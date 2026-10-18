@@ -771,57 +771,57 @@ export const ToeflQuestionsTab: React.FC = () => {
     <div className="w-full">
       {!selectedProgram ? (
         /* VIEW 1: TABLE OF AVAILABLE PROGRAMS */
-        <div id="toefl-question-bank-programs-view" className="space-y-6">
+        <div id="toefl-question-bank-programs-view" className="space-y-2 sm:space-y-2.5">
         
         {/* Top Action Header Banner */}
-        <div className={`p-6 sm:p-7 rounded-3xl border ${cardBg} flex flex-col md:flex-row md:items-center justify-between gap-5`}>
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#F7B425]/15 flex items-center justify-center text-[#F7B425] font-bold shrink-0">
-              <FolderOpen className="w-6 h-6" />
+        <div className={`p-2 sm:px-3 sm:py-2 rounded-2xl border ${cardBg} flex flex-col md:flex-row md:items-center justify-between gap-2`}>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#F7B425]/15 flex items-center justify-center text-[#F7B425] font-bold shrink-0">
+              <FolderOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className={`text-[20px] leading-[28px] font-bold font-['Poppins',sans-serif] tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h1 className={`text-base font-bold font-['Poppins',sans-serif] tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {tr('Bank Soal TOEFL per Program Tersedia', 'TOEFL Question Bank by Available Program')}
                 </h1>
               </div>
-              <p className={`text-[12px] font-['Poppins',sans-serif] mt-1.5 leading-relaxed max-w-2xl ${subText}`}>
+              <p className={`text-[11px] font-['Poppins',sans-serif] mt-0.2 leading-tight max-w-2xl ${subText}`}>
                 {tr(
-                  'Struktur bank soal TOEFL dikelompokkan berdasarkan program kursus & simulasi ujian. Klik tombol "Buka & Kelola Soal" pada program yang dipilih untuk menambah, meninjau, atau mengedit butir soal.',
-                  'The TOEFL question bank is organized by courses and exam simulations. Click "Manage Questions" on any available program to add, review, or edit questions.'
+                  'Struktur bank soal TOEFL dikelompokkan berdasarkan program kursus & simulasi ujian.',
+                  'TOEFL question bank organized by courses and exam simulations. Click "Manage Questions" to manage question items.'
                 )}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+          <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
             {/* Button Tambah Bank Soal Baru (Form Lengkap) */}
             <div className="relative" ref={dropdownRef}>
-              <div className="inline-flex rounded-2xl shadow-lg shadow-[#F7B425]/15 overflow-hidden border border-[#F7B425]/30">
+              <div className="inline-flex rounded-lg shadow-xs overflow-hidden border border-[#F7B425]/30">
                 <button
                   id="btn-add-test-question-bank"
                   type="button"
                   onClick={() => handleOpenCreateProgram()}
-                  className="px-4 py-2.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs inline-flex items-center gap-2 transition-all active:scale-95 cursor-pointer font-['Poppins',sans-serif]"
+                  className="px-2.5 py-1 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[11px] inline-flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer font-['Poppins',sans-serif]"
                   title={tr('Tambah bank soal baru lengkap dengan konfigurasi', 'Add new question bank with full configurations')}
                 >
-                  <Plus className="w-4 h-4 stroke-[3]" />
-                  <span className="text-[12px] font-bold">{tr('Tambah Bank Soal Baru', 'Add New Question Bank')}</span>
+                  <Plus className="w-3 h-3 stroke-[3]" />
+                  <span className="text-xs leading-4 font-bold">{tr('Tambah Bank Soal Baru', 'Add New Question Bank')}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsProgramDropdownOpen(!isProgramDropdownOpen)}
-                  className="px-2.5 py-2.5 bg-[#F7B425] hover:bg-amber-400 text-black border-l border-black/10 transition-all cursor-pointer flex items-center justify-center active:scale-95"
+                  className="px-1.5 py-1 bg-[#F7B425] hover:bg-amber-400 text-black border-l border-black/10 transition-all cursor-pointer flex items-center justify-center active:scale-95"
                   title={tr('Menu opsi tambah bank soal', 'Question bank addition options')}
                   aria-label="Menu opsi tambah bank soal"
                 >
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isProgramDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-2.5 h-2.5 transition-transform duration-200 ${isProgramDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
               </div>
 
               {/* Dropdown Menu */}
               {isProgramDropdownOpen && (
-                <div className={`absolute right-0 mt-2 w-84 rounded-2xl border shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 ${
+                <div className={`absolute right-0 mt-1 w-72 rounded-xl border shadow-xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 ${
                   isDark ? 'bg-[#181818] border-white/15 text-white' : 'bg-white border-slate-200 text-slate-900 shadow-xl'
                 }`}>
                   {/* Option 1: Buka Formulir Tambah Bank Soal Baru */}
@@ -831,34 +831,34 @@ export const ToeflQuestionsTab: React.FC = () => {
                       setIsProgramDropdownOpen(false);
                       handleOpenCreateProgram();
                     }}
-                    className="w-full text-left p-3 rounded-xl bg-[#F7B425]/15 hover:bg-[#F7B425]/25 border border-[#F7B425]/30 text-xs flex items-center gap-3 transition-colors cursor-pointer group mb-2"
+                    className="w-full text-left p-2 rounded-lg bg-[#F7B425]/15 hover:bg-[#F7B425]/25 border border-[#F7B425]/30 text-xs flex items-center gap-2 transition-colors cursor-pointer group mb-1"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#F7B425] flex items-center justify-center text-black shrink-0 font-bold group-hover:scale-105 transition-transform">
-                      <FolderPlus className="w-4 h-4 stroke-[2.5]" />
+                    <div className="w-6 h-6 rounded-md bg-[#F7B425] flex items-center justify-center text-black shrink-0 font-bold group-hover:scale-105 transition-transform">
+                      <FolderPlus className="w-3 h-3 stroke-[2.5]" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-extrabold font-['Poppins',sans-serif] text-[#F7B425] flex items-center justify-between">
+                      <div className="font-extrabold font-['Poppins',sans-serif] text-[#F7B425] flex items-center justify-between text-[11px]">
                         <span>{tr('Tambah Bank Soal Baru', 'Add New Question Bank')}</span>
-                        <Sparkles className="w-3.5 h-3.5" />
+                        <Sparkles className="w-2.5 h-2.5" />
                       </div>
-                      <div className={`text-[10px] mt-0.5 ${subText} line-clamp-1`}>
+                      <div className={`text-[9.5px] mt-0.2 ${subText} line-clamp-1`}>
                         {tr('Nama, format, durasi & target skor, struktur bagian, status', 'Name, format, duration & target score, structure, status')}
                       </div>
                     </div>
                   </button>
 
-                  <div className="px-3 py-1.5 border-t border-white/10 mb-1">
+                  <div className="px-2 py-0.5 border-t border-white/10 mb-0.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] uppercase font-black tracking-wider text-slate-400 block font-['Poppins',sans-serif]">
+                      <span className="text-[9px] uppercase font-black tracking-wider text-slate-400 block font-['Poppins',sans-serif]">
                         {tr('Atau Tambah Butir Soal Langsung:', 'Or Add Question Directly:')}
                       </span>
-                      <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                      <span className="px-1 py-0.2 rounded text-[8px] font-mono font-bold bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
                         {testBasedPrograms.length} {tr('Paket', 'Packages')}
                       </span>
                     </div>
                   </div>
 
-                  <div className="max-h-56 overflow-y-auto space-y-1 py-1">
+                  <div className="max-h-44 overflow-y-auto space-y-0.5 py-0.5">
                     {testBasedPrograms.map((prog) => (
                       <button
                         key={prog.id}
@@ -867,21 +867,21 @@ export const ToeflQuestionsTab: React.FC = () => {
                           setIsProgramDropdownOpen(false);
                           handleOpenAddQuestionWithProgram(prog);
                         }}
-                        className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between gap-2.5 transition-colors cursor-pointer group ${
+                        className={`w-full text-left px-2 py-1.5 rounded-md text-xs flex items-center justify-between gap-1.5 transition-colors cursor-pointer group ${
                           isDark ? 'hover:bg-white/10 text-slate-200' : 'hover:bg-amber-50 text-slate-800'
                         }`}
                       >
                         <div className="min-w-0 flex-1">
-                          <p className="font-bold truncate text-xs group-hover:text-[#F7B425] transition-colors">
+                          <p className="font-bold truncate text-[10.5px] group-hover:text-[#F7B425] transition-colors">
                             {prog.title}
                           </p>
-                          <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-400">
+                          <div className="flex items-center gap-1 mt-0.2 text-[9px] text-slate-400">
                             <span className="font-semibold text-[#F7B425]/90">{prog.category}</span>
                             <span>•</span>
                             <span className="font-mono">{getQuestionCountForProgram(prog.id)} soal</span>
                           </div>
                         </div>
-                        <Plus className="w-3.5 h-3.5 text-[#F7B425] shrink-0 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all" />
+                        <Plus className="w-2.5 h-2.5 text-[#F7B425] shrink-0 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all" />
                       </button>
                     ))}
                   </div>
@@ -892,10 +892,10 @@ export const ToeflQuestionsTab: React.FC = () => {
         </div>
 
         {/* Filter and Search Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            <Filter className={`w-4 h-4 ${subText}`} />
-            <div className={`flex items-center gap-1 p-1 rounded-2xl border text-xs overflow-x-auto max-w-full ${
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Filter className={`w-3 h-3 ${subText}`} />
+            <div className={`flex items-center gap-0.5 p-0.5 rounded-lg border text-xs overflow-x-auto max-w-full ${
               isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200'
             }`}>
               {[
@@ -908,7 +908,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedProgramCategory(tab.id)}
-                  className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer whitespace-nowrap text-[11px] ${
                     selectedProgramCategory === tab.id
                       ? 'bg-[#F7B425] text-black font-extrabold shadow-xs'
                       : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
@@ -926,18 +926,18 @@ export const ToeflQuestionsTab: React.FC = () => {
               placeholder={tr('Cari nama program ujian...', 'Search program title or code...')}
               value={programSearchTerm}
               onChange={(e) => setProgramSearchTerm(e.target.value)}
-              className={`w-full sm:w-72 pl-9 pr-4 py-2 rounded-xl text-xs transition-colors focus:outline-none focus:border-[#F7B425] border ${
+              className={`w-full sm:w-60 pl-7 pr-2.5 py-1 rounded-lg text-[11px] transition-colors focus:outline-none focus:border-[#F7B425] border ${
                 isDark 
                   ? 'bg-[#141414] border-white/10 text-white placeholder:text-slate-500' 
                   : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 shadow-xs'
               }`}
             />
-            <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 ${subText}`} />
+            <Search className={`w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 ${subText}`} />
           </div>
         </div>
 
         {/* Structured Table: Bank Soal Berdasarkan Available Program */}
-        <div className={`rounded-3xl border overflow-hidden ${cardBg}`}>
+        <div className={`rounded-xl border overflow-hidden ${cardBg}`}>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className={`border-b text-[11px] uppercase tracking-wider ${
@@ -946,21 +946,21 @@ export const ToeflQuestionsTab: React.FC = () => {
                   : 'border-slate-200 text-slate-500 bg-slate-50/80'
               }`}>
                 <tr>
-                  <th className="py-4 px-6 font-bold">{tr('Program Tersedia (Available Program)', 'Available Program')}</th>
-                  <th className="py-4 px-6 font-bold">{tr('Kategori & Format', 'Category & Format')}</th>
-                  <th className="py-4 px-6 font-bold text-center">{tr('Durasi & Target Skor', 'Duration & Target Score')}</th>
-                  <th className="py-4 px-6 font-bold text-center">{tr('Struktur Bagian', 'Section Structure')}</th>
-                  <th className="py-4 px-6 font-bold text-center">{tr('Bank Soal Terdaftar', 'Registered Questions')}</th>
-                  <th className="py-4 px-6 font-bold text-center">{tr('Status', 'Status')}</th>
-                  <th className="py-4 px-6 font-bold text-right">{tr('Aksi', 'Action')}</th>
+                  <th className="py-1.5 px-3 font-bold text-center">{tr('Program Tersedia', 'Available Program')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-center">{tr('Kategori & Format', 'Category & Format')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-center">{tr('Durasi & Target', 'Duration & Target')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-center">{tr('Struktur Bagian', 'Section Structure')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-center">{tr('Bank Soal', 'Registered Qs')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-center">{tr('Status', 'Status')}</th>
+                  <th className="py-1.5 px-3 font-bold text-center">{tr('Aksi', 'Action')}</th>
                 </tr>
               </thead>
               <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
                 {filteredPrograms.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-slate-400">
-                      <HelpCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                      <p className="font-semibold">{tr('Tidak ada program yang sesuai dengan pencarian.', 'No programs matched your search.')}</p>
+                    <td colSpan={7} className="py-6 text-center text-slate-400">
+                      <HelpCircle className="w-6 h-6 mx-auto mb-1 opacity-30" />
+                      <p className="font-semibold text-xs">{tr('Tidak ada program yang sesuai dengan pencarian.', 'No programs matched your search.')}</p>
                     </td>
                   </tr>
                 ) : (
@@ -974,18 +974,18 @@ export const ToeflQuestionsTab: React.FC = () => {
                         }`}
                       >
                         {/* Program Name & Code */}
-                        <td className="py-4 px-6">
-                          <div className="flex items-start gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0 mt-0.5">
-                              <BookOpen className="w-4 h-4" />
+                        <td className="py-1.5 px-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
+                              <BookOpen className="w-3 h-3" />
                             </div>
                             <div>
-                              <div className="flex items-center gap-2">
-                                <span className={`font-black font-heading text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                              <div className="flex items-center gap-1">
+                                <span className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                   {prog.title}
                                 </span>
                               </div>
-                              <span className="font-mono text-[10px] text-slate-400 block mt-0.5">
+                              <span className="font-mono text-[8.5px] text-slate-400 block">
                                 ID: #{prog.id}
                               </span>
                             </div>
@@ -993,8 +993,8 @@ export const ToeflQuestionsTab: React.FC = () => {
                         </td>
 
                         {/* Category */}
-                        <td className="py-4 px-6">
-                          <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold ${
+                        <td className="py-1.5 px-2.5 text-center">
+                          <span className={`px-1.5 py-0.2 rounded text-[11px] font-bold ${
                             isDark ? 'bg-white/5 text-slate-300' : 'bg-slate-100 text-slate-700'
                           }`}>
                             {prog.category}
@@ -1002,72 +1002,72 @@ export const ToeflQuestionsTab: React.FC = () => {
                         </td>
 
                         {/* Duration & Target Score */}
-                        <td className="py-4 px-6 text-center">
+                        <td className="py-1.5 px-2.5 text-center">
                           <div className="flex flex-col items-center">
-                            <span className="font-bold flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-[#F7B425]" />
+                            <span className="font-bold text-[11px] flex items-center gap-0.5">
+                              <Clock className="w-2.5 h-2.5 text-[#F7B425]" />
                               {prog.duration}
                             </span>
-                            <span className="text-[11px] text-[#F7B425] font-semibold mt-0.5">
+                            <span className="text-[11px] text-[#F7B425] font-semibold">
                               {prog.scoreTarget}
                             </span>
                           </div>
                         </td>
 
                         {/* Structure */}
-                        <td className="py-4 px-6 text-center">
-                          <span className={`text-[11px] font-medium block ${subText}`}>
+                        <td className="py-1.5 px-2.5 text-center">
+                          <span className={`text-[11px] font-medium block truncate max-w-[130px] mx-auto ${subText}`}>
                             {prog.benefits[0] || 'Listening, Structure, Reading'}
                           </span>
                         </td>
 
                         {/* Questions Count Badge */}
-                        <td className="py-4 px-6 text-center">
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono font-bold">
-                            <Layers className="w-3.5 h-3.5" />
-                            <span>{qCount} {tr('Butir Soal', 'Questions')}</span>
+                        <td className="py-1.5 px-2.5 text-center">
+                          <div className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono font-bold text-[11px]">
+                            <Layers className="w-2.5 h-2.5" />
+                            <span className="text-[11px]">{qCount} {tr('Soal', 'Qs')}</span>
                           </div>
                         </td>
 
                         {/* Status (Button On - Off) */}
-                        <td className="py-4 px-6 text-center whitespace-nowrap">
+                        <td className="py-1.5 px-2.5 text-center whitespace-nowrap">
                           <button
                             type="button"
                             onClick={() => handleToggleProgramStatus(prog.id)}
-                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer select-none border ${
+                            className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full text-[11px] font-bold transition-all cursor-pointer select-none border ${
                               prog.isActive !== false
                                 ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/25'
                                 : 'bg-rose-500/15 text-rose-500 border-rose-500/30 hover:bg-rose-500/25'
                             }`}
                             title={prog.isActive !== false ? tr('Klik untuk matikan status (OFF)', 'Click to turn off') : tr('Klik untuk aktifkan status (ON)', 'Click to turn on')}
                           >
-                            <div className={`w-7 h-4 rounded-full transition-colors flex items-center px-0.5 ${
+                            <div className={`w-4.5 h-2.5 rounded-full transition-colors flex items-center px-0.5 ${
                               prog.isActive !== false ? 'bg-emerald-500 justify-end' : 'bg-slate-400 dark:bg-slate-600 justify-start'
                             }`}>
-                              <div className="w-3 h-3 rounded-full bg-white shadow-xs" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-white shadow-xs" />
                             </div>
-                            <span className="font-extrabold tracking-wide font-['Poppins',sans-serif]">
+                            <span className="font-extrabold tracking-wide font-['Poppins',sans-serif] text-[11px]">
                               {prog.isActive !== false ? 'ON' : 'OFF'}
                             </span>
                           </button>
                         </td>
 
                         {/* Action: Open Question Editor & Delete */}
-                        <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
+                        <td className="py-1.5 px-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
                             <button
                               id={`btn-edit-program-${prog.id}`}
                               type="button"
                               onClick={() => handleOpenEditProgram(prog)}
-                              className={`px-3 py-2 rounded-xl font-bold text-xs inline-flex items-center gap-1.5 transition-all border cursor-pointer active:scale-95 shadow-xs ${
+                              className={`px-1.5 py-0.5 rounded-md font-bold text-[11px] inline-flex items-center gap-0.5 transition-all border cursor-pointer active:scale-95 shadow-xs ${
                                 isDark 
                                   ? 'bg-blue-500/15 border-blue-500/30 text-blue-400 hover:bg-blue-500/25 hover:text-white' 
                                   : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
                               }`}
                               title={tr(`Edit Data ${prog.title}`, `Edit Data for ${prog.title}`)}
                             >
-                              <Edit3 className="w-3.5 h-3.5" />
-                              <span>{tr('Edit Data', 'Edit Data')}</span>
+                              <Edit3 className="w-2.5 h-2.5" />
+                              <span className="text-[11px]">{tr('Edit', 'Edit')}</span>
                             </button>
 
                             <button
@@ -1077,22 +1077,22 @@ export const ToeflQuestionsTab: React.FC = () => {
                                 setSelectedSection('all');
                                 setQuestionSearchTerm('');
                               }}
-                              className="px-3.5 py-2 rounded-xl bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs inline-flex items-center gap-1.5 transition-all shadow-md shadow-[#F7B425]/15 cursor-pointer active:scale-95"
+                              className="px-2 py-0.5 rounded-md bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[11px] inline-flex items-center gap-0.5 transition-all shadow-xs cursor-pointer active:scale-95"
                               title={tr('Buka & Kelola Soal', 'Manage Questions')}
                             >
-                              <span>{tr('Buka & Kelola Soal', 'Manage Questions')}</span>
-                              <ChevronRight className="w-3.5 h-3.5" />
+                              <span className="text-[11px] font-bold">{tr('Buka & Kelola Soal', 'Manage Questions')}</span>
+                              <ChevronRight className="w-2.5 h-2.5" />
                             </button>
 
                             <button
                               id={`btn-delete-program-${prog.id}`}
                               type="button"
                               onClick={() => setDeletingProgram(prog)}
-                              className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/15 border border-rose-500/20 hover:border-rose-500/40 transition-all cursor-pointer active:scale-95 flex items-center justify-center shadow-xs"
+                              className="p-1 rounded-md text-rose-500 hover:bg-rose-500/15 border border-rose-500/20 hover:border-rose-500/40 transition-all cursor-pointer active:scale-95 flex items-center justify-center shadow-xs"
                               title={tr(`Hapus Program Bank Soal ${prog.title}`, `Delete Question Bank Program ${prog.title}`)}
                               aria-label={tr(`Hapus Program Bank Soal ${prog.title}`, `Delete Question Bank Program ${prog.title}`)}
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3 h-3" />
                             </button>
                           </div>
                         </td>
@@ -1105,17 +1105,17 @@ export const ToeflQuestionsTab: React.FC = () => {
           </div>
 
           {/* Table Footer */}
-          <div className={`p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs ${
+          <div className={`p-2 border-t flex flex-col sm:flex-row items-center justify-between gap-1.5 text-xs ${
             isDark ? 'border-white/10 text-slate-400 bg-white/[0.02]' : 'border-slate-200 text-slate-500 bg-slate-50/50'
           }`}>
-            <span>
+            <span className="text-[10px]">
               {tr(
                 `Menampilkan ${filteredPrograms.length} dari ${programsList.length} Program Tersedia`,
                 `Showing ${filteredPrograms.length} of ${programsList.length} Available Programs`
               )}
             </span>
-            <span className="text-[11px] text-[#F7B425] font-semibold flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5" />
+            <span className="text-[9.5px] text-[#F7B425] font-semibold flex items-center gap-1">
+              <Sparkles className="w-2.5 h-2.5" />
               {tr('Pilih salah satu program untuk mulai merevisi butir soal', 'Select a program above to begin editing question items')}
             </span>
           </div>
@@ -1126,55 +1126,53 @@ export const ToeflQuestionsTab: React.FC = () => {
         /* =========================================================================
            VIEW 2: QUESTION BANK MANAGEMENT & EDITOR FOR THE SELECTED PROGRAM
            ========================================================================= */
-        <div id="toefl-program-questions-editor-view" className="space-y-6">
+        <div id="toefl-program-questions-editor-view" className="space-y-2 sm:space-y-2.5">
       
       {/* Top Breadcrumb & Navigation Bar */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-2">
         <button
           type="button"
           onClick={() => setSelectedProgram(null)}
-          className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10.5px] font-bold transition-all cursor-pointer ${
             isDark 
               ? 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white' 
               : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 shadow-xs'
           }`}
         >
-          <ArrowLeft className="w-4 h-4 text-[#F7B425]" />
-          <span>{tr('Kembali ke Daftar Program (Tabel)', 'Back to Available Programs (Table)')}</span>
+          <ArrowLeft className="w-3 h-3 text-[#F7B425]" />
+          <span>{tr('Kembali ke Daftar Program', 'Back to Available Programs')}</span>
         </button>
       </div>
 
       {/* Selected Program Banner */}
-      <div className={`p-6 sm:p-7 rounded-3xl border ${cardBg} flex flex-col md:flex-row md:items-center justify-between gap-5`}>
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#F7B425]/15 flex items-center justify-center text-[#F7B425] font-bold shrink-0 mt-0.5">
-            <BookOpen className="w-6 h-6" />
+      <div className={`p-2 sm:px-3 sm:py-2 rounded-xl border ${cardBg} flex flex-col md:flex-row md:items-center justify-between gap-2`}>
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#F7B425]/15 flex items-center justify-center text-[#F7B425] font-bold shrink-0">
+            <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
                 {selectedProgram.category}
               </span>
-            </div>
-            <div className="flex items-center gap-3 mt-1 flex-wrap">
-              <h2 className={`text-xl sm:text-2xl font-black font-heading tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              <h2 className={`text-xs sm:text-sm font-bold font-heading tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {selectedProgram.title}
               </h2>
               <button
                 type="button"
                 onClick={() => handleOpenEditProgram(selectedProgram)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
+                className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md border text-[9.5px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
                   isDark 
                     ? 'bg-white/5 border-white/10 text-slate-300 hover:text-[#F7B425] hover:border-[#F7B425]/40 hover:bg-[#F7B425]/10' 
                     : 'bg-slate-100 border-slate-200 text-slate-700 hover:text-amber-700 hover:border-amber-300 hover:bg-amber-50'
                 }`}
                 title={tr('Edit Judul & Data Program Ini', 'Edit Title & Info of this Program')}
               >
-                <Edit3 className="w-3.5 h-3.5 text-[#F7B425]" />
+                <Edit3 className="w-2.5 h-2.5 text-[#F7B425]" />
                 <span>{tr('Edit Program', 'Edit Program')}</span>
               </button>
             </div>
-            <p className={`text-xs mt-1 leading-relaxed ${subText}`}>
+            <p className={`text-[10px] leading-tight mt-0.5 ${subText}`}>
               {tr(
                 `Durasi: ${selectedProgram.duration} • Target: ${selectedProgram.scoreTarget} • Total ${activeProgramQuestions.length} butir soal terdaftar`,
                 `Duration: ${selectedProgram.duration} • Target: ${selectedProgram.scoreTarget} • Total ${activeProgramQuestions.length} registered questions`
@@ -1186,18 +1184,18 @@ export const ToeflQuestionsTab: React.FC = () => {
         <button
           type="button"
           onClick={handleOpenAddQuestion}
-          className="px-4 py-2.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-xl transition-all shadow-lg shadow-[#F7B425]/20 flex items-center gap-2 cursor-pointer self-start md:self-center active:scale-95"
+          className="px-2.5 py-1 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[11px] rounded-lg transition-all shadow-xs flex items-center gap-1 cursor-pointer self-start md:self-center active:scale-95"
         >
-          <Plus className="w-4 h-4" />
-          <span>{tr('Tambah Soal Baru ke Program Ini', 'Add Question to This Program')}</span>
+          <Plus className="w-3 h-3" />
+          <span>{tr('Tambah Soal ke Program Ini', 'Add Question to This Program')}</span>
         </button>
       </div>
 
       {/* Section Filter & Search for Questions */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Filter className={`w-4 h-4 ${subText}`} />
-          <div className={`flex items-center gap-1 p-1 rounded-2xl border text-xs ${
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Filter className={`w-3 h-3 ${subText}`} />
+          <div className={`flex items-center gap-0.5 p-0.5 rounded-lg border text-xs ${
             isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200'
           }`}>
             {[
@@ -1209,7 +1207,7 @@ export const ToeflQuestionsTab: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setSelectedSection(tab.id)}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer text-[10px] ${
                   selectedSection === tab.id
                     ? 'bg-[#F7B425] text-black font-extrabold shadow-xs'
                     : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
@@ -1221,26 +1219,26 @@ export const ToeflQuestionsTab: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
-          <div className="relative flex-1 sm:w-72">
+        <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
+          <div className="relative flex-1 sm:w-60">
             <input
               type="text"
-              placeholder={tr('Cari teks soal atau kata kunci pembahasan...', 'Search question text or explanation...')}
+              placeholder={tr('Cari teks soal / kata kunci...', 'Search question text or explanation...')}
               value={questionSearchTerm}
               onChange={(e) => setQuestionSearchTerm(e.target.value)}
-              className={`w-full pl-9 pr-4 py-2 rounded-xl text-xs transition-colors focus:outline-none focus:border-[#F7B425] border ${
+              className={`w-full pl-7 pr-2.5 py-1 rounded-lg text-[11px] transition-colors focus:outline-none focus:border-[#F7B425] border ${
                 isDark 
                   ? 'bg-[#141414] border-white/10 text-white placeholder:text-slate-500' 
                   : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 shadow-xs'
               }`}
             />
-            <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 ${subText}`} />
+            <Search className={`w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 ${subText}`} />
           </div>
 
           {/* Grid / Tabel View Switcher matching user's reference */}
           <div 
             id="questions-viewmode-segmented-toggle"
-            className={`flex items-center p-1 rounded-2xl border text-xs shrink-0 transition-all ${
+            className={`flex items-center p-0.5 rounded-lg border text-xs shrink-0 transition-all ${
               isDark ? 'bg-[#0f0f10] border-white/15' : 'bg-slate-100 border-slate-300/80 shadow-xs'
             }`}
           >
@@ -1248,26 +1246,26 @@ export const ToeflQuestionsTab: React.FC = () => {
               id="btn-view-mode-grid"
               type="button"
               onClick={() => setViewMode('cards')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl font-black text-xs transition-all cursor-pointer active:scale-95 ${
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-[10.5px] transition-all cursor-pointer active:scale-95 ${
                 viewMode === 'cards'
                   ? 'bg-[#F7B425] text-black shadow-xs font-black'
                   : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <LayoutGrid className="w-4 h-4 stroke-[2.3]" />
+              <LayoutGrid className="w-3 h-3" />
               <span>Grid</span>
             </button>
             <button
               id="btn-view-mode-table"
               type="button"
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl font-black text-xs transition-all cursor-pointer active:scale-95 ${
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-[10.5px] transition-all cursor-pointer active:scale-95 ${
                 viewMode === 'table'
                   ? 'bg-[#F7B425] text-black shadow-xs font-black'
                   : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Table2 className="w-4 h-4 stroke-[2.3]" />
+              <Table2 className="w-3 h-3" />
               <span>Tabel</span>
             </button>
           </div>
@@ -1276,12 +1274,12 @@ export const ToeflQuestionsTab: React.FC = () => {
 
       {/* Questions Content: Cards or Compact Table */}
       {filteredQuestions.length === 0 ? (
-        <div className={`p-12 rounded-3xl border text-center ${cardBg}`}>
-          <HelpCircle className="w-10 h-10 mx-auto mb-3 opacity-30 text-[#F7B425]" />
-          <h3 className={`text-base font-black font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
+        <div className={`p-5 rounded-xl border text-center ${cardBg}`}>
+          <HelpCircle className="w-6 h-6 mx-auto mb-1.5 opacity-30 text-[#F7B425]" />
+          <h3 className={`text-xs sm:text-sm font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {tr('Belum ada butir soal yang sesuai', 'No matching questions found')}
           </h3>
-          <p className={`text-xs mt-1 max-w-md mx-auto ${subText}`}>
+          <p className={`text-[10.5px] mt-0.5 max-w-md mx-auto ${subText}`}>
             {tr(
               'Belum ada butir soal dalam filter ini atau pencarian tidak menemukan hasil. Klik tombol di bawah untuk menambahkan butir soal pertama.',
               'No questions in this section or search match. Click below to add the first question to this program.'
@@ -1290,68 +1288,68 @@ export const ToeflQuestionsTab: React.FC = () => {
           <button
             type="button"
             onClick={handleOpenAddQuestion}
-            className="mt-4 px-4 py-2 bg-[#F7B425] text-black font-extrabold text-xs rounded-xl hover:bg-amber-400 transition-all cursor-pointer inline-flex items-center gap-1.5"
+            className="mt-2.5 px-2.5 py-1 bg-[#F7B425] text-black font-extrabold text-[11px] rounded-lg hover:bg-amber-400 transition-all cursor-pointer inline-flex items-center gap-1"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3 h-3" />
             <span>{tr('Tambah Soal Sekarang', 'Add Question Now')}</span>
           </button>
         </div>
       ) : viewMode === 'cards' ? (
         /* Cards View - Rendered as responsive Grid */
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
           {filteredQuestions.map((item, idx) => (
             <div 
               key={item.id}
-              className={`rounded-3xl p-6 border transition-colors duration-150 space-y-4 ${cardBg} ${
+              className={`rounded-xl p-2.5 sm:p-3 border transition-colors duration-150 space-y-2 ${cardBg} ${
                 isDark ? 'hover:border-[#F7B425]/40' : 'hover:border-[#F7B425]'
               }`}
             >
               {/* Header Tag */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-[#F7B425] text-black text-xs font-black flex items-center justify-center">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-4.5 h-4.5 rounded-full bg-[#F7B425] text-black text-[9.5px] font-black flex items-center justify-center">
                     {idx + 1}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[10px] font-black uppercase">
+                  <span className="px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[8.5px] font-black uppercase">
                     {item.section}
                   </span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                  <span className={`px-1.5 py-0.2 rounded-full text-[8.5px] font-semibold ${
                     isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-600'
                   }`}>
                     {item.part}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <button
                     onClick={() => {
                       setEditingQuestion(item);
                       setIsAddModalOpen(true);
                     }}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                    className={`p-1 rounded-md transition-colors cursor-pointer ${
                       isDark 
                         ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' 
                         : 'bg-slate-100 hover:bg-[#F7B425] text-slate-700 hover:text-black'
                     }`}
                     title={tr('Edit Soal', 'Edit Question')}
                   >
-                    <Edit3 className="w-3.5 h-3.5" />
+                    <Edit3 className="w-2.5 h-2.5" />
                   </button>
                   <button
                     id={`btn-delete-card-question-${item.id}`}
                     type="button"
                     onClick={() => handleDelete(item)}
-                    className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
+                    className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
                     title={tr('Hapus Soal', 'Delete Question')}
                     aria-label={tr('Hapus Soal', 'Delete Question')}
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-2.5 h-2.5" />
                   </button>
                 </div>
               </div>
 
               {/* Question Text */}
-              <div className={`p-4 rounded-2xl border text-xs font-medium whitespace-pre-line leading-relaxed ${
+              <div className={`p-2 rounded-lg border text-[11px] font-medium whitespace-pre-line leading-relaxed ${
                 isDark 
                   ? 'bg-white/5 border-white/5 text-slate-200' 
                   : 'bg-slate-50 border-slate-200 text-slate-800'
@@ -1360,13 +1358,13 @@ export const ToeflQuestionsTab: React.FC = () => {
               </div>
 
               {/* Options Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
                 {(['A', 'B', 'C', 'D'] as const).map((optKey) => {
                   const isCorrect = item.correctAnswer === optKey;
                   return (
                     <div
                       key={optKey}
-                      className={`p-3 rounded-xl border flex items-center gap-2.5 transition-colors ${
+                      className={`p-1.5 rounded-md border flex items-center gap-1.5 transition-colors ${
                         isCorrect 
                           ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold' 
                           : isDark 
@@ -1374,23 +1372,23 @@ export const ToeflQuestionsTab: React.FC = () => {
                             : 'bg-slate-50 border-slate-200 text-slate-700'
                       }`}
                     >
-                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
+                      <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8.5px] font-black shrink-0 ${
                         isCorrect ? 'bg-emerald-500 text-black' : isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-200 text-slate-600'
                       }`}>
                         {optKey}
                       </span>
-                      <span className="flex-1">{item.options[optKey]}</span>
-                      {isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
+                      <span className="flex-1 text-[10.5px] leading-tight">{item.options[optKey]}</span>
+                      {isCorrect && <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />}
                     </div>
                   );
                 })}
               </div>
 
               {/* Explanation Box */}
-              <div className="p-3.5 bg-[#F7B425]/10 rounded-2xl border border-[#F7B425]/20 text-xs text-[#F7B425] flex items-start gap-2">
-                <BookOpen className="w-4 h-4 text-[#F7B425] shrink-0 mt-0.5" />
-                <div>
-                  <strong className={`font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              <div className="p-2 bg-[#F7B425]/10 rounded-lg border border-[#F7B425]/20 text-[10.5px] text-[#F7B425] flex items-start gap-1.5">
+                <BookOpen className="w-3 h-3 text-[#F7B425] shrink-0 mt-0.5" />
+                <div className="text-[10px] sm:text-[10.5px] leading-snug">
+                  <strong className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {tr('Kunci & Analisis Soal:', 'Key & Explanation:')}
                   </strong>{' '}
                   <span className={isDark ? 'text-slate-300' : 'text-slate-800'}>
@@ -1404,67 +1402,69 @@ export const ToeflQuestionsTab: React.FC = () => {
         </div>
       ) : (
         /* Compact Table View of Questions */
-        <div className={`rounded-3xl border overflow-hidden ${cardBg}`}>
+        <div className={`rounded-xl border overflow-hidden ${cardBg}`}>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className={`border-b text-[11px] uppercase tracking-wider ${
+              <thead className={`border-b text-[9.5px] uppercase tracking-wider ${
                 isDark ? 'border-white/10 text-slate-400 bg-white/5' : 'border-slate-200 text-slate-500 bg-slate-50/80'
               }`}>
                 <tr>
-                  <th className="py-3 px-4 font-bold text-center">No</th>
-                  <th className="py-3 px-4 font-bold">{tr('Bagian (Section)', 'Section')}</th>
-                  <th className="py-3 px-4 font-bold">{tr('Cuplikan Teks Soal', 'Question Snippet')}</th>
-                  <th className="py-3 px-4 font-bold text-center">{tr('Kunci', 'Key')}</th>
-                  <th className="py-3 px-4 font-bold">{tr('Analisis Pembahasan', 'Explanation')}</th>
-                  <th className="py-3 px-4 font-bold text-right">{tr('Aksi', 'Action')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-center w-10">No</th>
+                  <th className="py-1.5 px-2.5 font-bold w-32">{tr('Bagian (Section)', 'Section')}</th>
+                  <th className="py-1.5 px-2.5 font-bold">{tr('Cuplikan Teks Soal', 'Question Snippet')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-center w-14">{tr('Kunci', 'Key')}</th>
+                  <th className="py-1.5 px-2.5 font-bold">{tr('Analisis Pembahasan', 'Explanation')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-right w-16">{tr('Aksi', 'Action')}</th>
                 </tr>
               </thead>
               <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
                 {filteredQuestions.map((q, idx) => (
                   <tr key={q.id} className={isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}>
-                    <td className="py-3 px-4 font-bold text-center font-mono text-[#F7B425]">
+                    <td className="py-1 px-2.5 font-bold text-center font-mono text-[#F7B425] text-[11px]">
                       {idx + 1}
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                    <td className="py-1 px-2.5">
+                      <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
                         {q.section}
                       </span>
-                      <span className={`block text-[10px] mt-0.5 ${subText}`}>{q.part}</span>
+                      <span className={`block text-[9px] mt-0.2 ${subText}`}>{q.part}</span>
                     </td>
-                    <td className="py-3 px-4 max-w-xs truncate font-medium">
+                    <td className="py-1 px-2.5 max-w-xs truncate font-medium text-[11px]">
                       {q.questionText}
                     </td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="w-6 h-6 rounded-full inline-flex items-center justify-center text-xs font-black bg-emerald-500 text-black">
+                    <td className="py-1 px-2.5 text-center">
+                      <span className="w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[9.5px] font-black bg-emerald-500 text-black">
                         {q.correctAnswer}
                       </span>
                     </td>
-                    <td className="py-3 px-4 max-w-sm truncate text-slate-400">
+                    <td className="py-1 px-2.5 max-w-sm truncate text-slate-400 text-[10.5px]">
                       {q.explanation}
                     </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
+                    <td className="py-1 px-2.5 text-right">
+                      <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => {
                             setEditingQuestion(q);
                             setIsAddModalOpen(true);
                           }}
-                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                            isDark ? 'hover:bg-white/10 text-slate-300' : 'hover:bg-slate-200 text-slate-700'
+                          className={`p-1 rounded-md transition-colors cursor-pointer ${
+                            isDark 
+                              ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' 
+                              : 'bg-slate-100 hover:bg-[#F7B425] text-slate-700 hover:text-black'
                           }`}
                           title={tr('Edit Soal', 'Edit Question')}
                         >
-                          <Edit3 className="w-3.5 h-3.5" />
+                          <Edit3 className="w-2.5 h-2.5" />
                         </button>
                         <button
                           id={`btn-delete-table-question-${q.id}`}
                           type="button"
                           onClick={() => handleDelete(q)}
-                          className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/15 transition-colors cursor-pointer"
+                          className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
                           title={tr('Hapus Soal', 'Delete Question')}
                           aria-label={tr('Hapus Soal', 'Delete Question')}
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-2.5 h-2.5" />
                         </button>
                       </div>
                     </td>
@@ -1480,21 +1480,21 @@ export const ToeflQuestionsTab: React.FC = () => {
 
       {/* Edit / Add Modal */}
       {isAddModalOpen && editingQuestion && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
-          <div className={`rounded-3xl w-full max-w-4xl p-6 sm:p-8 shadow-2xl border max-h-[90vh] overflow-y-auto ${
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-3 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+          <div className={`rounded-xl w-full max-w-2xl p-3 sm:p-4 shadow-xl border max-h-[90vh] overflow-y-auto ${
             isDark ? 'bg-[#141414] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
           }`}>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-2">
               <div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
                   {selectedProgram?.title || testBasedPrograms.find(p => p.id === editingQuestion.programId)?.title || tr('Program Berbasis Tes', 'Test-Based Program')}
                 </span>
-                <h3 className={`text-xl font-black font-heading mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <h3 className={`text-xs sm:text-sm font-bold font-heading mt-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {editingQuestion.id 
                     ? tr('Edit Butir Soal TOEFL', 'Edit TOEFL Question') 
                     : tr('Tambah Butir Soal Baru (Program Berbasis Tes)', 'Add New Question (Test-Based Program)')}
                 </h3>
-                <p className={`text-xs mt-0.5 ${subText}`}>
+                <p className={`text-[10px] mt-0.2 ${subText}`}>
                   {tr(
                     'Lengkapi teks pertanyaan, opsi jawaban A/B/C/D, kunci jawaban benar, dan pembahasan mendalam.',
                     'Fill in the question prompt, answer options A/B/C/D, correct key, and grammar analysis.'
@@ -1507,23 +1507,23 @@ export const ToeflQuestionsTab: React.FC = () => {
                   setIsAddModalOpen(false);
                   setEditingQuestion(null);
                 }}
-                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 ${
+                className={`w-6 h-6 rounded-md flex items-center justify-center transition-all cursor-pointer shrink-0 ${
                   isDark ? 'bg-white/10 hover:bg-white/20 text-slate-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
                 }`}
                 aria-label="Tutup modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveQuestion} className="space-y-4 text-xs">
+            <form onSubmit={handleSaveQuestion} className="space-y-2 text-xs">
               {/* Program Berbasis Tes Selection */}
               <div>
                 <CustomDropdown
                   label={tr('Pilih Program Berbasis Tes *', 'Select Test-Based Program *')}
                   value={editingQuestion.programId || testBasedPrograms[0]?.id || ''}
                   onChange={(val) => setEditingQuestion({ ...editingQuestion, programId: val })}
-                  buttonClassName={isDark ? '!border-[#3a3a3a] !bg-[#1e1e1e]' : '!border-slate-300 !bg-slate-50'}
+                  buttonClassName={isDark ? '!border-[#3a3a3a] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
                   options={testBasedPrograms.map(p => ({
                     value: p.id,
                     label: p.title,
@@ -1532,13 +1532,13 @@ export const ToeflQuestionsTab: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
                   <CustomDropdown
                     label={tr('Section *', 'Section *')}
                     value={editingQuestion.section}
                     onChange={(val) => setEditingQuestion({ ...editingQuestion, section: val as any })}
-                    buttonClassName={isDark ? '!border-[#3a3a3a] !bg-[#1e1e1e]' : '!border-slate-300 !bg-slate-50'}
+                    buttonClassName={isDark ? '!border-[#3a3a3a] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
                     options={[
                       { value: 'Structure', label: 'Structure & Written Expression', badge: 'Section 2' },
                       { value: 'Listening', label: 'Listening Comprehension', badge: 'Section 1' },
@@ -1548,7 +1548,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className={`block font-bold mb-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                  <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     {tr('Part / Bagian Spesifik', 'Specific Part / Skill')}
                   </label>
                   <input
@@ -1556,7 +1556,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                     value={editingQuestion.part}
                     onChange={(e) => setEditingQuestion({ ...editingQuestion, part: e.target.value })}
                     placeholder="Contoh: Part A (Sentence Completion)"
-                    className={`w-full px-3.5 py-3 rounded-2xl border text-xs focus:outline-none focus:border-[#F7B425] ${
+                    className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                       isDark 
                         ? 'bg-[#1e1e1e] border-[#4b4b4b] text-white' 
                         : 'bg-slate-50 border-slate-300 text-slate-900'
@@ -1566,16 +1566,16 @@ export const ToeflQuestionsTab: React.FC = () => {
               </div>
 
               <div>
-                <label className={`block font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                   {tr('Teks Pertanyaan / Soal *', 'Question Prompt / Text *')}
                 </label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   required
                   value={editingQuestion.questionText}
                   onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
                   placeholder={tr('Ketik kalimat soal TOEFL di sini...', 'Type the TOEFL question here...')}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border focus:outline-none focus:border-[#F7B425] ${
+                  className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                     isDark 
                       ? 'bg-[#1e1e1e] border-white/10 text-white' 
                       : 'bg-slate-50 border-slate-300 text-slate-900'
@@ -1583,13 +1583,13 @@ export const ToeflQuestionsTab: React.FC = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className={`block font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+              <div className="space-y-1.5">
+                <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                   {tr('Pilihan Jawaban (Options A - D) *', 'Answer Options (A - D) *')}
                 </label>
                 {(['A', 'B', 'C', 'D'] as const).map((key) => (
-                  <div key={key} className="flex items-center gap-2">
-                    <span className="w-6 font-bold text-[#F7B425] text-center">{key}:</span>
+                  <div key={key} className="flex items-center gap-1.5">
+                    <span className="w-5 font-bold text-[#F7B425] text-center text-xs">{key}:</span>
                     <input
                       type="text"
                       required
@@ -1598,7 +1598,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                         ...editingQuestion,
                         options: { ...editingQuestion.options, [key]: e.target.value }
                       })}
-                      className={`flex-1 px-3 py-2 rounded-xl border focus:outline-none focus:border-[#F7B425] ${
+                      className={`flex-1 px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                         isDark 
                           ? 'bg-[#1e1e1e] border-white/10 text-white' 
                           : 'bg-slate-50 border-slate-300 text-slate-900'
@@ -1613,7 +1613,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                   label={tr('Kunci Jawaban Benar *', 'Correct Answer Key *')}
                   value={editingQuestion.correctAnswer}
                   onChange={(val) => setEditingQuestion({ ...editingQuestion, correctAnswer: val as any })}
-                  buttonClassName={isDark ? '!border-[#2d2d2d] !bg-[#1e1e1e]' : '!border-slate-300 !bg-slate-50'}
+                  buttonClassName={isDark ? '!border-[#2d2d2d] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
                   options={[
                     { value: 'A', label: 'Opsi A' },
                     { value: 'B', label: 'Opsi B' },
@@ -1624,7 +1624,7 @@ export const ToeflQuestionsTab: React.FC = () => {
               </div>
 
               <div>
-                <label className={`block font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                   {tr('Penjelasan / Pembahasan Grammar & Jawaban', 'Grammar Analysis & Explanation')}
                 </label>
                 <textarea
@@ -1632,7 +1632,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                   value={editingQuestion.explanation}
                   onChange={(e) => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
                   placeholder={tr('Jelaskan alasan mengapa opsi tersebut benar...', 'Explain why the selected option is correct...')}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border focus:outline-none focus:border-[#F7B425] ${
+                  className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                     isDark 
                       ? 'bg-[#1e1e1e] border-white/10 text-white' 
                       : 'bg-slate-50 border-slate-300 text-slate-900'
@@ -1640,11 +1640,11 @@ export const ToeflQuestionsTab: React.FC = () => {
                 />
               </div>
 
-              <div className="pt-3 flex gap-3">
+              <div className="pt-2 flex gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className={`flex-1 py-2.5 rounded-xl border font-bold transition-colors cursor-pointer ${
+                  className={`flex-1 py-1.5 rounded-lg border font-bold text-xs transition-colors cursor-pointer ${
                     isDark 
                       ? 'border-white/10 text-slate-300 hover:bg-white/5' 
                       : 'border-slate-300 text-slate-700 hover:bg-slate-100'
@@ -1654,7 +1654,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-[#F7B425] font-extrabold text-black hover:bg-amber-400 cursor-pointer shadow-lg shadow-[#F7B425]/20 transition-all active:scale-98"
+                  className="flex-1 py-1.5 rounded-lg bg-[#F7B425] font-extrabold text-black hover:bg-amber-400 cursor-pointer shadow-md shadow-[#F7B425]/20 transition-all active:scale-98 text-xs"
                 >
                   {tr('Simpan Butir Soal', 'Save Question')}
                 </button>
@@ -1666,27 +1666,27 @@ export const ToeflQuestionsTab: React.FC = () => {
 
       {/* Modal: Tambah Bank Soal Baru / Edit Bank Soal TOEFL */}
       {isProgramModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in overflow-y-auto">
-          <div className={`w-full max-w-2xl rounded-3xl border p-6 sm:p-7 shadow-2xl relative my-8 max-h-[90vh] overflow-y-auto ${cardBg}`}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-3 bg-black/75 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className={`w-full max-w-lg rounded-xl border p-3.5 sm:p-4 shadow-xl relative my-3 max-h-[90vh] overflow-y-auto ${cardBg}`}>
             <button
               onClick={() => setIsProgramModalOpen(false)}
-              className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="absolute top-3 right-3 p-1 rounded-md text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-3.5 h-3.5" />
             </button>
 
             {/* Modal Header */}
-            <div className="flex items-center gap-3.5 mb-6 border-b pb-4 border-white/10">
-              <div className="w-11 h-11 rounded-2xl bg-[#F7B425]/20 flex items-center justify-center text-[#F7B425] shrink-0">
-                {programModalMode === 'create' ? <FolderPlus className="w-6 h-6 stroke-[2.5]" /> : <Edit3 className="w-6 h-6 stroke-[2.5]" />}
+            <div className="flex items-center gap-2 mb-3 border-b pb-2.5 border-white/10">
+              <div className="w-7 h-7 rounded-lg bg-[#F7B425]/20 flex items-center justify-center text-[#F7B425] shrink-0">
+                {programModalMode === 'create' ? <FolderPlus className="w-3.5 h-3.5 stroke-[2.5]" /> : <Edit3 className="w-3.5 h-3.5 stroke-[2.5]" />}
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="text-xl font-black font-['Poppins',sans-serif] tracking-tight">
+                <h3 className="text-xs sm:text-sm font-bold font-['Poppins',sans-serif] tracking-tight">
                   {programModalMode === 'create' 
                     ? tr('Tambah Bank Soal Baru', 'Add New Question Bank') 
                     : tr('Edit Konfigurasi Bank Soal', 'Edit Question Bank Configuration')}
                 </h3>
-                <p className={`text-xs mt-0.5 ${subText}`}>
+                <p className={`text-[10px] mt-0.2 ${subText}`}>
                   {programModalMode === 'create'
                     ? tr('Konfigurasikan nama, format kategori, durasi, target skor, struktur bagian, dan status.', 'Configure name, format category, duration, target score, section structure, and status.')
                     : tr(`Perbarui konfigurasi paket bank soal #${programFormData.id}`, `Update configuration for question bank #${programFormData.id}`)}
@@ -1694,9 +1694,9 @@ export const ToeflQuestionsTab: React.FC = () => {
               </div>
             </div>
 
-            <form onSubmit={handleSaveProgram} className="space-y-6 text-xs">
+            <form onSubmit={handleSaveProgram} className="space-y-3 text-xs">
               {/* 1. NAMA BANK SOAL */}
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <label className={`block font-bold text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                   1. {tr('Nama Bank Soal', 'Question Bank Name')} <span className="text-rose-500">*</span>
                 </label>
@@ -1707,30 +1707,30 @@ export const ToeflQuestionsTab: React.FC = () => {
                   value={programFormData.title}
                   onChange={(e) => setProgramFormData({ ...programFormData, title: e.target.value })}
                   placeholder={tr('Contoh: TOEFL ITP Prediction Test - Paket 02 (Simulasi Lengkap)', 'e.g. TOEFL ITP Prediction Test - Package 02 (Full Simulation)')}
-                  className={`w-full px-4 py-3 rounded-2xl border focus:outline-none focus:border-[#F7B425] font-semibold text-sm transition-all ${
+                  className={`w-full px-3 py-1.5 rounded-lg border focus:outline-none focus:border-[#F7B425] font-semibold text-xs transition-all ${
                     isDark 
                       ? 'bg-[#1e1e1e] border-white/10 text-white placeholder:text-slate-500' 
                       : 'bg-slate-50 border-slate-300 text-slate-900 placeholder:text-slate-400'
                   }`}
                 />
-                <p className={`text-[11px] ${subText}`}>
+                <p className={`text-[10px] ${subText}`}>
                   {tr('Nama resmi paket tes yang akan dilihat peserta pada daftar simulasi dan sertifikat kelulusan.', 'Official test package title displayed to students in test lists and certificates.')}
                 </p>
               </div>
 
               {/* 2. KATEGORI / FORMAT */}
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className={`block font-bold text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                     2. {tr('Kategori / Format Ujian', 'Category / Exam Format')} <span className="text-rose-500">*</span>
                   </label>
-                  <span className="text-[11px] font-mono font-bold text-[#F7B425] bg-[#F7B425]/10 px-2 py-0.5 rounded-lg border border-[#F7B425]/20">
+                  <span className="text-[10px] font-mono font-bold text-[#F7B425] bg-[#F7B425]/10 px-1.5 py-0.2 rounded-md border border-[#F7B425]/20">
                     {programFormData.category}
                   </span>
                 </div>
 
                 {/* Category Preset Cards: Structure, Listening, Reading with Icons */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {[
                     {
                       id: 'structure',
@@ -1792,42 +1792,42 @@ export const ToeflQuestionsTab: React.FC = () => {
                             sections: catItem.presetSections
                           }));
                         }}
-                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between group active:scale-[0.98] ${
+                        className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between group active:scale-[0.98] ${
                           isSelected
-                            ? 'bg-[#F7B425]/15 border-[#F7B425] shadow-md shadow-[#F7B425]/15 ring-1 ring-[#F7B425]/40'
+                            ? 'bg-[#F7B425]/15 border-[#F7B425] shadow-xs ring-1 ring-[#F7B425]/40'
                             : isDark
                               ? 'bg-white/5 border-white/10 hover:border-white/25 hover:bg-white/10 text-slate-300'
                               : 'bg-slate-50 border-slate-200 hover:border-amber-300 hover:bg-white text-slate-700'
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${
+                        <div className="flex items-center justify-between mb-1.5">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110 ${
                             isSelected
                               ? 'bg-[#F7B425] text-black shadow-xs font-bold'
                               : isDark
                                 ? 'bg-white/10 text-[#F7B425]'
                                 : 'bg-slate-200 text-slate-800'
                           }`}>
-                            <CatIcon className="w-4 h-4 stroke-[2.2]" />
+                            <CatIcon className="w-3.5 h-3.5 stroke-[2.2]" />
                           </div>
                           {isSelected ? (
-                            <span className="w-5 h-5 rounded-full bg-[#F7B425] text-black flex items-center justify-center shadow-xs">
-                              <Check className="w-3 h-3 stroke-[3]" />
+                            <span className="w-4 h-4 rounded-full bg-[#F7B425] text-black flex items-center justify-center shadow-xs">
+                              <Check className="w-2.5 h-2.5 stroke-[3]" />
                             </span>
                           ) : (
-                            <span className="w-4 h-4 rounded-full border border-white/15 opacity-0 group-hover:opacity-60 transition-opacity" />
+                            <span className="w-3.5 h-3.5 rounded-full border border-white/15 opacity-0 group-hover:opacity-60 transition-opacity" />
                           )}
                         </div>
 
                         <div>
-                          <div className={`font-black font-heading text-xs flex items-center gap-1.5 ${
+                          <div className={`font-black font-heading text-[11px] flex items-center gap-1 ${
                             isSelected 
                               ? isDark ? 'text-white font-extrabold' : 'text-slate-900 font-extrabold' 
                               : isDark ? 'text-slate-200' : 'text-slate-800'
                           }`}>
                             <span>{catItem.name}</span>
                           </div>
-                          <p className={`text-[10.5px] mt-0.5 leading-snug ${
+                          <p className={`text-[9.5px] mt-0.2 leading-tight ${
                             isSelected ? 'text-[#F7B425] font-semibold' : subText
                           }`}>
                             ({catItem.desc})
@@ -1852,7 +1852,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                         sections: DEFAULT_TOEFL_SECTIONS
                       }));
                     }}
-                    className={`w-full py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 ${
+                    className={`w-full py-1.5 px-2.5 rounded-lg text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95 ${
                       programFormData.category.includes('Simulasi Lengkap') || programFormData.category === 'TOEFL ITP'
                         ? 'bg-[#F7B425]/20 border-[#F7B425] text-[#F7B425]'
                         : isDark
@@ -1860,15 +1860,15 @@ export const ToeflQuestionsTab: React.FC = () => {
                           : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                     }`}
                   >
-                    <Layers className="w-3.5 h-3.5" />
+                    <Layers className="w-3 h-3" />
                     <span>{tr('Simulasi Lengkap (Listening, Structure & Reading • 140 Soal)', 'Full Simulation (Listening, Structure & Reading • 140 Qs)')}</span>
                   </button>
                 </div>
 
                 {/* Custom Category Input & Badge/Tag */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
                   <div>
-                    <label className={`block font-semibold mb-1 text-[11px] ${subText}`}>
+                    <label className={`block font-semibold mb-0.5 text-[10px] ${subText}`}>
                       {tr('Format Kustom (Opsional)', 'Custom Format (Optional)')}
                     </label>
                     <input
@@ -1884,7 +1884,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                         category: e.target.value || 'Kustom', 
                         customCategory: e.target.value 
                       })}
-                      className={`w-full px-3.5 py-2 rounded-xl border focus:outline-none focus:border-[#F7B425] text-xs ${
+                      className={`w-full px-2.5 py-1.5 rounded-lg border focus:outline-none focus:border-[#F7B425] text-xs ${
                         isDark 
                           ? 'bg-[#1e1e1e] border-white/10 text-white' 
                           : 'bg-slate-50 border-slate-300 text-slate-900'
@@ -1893,7 +1893,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className={`block font-semibold mb-1 text-[11px] ${subText}`}>
+                    <label className={`block font-semibold mb-0.5 text-[10px] ${subText}`}>
                       {tr('Badge / Tag Singkat', 'Short Badge / Tag')}
                     </label>
                     <input
@@ -1901,7 +1901,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                       value={programFormData.tag}
                       onChange={(e) => setProgramFormData({ ...programFormData, tag: e.target.value })}
                       placeholder="Contoh: Structure Test, Paling Populer, Official"
-                      className={`w-full px-3.5 py-2 rounded-xl border focus:outline-none focus:border-[#F7B425] text-xs font-semibold ${
+                      className={`w-full px-2.5 py-1.5 rounded-lg border focus:outline-none focus:border-[#F7B425] text-xs font-semibold ${
                         isDark 
                           ? 'bg-[#1e1e1e] border-white/10 text-white' 
                           : 'bg-slate-50 border-slate-300 text-slate-900'
@@ -1912,17 +1912,17 @@ export const ToeflQuestionsTab: React.FC = () => {
               </div>
 
               {/* 3. DURASI & TARGET SKOR */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className={`block font-bold text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                   3. {tr('Durasi Pengerjaan & Target Skor', 'Duration & Target Score')} <span className="text-rose-500">*</span>
                 </label>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {/* Durasi */}
-                  <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-white/[0.02] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-bold text-xs flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-[#F7B425]" />
+                  <div className={`p-2.5 rounded-xl border ${isDark ? 'bg-white/[0.02] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-[11px] flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#F7B425]" />
                         {tr('Durasi Pengerjaan', 'Test Duration')}
                       </span>
                     </div>
@@ -1932,20 +1932,20 @@ export const ToeflQuestionsTab: React.FC = () => {
                       value={programFormData.duration}
                       onChange={(e) => setProgramFormData({ ...programFormData, duration: e.target.value })}
                       placeholder="Contoh: 115 Menit"
-                      className={`w-full px-3 py-2 rounded-xl border focus:outline-none focus:border-[#F7B425] text-xs font-semibold mb-2 ${
+                      className={`w-full px-2.5 py-1 rounded-lg border focus:outline-none focus:border-[#F7B425] text-xs font-semibold mb-1.5 ${
                         isDark 
                           ? 'bg-[#181818] border-white/10 text-white' 
                           : 'bg-white border-slate-300 text-slate-900'
                       }`}
                     />
                     {/* Quick chips for duration */}
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                    <div className="flex items-center gap-1 flex-wrap">
                       {['115 Menit', '120 Menit', '140 Menit', '60 Menit'].map(d => (
                         <button
                           key={d}
                           type="button"
                           onClick={() => setProgramFormData({ ...programFormData, duration: d })}
-                          className={`text-[10px] px-2 py-0.5 rounded-md border transition-colors cursor-pointer ${
+                          className={`text-[9.5px] px-1.5 py-0.2 rounded-md border transition-colors cursor-pointer ${
                             programFormData.duration === d
                               ? 'bg-[#F7B425]/20 text-[#F7B425] border-[#F7B425]/40 font-bold'
                               : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'
@@ -1958,10 +1958,10 @@ export const ToeflQuestionsTab: React.FC = () => {
                   </div>
 
                   {/* Target Skor */}
-                  <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-white/[0.02] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-bold text-xs flex items-center gap-1.5">
-                        <Award className="w-3.5 h-3.5 text-[#F7B425]" />
+                  <div className={`p-2.5 rounded-xl border ${isDark ? 'bg-white/[0.02] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-[11px] flex items-center gap-1">
+                        <Award className="w-3 h-3 text-[#F7B425]" />
                         {tr('Target / Skala Skor', 'Target / Score Scale')}
                       </span>
                     </div>
@@ -1971,20 +1971,20 @@ export const ToeflQuestionsTab: React.FC = () => {
                       value={programFormData.scoreTarget}
                       onChange={(e) => setProgramFormData({ ...programFormData, scoreTarget: e.target.value })}
                       placeholder="Contoh: Skala 310 - 677"
-                      className={`w-full px-3 py-2 rounded-xl border focus:outline-none focus:border-[#F7B425] text-xs font-semibold mb-2 ${
+                      className={`w-full px-2.5 py-1 rounded-lg border focus:outline-none focus:border-[#F7B425] text-xs font-semibold mb-1.5 ${
                         isDark 
                           ? 'bg-[#181818] border-white/10 text-white' 
                           : 'bg-white border-slate-300 text-slate-900'
                       }`}
                     />
                     {/* Quick chips for score */}
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                    <div className="flex items-center gap-1 flex-wrap">
                       {['Skala 310 - 677', 'Target Skor 500+', 'Skala 0 - 120 (iBT)'].map(s => (
                         <button
                           key={s}
                           type="button"
                           onClick={() => setProgramFormData({ ...programFormData, scoreTarget: s })}
-                          className={`text-[10px] px-2 py-0.5 rounded-md border transition-colors cursor-pointer ${
+                          className={`text-[9.5px] px-1.5 py-0.2 rounded-md border transition-colors cursor-pointer ${
                             programFormData.scoreTarget === s
                               ? 'bg-[#F7B425]/20 text-[#F7B425] border-[#F7B425]/40 font-bold'
                               : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'
@@ -1999,52 +1999,52 @@ export const ToeflQuestionsTab: React.FC = () => {
               </div>
 
               {/* 4. STRUKTUR BAGIAN */}
-              <div className="space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                   <div>
                     <label className={`block font-bold text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       4. {tr('Struktur Bagian Ujian', 'Exam Section Structure')} <span className="text-rose-500">*</span>
                     </label>
-                    <p className={`text-[11px] ${subText}`}>
+                    <p className={`text-[10px] ${subText}`}>
                       {tr('Rincian bagian/seksi tes, kuota butir soal, dan alokasi waktu tiap bagian.', 'Breakdown of sections, question quota, and time allocation.')}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded-lg text-[9.5px] font-mono font-bold bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
                       Total: {programFormData.sections.reduce((acc, s) => acc + (Number(s.questionCount) || 0), 0)} Soal • {programFormData.sections.reduce((acc, s) => acc + (Number(s.durationMinutes) || 0), 0)}m
                     </span>
                   </div>
                 </div>
 
                 {/* Presets loader */}
-                <div className="flex items-center gap-2 flex-wrap text-[11px]">
-                  <span className={`text-[10px] font-bold ${subText}`}>{tr('Muat Standar:', 'Load Preset:')}</span>
+                <div className="flex items-center gap-1.5 flex-wrap text-xs">
+                  <span className={`text-[9.5px] font-bold ${subText}`}>{tr('Muat Standar:', 'Load Preset:')}</span>
                   <button
                     type="button"
                     onClick={() => handleLoadSectionPreset('itp')}
-                    className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-semibold cursor-pointer active:scale-95 transition-colors"
+                    className="px-2 py-0.5 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-semibold cursor-pointer active:scale-95 transition-colors text-[10px]"
                   >
                     ⚡ TOEFL ITP (Listening, Structure, Reading)
                   </button>
                 </div>
 
                 {/* Section Items */}
-                <div className="space-y-2.5">
+                <div className="space-y-1.5">
                   {programFormData.sections.map((section, idx) => (
                     <div 
                       key={section.id || idx}
-                      className={`p-3 sm:p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center gap-3 transition-all ${
+                      className={`p-2.5 rounded-xl border flex flex-col sm:flex-row sm:items-center gap-2 transition-all ${
                         isDark ? 'bg-white/[0.03] border-white/10' : 'bg-slate-50/80 border-slate-200'
                       }`}
                     >
                       {/* Section order badge */}
-                      <div className="w-6 h-6 rounded-lg bg-[#F7B425] text-black font-black flex items-center justify-center text-xs shrink-0">
+                      <div className="w-5 h-5 rounded-md bg-[#F7B425] text-black font-black flex items-center justify-center text-[10px] shrink-0">
                         {idx + 1}
                       </div>
 
                       {/* Section Name */}
-                      <div className="flex-1 min-w-[180px]">
-                        <label className={`block text-[10px] font-bold mb-0.5 ${subText}`}>
+                      <div className="flex-1 min-w-[160px]">
+                        <label className={`block text-[9.5px] font-bold mb-0.5 ${subText}`}>
                           {tr('Nama Bagian / Subtes', 'Section Name')}
                         </label>
                         <input
@@ -2053,15 +2053,15 @@ export const ToeflQuestionsTab: React.FC = () => {
                           value={section.name}
                           onChange={(e) => handleUpdateSection(idx, 'name', e.target.value)}
                           placeholder="Contoh: Section 1: Listening Comprehension"
-                          className={`w-full px-3 py-1.5 rounded-xl border focus:outline-none focus:border-[#F7B425] text-xs font-semibold ${
+                          className={`w-full px-2.5 py-1 rounded-lg border focus:outline-none focus:border-[#F7B425] text-xs font-semibold ${
                             isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-300 text-slate-900'
                           }`}
                         />
                       </div>
 
                       {/* Question Count */}
-                      <div className="w-full sm:w-28 shrink-0">
-                        <label className={`block text-[10px] font-bold mb-0.5 ${subText}`}>
+                      <div className="w-full sm:w-24 shrink-0">
+                        <label className={`block text-[9.5px] font-bold mb-0.5 ${subText}`}>
                           {tr('Jumlah Soal', 'Questions')}
                         </label>
                         <div className="relative">
@@ -2072,19 +2072,19 @@ export const ToeflQuestionsTab: React.FC = () => {
                             required
                             value={section.questionCount}
                             onChange={(e) => handleUpdateSection(idx, 'questionCount', parseInt(e.target.value, 10) || 0)}
-                            className={`w-full px-3 py-1.5 rounded-xl border focus:outline-none focus:border-[#F7B425] text-xs font-mono font-bold ${
+                            className={`w-full px-2 py-1 rounded-lg border focus:outline-none focus:border-[#F7B425] text-xs font-mono font-bold ${
                               isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-300 text-slate-900'
                             }`}
                           />
-                          <span className={`absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none ${subText}`}>
+                          <span className={`absolute right-2 top-1/2 -translate-y-1/2 text-[9px] pointer-events-none ${subText}`}>
                             soal
                           </span>
                         </div>
                       </div>
 
                       {/* Duration in Minutes */}
-                      <div className="w-full sm:w-28 shrink-0">
-                        <label className={`block text-[10px] font-bold mb-0.5 ${subText}`}>
+                      <div className="w-full sm:w-24 shrink-0">
+                        <label className={`block text-[9.5px] font-bold mb-0.5 ${subText}`}>
                           {tr('Alokasi Waktu', 'Duration')}
                         </label>
                         <div className="relative">
@@ -2095,11 +2095,11 @@ export const ToeflQuestionsTab: React.FC = () => {
                             required
                             value={section.durationMinutes}
                             onChange={(e) => handleUpdateSection(idx, 'durationMinutes', parseInt(e.target.value, 10) || 0)}
-                            className={`w-full px-3 py-1.5 rounded-xl border focus:outline-none focus:border-[#F7B425] text-xs font-mono font-bold ${
+                            className={`w-full px-2 py-1 rounded-lg border focus:outline-none focus:border-[#F7B425] text-xs font-mono font-bold ${
                               isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-300 text-slate-900'
                             }`}
                           />
-                          <span className={`absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none ${subText}`}>
+                          <span className={`absolute right-2 top-1/2 -translate-y-1/2 text-[9px] pointer-events-none ${subText}`}>
                             menit
                           </span>
                         </div>
@@ -2110,10 +2110,10 @@ export const ToeflQuestionsTab: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleRemoveSection(idx)}
-                          className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/15 border border-rose-500/20 hover:border-rose-500/40 transition-colors cursor-pointer self-end sm:self-center shrink-0"
+                          className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/15 border border-rose-500/20 hover:border-rose-500/40 transition-colors cursor-pointer self-end sm:self-center shrink-0"
                           title={tr('Hapus bagian ini', 'Remove this section')}
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-3 h-3" />
                         </button>
                       )}
                     </div>
@@ -2124,40 +2124,40 @@ export const ToeflQuestionsTab: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleAddSection}
-                  className="w-full py-2 px-3 rounded-xl border border-dashed border-[#F7B425]/40 hover:border-[#F7B425] bg-[#F7B425]/5 hover:bg-[#F7B425]/10 text-[#F7B425] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-99"
+                  className="w-full py-1.5 px-2.5 rounded-lg border border-dashed border-[#F7B425]/40 hover:border-[#F7B425] bg-[#F7B425]/5 hover:bg-[#F7B425]/10 text-[#F7B425] font-bold text-xs flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-99"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3 h-3" />
                   <span>{tr('+ Tambah Bagian Baru ke Struktur Ujian', '+ Add New Section to Structure')}</span>
                 </button>
               </div>
 
               {/* 5. STATUS BANK SOAL */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className={`block font-bold text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                   5. {tr('Status Publikasi Bank Soal', 'Question Bank Status')} <span className="text-rose-500">*</span>
                 </label>
 
-                <div className={`p-4 rounded-2xl border flex items-center justify-between gap-4 transition-all ${
+                <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-3 transition-all ${
                   programFormData.isActive 
                     ? isDark ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-emerald-50/80 border-emerald-200'
                     : isDark ? 'bg-slate-800/40 border-white/10' : 'bg-slate-100 border-slate-200'
                 }`}>
-                  <div className="flex items-start gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                  <div className="flex items-start gap-2.5">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                       programFormData.isActive 
-                        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' 
+                        ? 'bg-emerald-500 text-white shadow-xs' 
                         : 'bg-slate-400 dark:bg-slate-700 text-white'
                     }`}>
-                      {programFormData.isActive ? <CheckCircle2 className="w-5 h-5 stroke-[2.5]" /> : <Clock className="w-5 h-5" />}
+                      {programFormData.isActive ? <CheckCircle2 className="w-4 h-4 stroke-[2.5]" /> : <Clock className="w-4 h-4" />}
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className={`font-extrabold text-xs tracking-wide ${
+                      <div className="flex items-center gap-1.5">
+                        <span className={`font-extrabold text-[11px] tracking-wide ${
                           programFormData.isActive ? 'text-emerald-500' : 'text-slate-400'
                         }`}>
                           {programFormData.isActive ? tr('AKTIF (Siap Diujikan)', 'ACTIVE (Ready for Test)') : tr('NONAKTIF (Draf)', 'INACTIVE (Draft)')}
                         </span>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                        <span className={`px-1.5 py-0.2 rounded-full text-[8.5px] font-bold uppercase ${
                           programFormData.isActive 
                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
                             : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
@@ -2165,7 +2165,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                           {programFormData.isActive ? 'Live' : 'Hidden'}
                         </span>
                       </div>
-                      <p className={`text-[11px] mt-0.5 leading-relaxed ${subText}`}>
+                      <p className={`text-[10px] mt-0.2 leading-tight ${subText}`}>
                         {programFormData.isActive 
                           ? tr('Bank soal aktif dan langsung dapat diakses peserta ujian untuk simulasi.', 'Question bank is active and immediately accessible to students for simulation.') 
                           : tr('Bank soal tersimpan sebagai draf, tidak tampil pada daftar ujian peserta.', 'Question bank is saved as draft, hidden from the student exam catalog.')}
@@ -2177,12 +2177,12 @@ export const ToeflQuestionsTab: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setProgramFormData(prev => ({ ...prev, isActive: !prev.isActive }))}
-                    className={`w-14 h-8 rounded-full p-1 transition-colors cursor-pointer flex items-center shadow-inner shrink-0 ${
+                    className={`w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer flex items-center shadow-inner shrink-0 ${
                       programFormData.isActive ? 'bg-emerald-500 justify-end' : 'bg-slate-400 dark:bg-slate-600 justify-start'
                     }`}
                     aria-label={tr('Ubah status aktif bank soal', 'Toggle question bank active status')}
                   >
-                    <div className="w-6 h-6 rounded-full bg-white shadow-md flex items-center justify-center font-black text-[9px] text-slate-800">
+                    <div className="w-5 h-5 rounded-full bg-white shadow-xs flex items-center justify-center font-black text-[8.5px] text-slate-800">
                       {programFormData.isActive ? 'ON' : 'OFF'}
                     </div>
                   </button>
@@ -2190,11 +2190,11 @@ export const ToeflQuestionsTab: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 border-t border-white/10 flex items-center gap-3">
+              <div className="pt-2 border-t border-white/10 flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setIsProgramModalOpen(false)}
-                  className={`flex-1 py-3 rounded-2xl border font-bold text-xs transition-colors cursor-pointer ${
+                  className={`flex-1 py-1.5 rounded-lg border font-bold text-xs transition-colors cursor-pointer ${
                     isDark 
                       ? 'border-white/10 text-slate-300 hover:bg-white/5' 
                       : 'border-slate-300 text-slate-700 hover:bg-slate-100'
@@ -2204,13 +2204,13 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 rounded-2xl bg-[#F7B425] font-extrabold text-black hover:bg-amber-400 cursor-pointer shadow-lg shadow-[#F7B425]/25 transition-all active:scale-98 flex items-center justify-center gap-2 text-xs"
+                  className="flex-1 py-1.5 rounded-lg bg-[#F7B425] font-extrabold text-black hover:bg-amber-400 cursor-pointer shadow-md shadow-[#F7B425]/25 transition-all active:scale-98 flex items-center justify-center gap-1.5 text-xs"
                 >
-                  <Check className="w-4 h-4 stroke-[3]" />
+                  <Check className="w-3.5 h-3.5 stroke-[3]" />
                   <span>
                     {programModalMode === 'create' 
-                      ? tr('Simpan & Buat Bank Soal Baru', 'Save & Create New Question Bank') 
-                      : tr('Simpan Perubahan Bank Soal', 'Save Question Bank Changes')}
+                      ? tr('Simpan Bank Soal', 'Save Question Bank') 
+                      : tr('Simpan Perubahan', 'Save Changes')}
                   </span>
                 </button>
               </div>
@@ -2221,32 +2221,32 @@ export const ToeflQuestionsTab: React.FC = () => {
 
       {/* Delete Program Confirmation Modal */}
       {deletingProgram && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className={`w-full max-w-md rounded-3xl p-6 border shadow-2xl ${
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className={`w-full max-w-sm rounded-xl p-3.5 sm:p-4 border shadow-xl ${
             isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
           }`}>
-            <div className="flex items-start gap-4 mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-500 flex items-center justify-center flex-shrink-0">
-                <Trash2 className="w-6 h-6" />
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-rose-500/15 text-rose-500 flex items-center justify-center shrink-0">
+                <Trash2 className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-base font-bold font-['Poppins',sans-serif] mb-1">
+                <h3 className="text-xs sm:text-sm font-bold font-['Poppins',sans-serif] mb-0.5">
                   {tr('Hapus Bank Soal Program?', 'Delete Program Question Bank?')}
                 </h3>
-                <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                <p className={`text-[11px] leading-snug ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                   {tr(
-                    `Apakah Anda yakin ingin menghapus bank soal "${deletingProgram.title}"? Semua butir soal di dalam program ini (${getQuestionCountForProgram(deletingProgram.id)} soal) akan ikut dihapus.`,
-                    `Are you sure you want to delete the question bank "${deletingProgram.title}"? All question items in this program (${getQuestionCountForProgram(deletingProgram.id)} questions) will be deleted as well.`
+                    `Apakah Anda yakin ingin menghapus bank soal "${deletingProgram.title}"? Semua butir soal (${getQuestionCountForProgram(deletingProgram.id)} soal) akan ikut dihapus.`,
+                    `Are you sure you want to delete "${deletingProgram.title}"? All question items (${getQuestionCountForProgram(deletingProgram.id)} questions) will be deleted.`
                   )}
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-3 justify-end pt-2">
+            <div className="flex gap-2 justify-end pt-1">
               <button
                 type="button"
                 onClick={() => setDeletingProgram(null)}
-                className={`px-4 py-2.5 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-colors cursor-pointer ${
                   isDark ? 'border-white/10 text-slate-300 hover:bg-white/5' : 'border-slate-300 text-slate-700 hover:bg-slate-100'
                 }`}
               >
@@ -2255,9 +2255,9 @@ export const ToeflQuestionsTab: React.FC = () => {
               <button
                 type="button"
                 onClick={handleConfirmDeleteProgram}
-                className="px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all shadow-md shadow-rose-500/25 cursor-pointer active:scale-95 flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all shadow-md shadow-rose-500/25 cursor-pointer active:scale-95 flex items-center gap-1"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3 h-3" />
                 <span>{tr('Ya, Hapus Bank Soal', 'Yes, Delete Bank')}</span>
               </button>
             </div>
@@ -2269,33 +2269,33 @@ export const ToeflQuestionsTab: React.FC = () => {
       {deletingQuestion && (
         <div 
           id="delete-question-confirmation-modal" 
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150"
         >
-          <div className={`w-full max-w-md rounded-3xl p-6 border shadow-2xl ${
+          <div className={`w-full max-w-sm rounded-xl p-3.5 sm:p-4 border shadow-xl ${
             isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
           }`}>
-            <div className="flex items-start gap-4 mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-500 flex items-center justify-center flex-shrink-0">
-                <Trash2 className="w-6 h-6" />
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-rose-500/15 text-rose-500 flex items-center justify-center shrink-0">
+                <Trash2 className="w-4 h-4" />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                  <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
                     {deletingQuestion.section}
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-[9px] font-mono text-slate-400">
                     #{deletingQuestion.id}
                   </span>
                 </div>
-                <h3 className="text-base font-bold font-['Poppins',sans-serif] mb-1">
+                <h3 className="text-xs sm:text-sm font-bold font-['Poppins',sans-serif] mb-0.5">
                   {tr('Hapus Butir Soal TOEFL?', 'Delete TOEFL Question?')}
                 </h3>
-                <div className={`p-2.5 rounded-xl border text-xs leading-relaxed line-clamp-3 mb-2 font-medium ${
+                <div className={`p-2 rounded-lg border text-[11px] leading-snug line-clamp-3 mb-1.5 font-medium ${
                   isDark ? 'bg-white/5 border-white/5 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
                 }`}>
                   "{deletingQuestion.questionText}"
                 </div>
-                <p className={`text-[11px] leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                <p className={`text-[10px] leading-snug ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                   {tr(
                     'Soal ini akan dihapus secara permanen dari daftar bank soal.',
                     'This question item will be permanently deleted from the question bank.'
@@ -2304,12 +2304,12 @@ export const ToeflQuestionsTab: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex gap-3 justify-end pt-2">
+            <div className="flex gap-2 justify-end pt-1">
               <button
                 id="btn-cancel-delete-question"
                 type="button"
                 onClick={() => setDeletingQuestion(null)}
-                className={`px-4 py-2.5 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-colors cursor-pointer ${
                   isDark ? 'border-white/10 text-slate-300 hover:bg-white/5' : 'border-slate-300 text-slate-700 hover:bg-slate-100'
                 }`}
               >
@@ -2319,9 +2319,9 @@ export const ToeflQuestionsTab: React.FC = () => {
                 id="btn-confirm-delete-question"
                 type="button"
                 onClick={handleConfirmDeleteQuestion}
-                className="px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all shadow-md shadow-rose-500/25 cursor-pointer active:scale-95 flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all shadow-md shadow-rose-500/25 cursor-pointer active:scale-95 flex items-center gap-1"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3 h-3" />
                 <span>{tr('Ya, Hapus Soal', 'Yes, Delete Question')}</span>
               </button>
             </div>

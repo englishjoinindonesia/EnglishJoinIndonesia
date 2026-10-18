@@ -209,28 +209,28 @@ export const MentorsManagementTab: React.FC = () => {
   const subText = isDark ? 'text-slate-400' : 'text-slate-500';
 
   return (
-    <div className="space-y-6 relative" id="mentors-management-container">
+    <div className="space-y-3 relative" id="mentors-management-container">
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 animate-in slide-in-from-bottom-4 duration-200">
-          <CheckCircle2 className="w-4 h-4 text-[#F7B425]" />
-          <span className="text-xs font-bold">{toastMessage}</span>
+        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#F7B425]" />
+          <span className="text-xs font-semibold">{toastMessage}</span>
         </div>
       )}
 
-      {/* Top Header Card */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl border ${cardBg}`}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
-            <GraduationCap className="w-5 h-5 text-[#F7B425]" />
+      {/* Top Header Card - Compact & Minimal Padding */}
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:px-4 sm:py-2.5 rounded-2xl border ${cardBg}`}>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
+            <GraduationCap className="w-4 h-4 text-[#F7B425]" />
           </div>
           <div>
-            <h2 className={`text-lg font-black font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h2 className={`text-sm sm:text-base font-extrabold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
               Kelola Mentor &amp; Coach English Join Indonesia
             </h2>
-            <p className={`text-xs ${subText}`}>
-              Kelola profil instruktur yang ditampilkan pada bagian <strong className={isDark ? 'text-[#F7B425]' : 'text-amber-700'}>"Mentors &amp; Coaches"</strong> di Landing Page.
+            <p className={`text-[11px] ${subText}`}>
+              Profil mentor aktif ditampilkan langsung di Landing Page English Join Indonesia.
             </p>
           </div>
         </div>
@@ -239,18 +239,18 @@ export const MentorsManagementTab: React.FC = () => {
           <button
             type="button"
             onClick={openCreateModal}
-            className="px-4 py-2.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-xl transition-all shadow-lg shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98"
+            className="px-3 py-1.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98"
           >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Mentor Baru</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>Tambah Mentor</span>
           </button>
         </div>
       </div>
 
-      {/* Search & Status Filter Filter Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      {/* Search & Status Filter Filter Bar - Compact */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <div className={`flex items-center gap-1 p-1 rounded-2xl border text-xs ${
+          <div className={`flex items-center gap-1 p-0.5 rounded-xl border text-xs ${
             isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200 shadow-xs'
           }`}>
             {[
@@ -262,7 +262,7 @@ export const MentorsManagementTab: React.FC = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setFilterRole(tab.id)}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-colors cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
                   filterRole === tab.id
                     ? 'bg-[#F7B425] text-black font-extrabold shadow-xs'
                     : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
@@ -278,28 +278,28 @@ export const MentorsManagementTab: React.FC = () => {
         <div className="relative">
           <input
             type="text"
-            placeholder="Cari nama tutor, spesialisasi, gelar..."
+            placeholder="Cari mentor, spesialisasi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full md:w-80 pl-9 pr-4 py-2 rounded-xl border text-xs focus:outline-none focus:border-[#F7B425] ${
+            className={`w-full md:w-72 pl-8 pr-3 py-1.5 rounded-xl border text-xs focus:outline-none focus:border-[#F7B425] ${
               isDark 
                 ? 'bg-[#141414] border-white/10 text-white placeholder:text-slate-500' 
                 : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 shadow-xs'
             }`}
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
         </div>
       </div>
 
-      {/* Mentors Grid Display Container */}
-      <div className="space-y-4">
+      {/* Mentors Grid Display Container - Minimal padding & compact spacing */}
+      <div>
         {filteredMentors.length === 0 ? (
-          <div className={`py-12 text-center rounded-3xl border ${cardBg}`}>
-            <GraduationCap className="w-10 h-10 text-slate-400 mx-auto mb-2 opacity-50" />
-            <p className="text-sm font-bold text-slate-400">Tidak ada data mentor yang cocok.</p>
+          <div className={`py-8 text-center rounded-2xl border ${cardBg}`}>
+            <GraduationCap className="w-8 h-8 text-slate-400 mx-auto mb-1.5 opacity-50" />
+            <p className="text-xs font-bold text-slate-400">Tidak ada data mentor yang cocok.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filteredMentors.map((mentor, index) => {
               const isBeingDragged = draggedMentorId === mentor.id;
               const isDragOver = dragOverMentorId === mentor.id && !isBeingDragged;
@@ -312,105 +312,104 @@ export const MentorsManagementTab: React.FC = () => {
                   onDragOver={(e) => handleDragOver(e, mentor.id)}
                   onDrop={(e) => handleDrop(e, mentor.id)}
                   onDragEnd={handleDragEnd}
-                  className={`rounded-3xl border p-5 flex flex-col justify-between transition-all duration-200 relative overflow-hidden group select-none ${cardBg} ${
+                  className={`rounded-2xl border p-3 flex flex-col justify-between transition-all duration-200 relative overflow-hidden group select-none ${cardBg} ${
                     isBeingDragged
                       ? 'opacity-30 scale-95 border-dashed border-[#F7B425] shadow-none ring-2 ring-[#F7B425]/50'
                       : isDragOver
-                      ? 'border-[#F7B425] scale-[1.02] shadow-2xl ring-2 ring-[#F7B425] bg-[#F7B425]/10'
+                      ? 'border-[#F7B425] scale-[1.01] shadow-xl ring-2 ring-[#F7B425] bg-[#F7B425]/10'
                       : !mentor.isActive 
                       ? 'opacity-60 grayscale-[40%]' 
-                      : isDark ? 'hover:border-[#F7B425]/40 hover:shadow-2xl' : 'hover:border-[#F7B425]/70 hover:shadow-md'
+                      : isDark ? 'hover:border-[#F7B425]/40 hover:shadow-xl' : 'hover:border-[#F7B425]/70 hover:shadow-md'
                   }`}
                 >
                   <div>
-                    {/* Drag Handle & Order Toolbar */}
-                    <div className={`flex items-center justify-between pb-3 mb-3 border-b ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
-                      <div 
-                        className="flex items-center gap-2 cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#F7B425] transition-colors select-none"
-                        title="Tahan & geser untuk memindahkan urutan mentor"
-                      >
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                          isDark ? 'bg-white/5 group-hover:bg-[#F7B425]/20 group-hover:text-[#F7B425]' : 'bg-slate-100 group-hover:bg-[#F7B425]/20 group-hover:text-amber-700'
-                        }`}>
-                          <GripVertical className="w-4 h-4" />
-                        </div>
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="text-[10px] uppercase font-extrabold text-slate-400">Urutan</span>
-                          <span className="text-xs font-black text-[#F7B425] font-mono bg-[#F7B425]/10 px-2 py-0.5 rounded-md border border-[#F7B425]/20">
+                    {/* Top Header: Order Grip, Navigation, & Action Buttons all in ONE unified row */}
+                    <div className={`flex items-center justify-between pb-2 mb-2 border-b gap-1.5 ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
+                      {/* Left: Drag Handle & Order */}
+                      <div className="flex items-center gap-1.5">
+                        <div 
+                          className="flex items-center gap-1 cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#F7B425] transition-colors select-none"
+                          title="Tahan & geser untuk mengatur urutan"
+                        >
+                          <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${
+                            isDark ? 'bg-white/5 group-hover:bg-[#F7B425]/20 group-hover:text-[#F7B425]' : 'bg-slate-100 group-hover:bg-[#F7B425]/20 group-hover:text-amber-700'
+                          }`}>
+                            <GripVertical className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="text-[11px] font-black text-[#F7B425] font-mono bg-[#F7B425]/10 px-1.5 py-0.5 rounded border border-[#F7B425]/20">
                             #{index + 1}
                           </span>
                         </div>
+
+                        {/* Order Move Arrows */}
+                        <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            disabled={index === 0}
+                            onClick={() => moveMentorByIndex(index, index - 1)}
+                            className={`w-5 h-5 rounded transition-all flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-20 ${
+                              isDark 
+                                ? 'bg-white/5 hover:bg-[#F7B425] hover:text-black text-slate-300' 
+                                : 'bg-slate-100 hover:bg-[#F7B425] hover:text-black text-slate-700'
+                            }`}
+                            title="Geser posisi ke kiri"
+                          >
+                            <ArrowLeft className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={index === filteredMentors.length - 1}
+                            onClick={() => moveMentorByIndex(index, index + 1)}
+                            className={`w-5 h-5 rounded transition-all flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-20 ${
+                              isDark 
+                                ? 'bg-white/5 hover:bg-[#F7B425] hover:text-black text-slate-300' 
+                                : 'bg-slate-100 hover:bg-[#F7B425] hover:text-black text-slate-700'
+                            }`}
+                            title="Geser posisi ke kanan"
+                          >
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
 
+                      {/* Right: Actions (Visibility, Edit, Delete) */}
                       <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
-                          disabled={index === 0}
-                          onClick={() => moveMentorByIndex(index, index - 1)}
-                          className={`w-7 h-7 rounded-lg transition-all flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-20 active:scale-95 ${
-                            isDark 
-                              ? 'bg-white/5 hover:bg-[#F7B425] hover:text-black text-slate-300' 
-                              : 'bg-slate-100 hover:bg-[#F7B425] hover:text-black text-slate-700'
-                          }`}
-                          title="Geser ke posisi sebelumnya"
-                        >
-                          <ArrowLeft className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          disabled={index === filteredMentors.length - 1}
-                          onClick={() => moveMentorByIndex(index, index + 1)}
-                          className={`w-7 h-7 rounded-lg transition-all flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-20 active:scale-95 ${
-                            isDark 
-                              ? 'bg-white/5 hover:bg-[#F7B425] hover:text-black text-slate-300' 
-                              : 'bg-slate-100 hover:bg-[#F7B425] hover:text-black text-slate-700'
-                          }`}
-                          title="Geser ke posisi berikutnya"
-                        >
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Top Actions & Active Badge */}
-                    <div className="flex items-center justify-end gap-2 mb-4" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
                           onClick={() => handleToggle(mentor.id, mentor.name, mentor.isActive)}
-                          className={`p-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                          className={`p-1 rounded text-xs transition-colors cursor-pointer ${
                             mentor.isActive
                               ? 'bg-[#F7B425]/10 hover:bg-[#F7B425]/20 text-[#F7B425]'
                               : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600'
                           }`}
                           title={mentor.isActive ? 'Sembunyikan dari Landing Page' : 'Tampilkan di Landing Page'}
                         >
-                          {mentor.isActive ? <EyeOff className="w-3.5 h-3.5 text-[#F7B425]" /> : <Eye className="w-3.5 h-3.5" />}
+                          {mentor.isActive ? <EyeOff className="w-3 h-3 text-[#F7B425]" /> : <Eye className="w-3 h-3" />}
                         </button>
                         <button
                           type="button"
                           onClick={() => openEditModal(mentor)}
-                          className={`p-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                          className={`p-1 rounded text-xs transition-colors cursor-pointer ${
                             isDark ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' : 'bg-slate-100 hover:bg-[#F7B425] text-slate-800 hover:text-black'
                           }`}
                           title="Edit Profil Mentor"
                         >
-                          <Edit3 className="w-3.5 h-3.5" />
+                          <Edit3 className="w-3 h-3" />
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeletingMentor(mentor)}
-                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
+                          className="p-1 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
                           title="Hapus Mentor"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-3 h-3" />
                         </button>
                       </div>
                     </div>
 
-                    {/* Avatar & Basic Info */}
-                    <div className="flex items-start gap-3.5 mb-4">
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-800 flex-shrink-0 border-2 border-[#F7B425]">
+                    {/* Avatar & Basic Info - Compact */}
+                    <div className="flex items-start gap-2.5 mb-2">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-800 flex-shrink-0 border border-[#F7B425]">
                         <img
                           src={mentor.avatarUrl}
                           alt={mentor.name}
@@ -418,20 +417,20 @@ export const MentorsManagementTab: React.FC = () => {
                           className="w-full h-full object-cover object-top"
                         />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <h3 className={`font-black text-base font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-1">
+                          <h3 className={`font-extrabold text-xs sm:text-sm font-heading truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                             {mentor.name}
                           </h3>
-                          <div className="flex items-center gap-0.5 text-[#F7B425] text-[10px] font-bold">
-                            <Star className="w-3 h-3 fill-[#F7B425]" />
+                          <div className="flex items-center gap-0.5 text-[#F7B425] text-[10px] font-bold shrink-0">
+                            <Star className="w-2.5 h-2.5 fill-[#F7B425]" />
                             <span>5.0</span>
                           </div>
                         </div>
-                        <p className="text-xs font-bold text-[#F7B425] mt-0.5">
+                        <p className="text-[11px] font-semibold text-[#F7B425] truncate">
                           {mentor.title}
                         </p>
-                        <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold mt-1 ${
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-medium mt-0.5 ${
                           isDark ? 'bg-white/5 text-slate-400' : 'bg-slate-100 text-slate-600'
                         }`}>
                           {mentor.experience}
@@ -440,25 +439,25 @@ export const MentorsManagementTab: React.FC = () => {
                     </div>
 
                     {/* Badge Pill */}
-                    <div className="mb-3">
-                      <span className="inline-block px-2.5 py-1 rounded-lg text-[10px] font-black bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                    <div className="mb-2">
+                      <span className="inline-block px-2 py-0.5 rounded-md text-[9px] font-extrabold bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
                         {mentor.badge}
                       </span>
                     </div>
 
                     {/* Bio Snippet */}
-                    <p className={`text-xs line-clamp-3 mb-4 leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                    <p className={`text-[11px] line-clamp-2 mb-2 leading-snug ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                       {mentor.bio}
                     </p>
 
                     {/* Specialties Checklist */}
-                    <div className={`space-y-1.5 pt-3 border-t text-xs ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
-                      <span className={`text-[10px] font-bold uppercase tracking-wider block ${subText}`}>
+                    <div className={`space-y-1 pt-2 border-t text-[11px] ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
+                      <span className={`text-[9px] font-bold uppercase tracking-wider block ${subText}`}>
                         Spesialisasi:
                       </span>
                       {mentor.specialties.slice(0, 3).map((spec, i) => (
-                        <div key={i} className="flex items-center gap-1.5 text-[11px] font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#F7B425] flex-shrink-0" />
+                        <div key={i} className="flex items-center gap-1.5 text-[10px] font-medium">
+                          <CheckCircle2 className="w-3 h-3 text-[#F7B425] flex-shrink-0" />
                           <span className={`line-clamp-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{spec}</span>
                         </div>
                       ))}
@@ -466,7 +465,7 @@ export const MentorsManagementTab: React.FC = () => {
                   </div>
 
                   {/* Footer Education */}
-                  <div className={`mt-4 pt-3 border-t text-[10px] flex items-center justify-between ${
+                  <div className={`mt-2 pt-1.5 border-t text-[9px] flex items-center justify-between ${
                     isDark ? 'border-white/10 text-slate-400' : 'border-slate-100 text-slate-500'
                   }`}>
                     <span className="truncate">{mentor.educationOrCert}</span>

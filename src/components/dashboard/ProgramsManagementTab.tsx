@@ -200,28 +200,28 @@ export const ProgramsManagementTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 relative" id="programs-management-container">
+    <div className="space-y-3 relative" id="programs-management-container">
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 animate-in slide-in-from-bottom-4 duration-200">
-          <CheckCircle2 className="w-4 h-4 text-[#F7B425]" />
-          <span className="text-xs font-bold">{toastMessage}</span>
+        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#F7B425]" />
+          <span className="text-xs font-semibold">{toastMessage}</span>
         </div>
       )}
 
-      {/* Top Header Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#141414] p-5 rounded-3xl border border-white/10 shadow-xl text-white">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
-            <BookOpen className="w-5 h-5" />
+      {/* Top Header Card - Compact & Minimal Padding */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#141414] p-3 sm:px-4 sm:py-2.5 rounded-2xl border border-white/10 shadow-lg text-white">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
+            <BookOpen className="w-4 h-4 text-[#F7B425]" />
           </div>
           <div>
-            <h2 className="text-lg font-black text-white font-heading">
+            <h2 className="text-sm sm:text-base font-extrabold text-white font-heading">
               Pilihan Program English Join Indonesia
             </h2>
-            <p className="text-xs text-slate-400">
-              Perubahan pada menu ini <strong className="text-[#90a1b9] font-normal">langsung tersinkronisasi otomatis</strong> ke <strong className="text-[#F7B425] font-bold">Landing Page ("Chosen Program")</strong> dan <strong className="text-[#F7B425] font-bold">TOEFL Portal Login</strong>.
+            <p className="text-[11px] text-slate-400">
+              Perubahan langsung tersinkronisasi ke <strong className="text-[#F7B425]">Landing Page ("Chosen Program")</strong> &amp; <strong className="text-[#F7B425]">Portal Ujian</strong>.
             </p>
           </div>
         </div>
@@ -230,22 +230,22 @@ export const ProgramsManagementTab: React.FC = () => {
           <button
             type="button"
             onClick={openCreateModal}
-            className="px-4 py-2.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-xl transition-all shadow-lg shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98"
+            className="px-3 py-1.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98"
           >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Program Baru</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>Tambah Program</span>
           </button>
         </div>
       </div>
 
-      {/* Category Tabs & Filter */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Tag className="w-4 h-4 text-slate-400" />
-          <div className="flex flex-wrap items-center gap-1 bg-[#141414] p-1 rounded-2xl border border-white/10 text-xs shadow-2xs">
+      {/* Category Tabs & Filter - Compact */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          <Tag className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex flex-wrap items-center gap-1 bg-[#141414] p-0.5 rounded-xl border border-white/10 text-xs shadow-2xs">
             {[
               { id: 'all', label: 'Semua Program' },
-              { id: 'Landing Page', label: 'Program Kursus Aktif (Landing Page & Login)' },
+              { id: 'Landing Page', label: 'Program Kursus Aktif' },
             ].map((cat) => {
               const count = cat.id === 'all' 
                 ? programs.length 
@@ -256,14 +256,14 @@ export const ProgramsManagementTab: React.FC = () => {
                   type="button"
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer text-[12px] ${
+                  className={`px-2.5 py-1 rounded-lg font-bold transition-all flex items-center gap-1.5 cursor-pointer text-[11px] ${
                     activeCategory === cat.id
                       ? 'bg-[#F7B425] text-black font-extrabold shadow-xs'
                       : 'text-slate-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   <span>{cat.label}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  <span className={`text-[9px] px-1 py-0.2 rounded-full font-bold ${
                     activeCategory === cat.id ? 'bg-black text-[#F7B425]' : 'bg-white/10 text-slate-300'
                   }`}>
                     {count}
@@ -274,31 +274,31 @@ export const ProgramsManagementTab: React.FC = () => {
           </div>
         </div>
 
-        <span className="text-xs text-slate-400 font-medium">
+        <span className="text-[11px] text-slate-400 font-medium">
           Menampilkan <strong className="text-white">{filtered.length}</strong> program
         </span>
       </div>
 
-      {/* Program Cards Grid */}
+      {/* Program Cards Grid - Minimal padding & compact spacing */}
       {filtered.length === 0 ? (
-        <div className="bg-[#141414] rounded-3xl p-12 text-center border border-dashed border-white/20 text-white">
-          <BookOpen className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-white mb-1">Belum Ada Program di Kategori Ini</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
+        <div className="bg-[#141414] rounded-2xl p-8 text-center border border-dashed border-white/20 text-white">
+          <BookOpen className="w-8 h-8 text-slate-500 mx-auto mb-2 opacity-50" />
+          <h3 className="text-xs font-bold text-white mb-1">Belum Ada Program di Kategori Ini</h3>
+          <p className="text-[11px] text-slate-400 max-w-sm mx-auto mb-3">
             Anda dapat menambahkan program baru atau memilih tab kategori lain.
           </p>
           <button
             type="button"
             onClick={openCreateModal}
-            className="px-4 py-2 bg-[#F7B425] text-black text-xs font-bold rounded-xl inline-flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 bg-[#F7B425] text-black text-xs font-bold rounded-lg inline-flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             <span>Tambah Program</span>
           </button>
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {filtered.map((program, index) => {
               const isFeatured = program.isFeatured;
               const isBeingDragged = draggedProgramId === program.id;
@@ -312,68 +312,68 @@ export const ProgramsManagementTab: React.FC = () => {
                   onDragOver={(e) => handleDragOver(e, program.id)}
                   onDrop={(e) => handleDrop(e, program.id)}
                   onDragEnd={handleDragEnd}
-                  className={`bg-[#141414] rounded-3xl p-6 border transition-all duration-200 flex flex-col justify-between shadow-xl relative group ${
+                  className={`bg-[#141414] rounded-2xl p-3 sm:p-3.5 border transition-all duration-200 flex flex-col justify-between shadow-lg relative group ${
                     isBeingDragged
                       ? 'opacity-30 scale-95 border-dashed border-[#F7B425] shadow-none ring-2 ring-[#F7B425]/50'
                       : isDragOver
-                      ? 'border-[#F7B425] scale-[1.02] shadow-2xl ring-2 ring-[#F7B425] bg-[#F7B425]/10'
+                      ? 'border-[#F7B425] scale-[1.01] shadow-xl ring-2 ring-[#F7B425] bg-[#F7B425]/10'
                       : isFeatured 
-                      ? 'border-2 border-[#F7B425] shadow-lg shadow-[#F7B425]/15 hover:border-[#ffbe33]' 
-                      : program.isActive ? 'border-white/10 hover:border-[#F7B425]/40 hover:shadow-2xl' : 'border-white/5 opacity-60 bg-[#101010]'
+                      ? 'border-2 border-[#F7B425] shadow-md shadow-[#F7B425]/15 hover:border-[#ffbe33]' 
+                      : program.isActive ? 'border-white/10 hover:border-[#F7B425]/40 hover:shadow-xl' : 'border-white/5 opacity-60 bg-[#101010]'
                   }`}
                 >
                   {/* Featured Ribbon */}
                   {isFeatured && (
-                    <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-[#F7B425] text-black text-[10px] font-black uppercase tracking-wider shadow-md flex items-center gap-1 z-10">
-                      <Star className="w-3 h-3 fill-black" />
-                      <span>FEATURED • POPULER</span>
+                    <div className="absolute -top-2.5 left-4 px-2 py-0.5 rounded-full bg-[#F7B425] text-black text-[9px] font-black uppercase tracking-wider shadow-md flex items-center gap-1 z-10">
+                      <Star className="w-2.5 h-2.5 fill-black" />
+                      <span>POPULER</span>
                     </div>
                   )}
 
                   <div>
-                    {/* Drag Handle & Order Toolbar */}
-                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+                    {/* Drag Handle & Order Toolbar - Compact */}
+                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
                       <div 
-                        className="flex items-center gap-2 cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#F7B425] transition-colors select-none"
+                        className="flex items-center gap-1.5 cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#F7B425] transition-colors select-none"
                         title="Tahan & geser untuk memindahkan urutan program"
                       >
-                        <div className="w-7 h-7 rounded-lg bg-white/5 group-hover:bg-[#F7B425]/20 flex items-center justify-center text-slate-400 group-hover:text-[#F7B425] transition-colors">
-                          <GripVertical className="w-4 h-4" />
+                        <div className="w-5 h-5 rounded bg-white/5 group-hover:bg-[#F7B425]/20 flex items-center justify-center text-slate-400 group-hover:text-[#F7B425] transition-colors">
+                          <GripVertical className="w-3.5 h-3.5" />
                         </div>
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="text-[10px] uppercase font-extrabold text-slate-400">Urutan</span>
-                          <span className="text-xs font-black text-[#F7B425] font-mono bg-[#F7B425]/10 px-2 py-0.5 rounded-md border border-[#F7B425]/20">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-[9px] uppercase font-bold text-slate-400">Urutan</span>
+                          <span className="text-[11px] font-black text-[#F7B425] font-mono bg-[#F7B425]/10 px-1.5 py-0.5 rounded border border-[#F7B425]/20">
                             #{index + 1}
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
                           disabled={index === 0}
                           onClick={() => moveProgramByIndex(index, index - 1)}
-                          className="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#F7B425] hover:text-black disabled:opacity-20 text-slate-300 transition-all flex items-center justify-center cursor-pointer disabled:cursor-not-allowed active:scale-95"
-                          title="Geser ke posisi sebelumnya"
+                          className="w-5 h-5 rounded bg-white/5 hover:bg-[#F7B425] hover:text-black disabled:opacity-20 text-slate-300 transition-all flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
+                          title="Geser posisi ke kiri"
                         >
-                          <ArrowLeft className="w-3.5 h-3.5" />
+                          <ArrowLeft className="w-3 h-3" />
                         </button>
                         <button
                           type="button"
                           disabled={index === filtered.length - 1}
                           onClick={() => moveProgramByIndex(index, index + 1)}
-                          className="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#F7B425] hover:text-black disabled:opacity-20 text-slate-300 transition-all flex items-center justify-center cursor-pointer disabled:cursor-not-allowed active:scale-95"
-                          title="Geser ke posisi berikutnya"
+                          className="w-5 h-5 rounded bg-white/5 hover:bg-[#F7B425] hover:text-black disabled:opacity-20 text-slate-300 transition-all flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
+                          title="Geser posisi ke kanan"
                         >
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          <ArrowRight className="w-3 h-3" />
                         </button>
                       </div>
                     </div>
 
-                    {/* Header Badges */}
-                    <div className="flex items-center justify-between mb-3.5 pt-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ${
+                    {/* Header Badges & Status */}
+                    <div className="flex items-center justify-between mb-2 pt-0.5">
+                      <div className="flex items-center gap-1 flex-wrap">
+                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wide ${
                           program.category === 'Landing Page'
                             ? 'bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30'
                             : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
@@ -381,7 +381,7 @@ export const ProgramsManagementTab: React.FC = () => {
                           {program.category === 'Landing Page' ? 'Landing Page' : 'TOEFL Portal'}
                         </span>
                         {program.level && (
-                          <span className="px-2 py-0.5 rounded-full bg-white/10 text-slate-300 text-[10px] font-bold">
+                          <span className="px-1.5 py-0.5 rounded-md bg-white/10 text-slate-300 text-[9px] font-bold">
                             {program.level}
                           </span>
                         )}
@@ -393,7 +393,7 @@ export const ProgramsManagementTab: React.FC = () => {
                           e.stopPropagation();
                           handleToggle(program.id, program.title, program.isActive);
                         }}
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold cursor-pointer transition-colors ${
+                        className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold cursor-pointer transition-colors ${
                           program.isActive 
                             ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/30' 
                             : 'bg-white/10 text-slate-400 hover:bg-white/20'
@@ -405,25 +405,25 @@ export const ProgramsManagementTab: React.FC = () => {
                     </div>
 
                     {/* Title & Tag */}
-                    <div className="mb-2">
-                      <span className="text-[11px] font-extrabold text-[#F7B425] uppercase tracking-wider block">
+                    <div className="mb-1.5">
+                      <span className="text-[10px] font-extrabold text-[#F7B425] uppercase tracking-wider block">
                         {program.tag}
                       </span>
-                      <h3 className="text-lg font-bold text-white font-heading leading-snug">
+                      <h3 className="text-sm sm:text-base font-extrabold text-white font-heading leading-snug">
                         {program.title}
                       </h3>
                     </div>
 
                     {/* Description */}
-                    <p className="text-xs text-slate-400 leading-relaxed mb-4 min-h-[36px]">
+                    <p className="text-[11px] text-slate-400 leading-snug mb-2.5 line-clamp-2">
                       {program.description || 'Tidak ada deskripsi rinci.'}
                     </p>
 
-                    {/* Specs & Pricing Box */}
-                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5 space-y-2 text-xs mb-4">
+                    {/* Specs & Pricing Box - Compact */}
+                    <div className="p-2.5 bg-white/5 rounded-xl border border-white/5 space-y-1.5 text-[11px] mb-2.5">
                       <div className="flex justify-between items-center">
                         <span className="text-slate-400 flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-[#F7B425]" />
+                          <Clock className="w-3 h-3 text-[#F7B425]" />
                           <span>Durasi:</span>
                         </span>
                         <span className="font-bold text-slate-200">{program.duration}</span>
@@ -431,7 +431,7 @@ export const ProgramsManagementTab: React.FC = () => {
 
                       <div className="flex justify-between items-center">
                         <span className="text-slate-400 flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5 text-[#F7B425]" />
+                          <Calendar className="w-3 h-3 text-[#F7B425]" />
                           <span>Sesi / Soal:</span>
                         </span>
                         <span className="font-semibold text-slate-200 text-right">{program.sessionCount}</span>
@@ -440,23 +440,23 @@ export const ProgramsManagementTab: React.FC = () => {
                       {program.scoreTarget && (
                         <div className="flex justify-between items-center">
                           <span className="text-slate-400 flex items-center gap-1">
-                            <Award className="w-3.5 h-3.5 text-[#F7B425]" />
+                            <Award className="w-3 h-3 text-[#F7B425]" />
                             <span>Target Skor:</span>
                           </span>
-                          <span className="font-black text-[#F7B425] font-mono bg-[#F7B425]/10 px-2 py-0.5 rounded border border-[#F7B425]/30">
+                          <span className="font-black text-[#F7B425] font-mono bg-[#F7B425]/10 px-1.5 py-0.5 rounded border border-[#F7B425]/30">
                             {program.scoreTarget}
                           </span>
                         </div>
                       )}
 
-                      <div className="flex justify-between items-baseline pt-2 border-t border-white/10">
-                        <span className="text-slate-400 font-medium">Biaya Investasi:</span>
+                      <div className="flex justify-between items-baseline pt-1.5 border-t border-white/10">
+                        <span className="text-slate-400 text-[10px] font-medium">Investasi:</span>
                         <div className="flex items-baseline gap-1.5">
-                          <span className="font-black text-base text-[#F7B425] font-mono">
+                          <span className="font-black text-sm text-[#F7B425] font-mono">
                             {program.priceFormatted}
                           </span>
                           {program.originalPrice && (
-                            <span className="text-[10px] text-slate-500 line-through">
+                            <span className="text-[9px] text-slate-500 line-through">
                               {program.originalPrice}
                             </span>
                           )}
@@ -464,36 +464,47 @@ export const ProgramsManagementTab: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Benefits */}
-                    <div className="space-y-1.5 mb-5">
-                      <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    {/* Benefits - Compact */}
+                    <div className="space-y-1 mb-3">
+                      <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">
                         Fasilitas &amp; Keunggulan:
                       </div>
-                      {program.benefits.slice(0, 5).map((b, idx) => (
-                        <div key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-300">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                          <span className="leading-tight">{b}</span>
+                      {program.benefits.slice(0, 4).map((b, idx) => (
+                        <div key={idx} className="flex items-start gap-1.5 text-[10.5px] text-slate-300">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0 mt-0.5" />
+                          <span className="leading-tight line-clamp-1">{b}</span>
                         </div>
                       ))}
-                      {program.benefits.length > 5 && (
-                        <span className="text-[10px] text-slate-500 font-semibold pl-5 block">
-                          +{program.benefits.length - 5} fasilitas lainnya
+                      {program.benefits.length > 4 && (
+                        <span className="text-[9px] text-slate-500 font-semibold pl-4 block">
+                          +{program.benefits.length - 4} fasilitas lainnya
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Actions Footer: Edit Button */}
-                  <div className="pt-3.5 border-t border-white/10 flex items-center justify-end text-xs">
+                  {/* Actions Footer - Edit & Delete */}
+                  <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeletingProgram(program);
+                      }}
+                      className="p-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                      title="Hapus Program"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         openEditModal(program);
                       }}
-                      className="w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-[#F7B425] text-white hover:text-black font-bold rounded-xl transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 shadow-sm"
+                      className="px-3 py-1.5 bg-white/10 hover:bg-[#F7B425] text-white hover:text-black font-bold rounded-lg transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-98 text-xs"
                     >
-                      <Edit3 className="w-3.5 h-3.5" />
+                      <Edit3 className="w-3 h-3" />
                       <span>Edit Program</span>
                     </button>
                   </div>

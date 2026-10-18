@@ -118,20 +118,33 @@ export const StudentRegistrationsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedStudent, setSelectedStudent] = useState<StudentRecord | null>(null);
+  const [studentToDelete, setStudentToDelete] = useState<StudentRecord | null>(null);
+  const [deleteToast, setDeleteToast] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Initial student dataset merged with registered students
+  // Initial student dataset merged with registered students & localStorage persistence
   const [students, setStudents] = useState<StudentRecord[]>(() => {
     try {
+      const savedMaster = localStorage.getItem('ej_all_students_records');
+      if (savedMaster) {
+        const parsedMaster = JSON.parse(savedMaster);
+        if (Array.isArray(parsedMaster) && parsedMaster.length > 0) {
+          return parsedMaster;
+        }
+      }
+
       const saved = localStorage.getItem('ej_registered_students');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return [...parsed, ...defaultStudents];
+          const combined = [...parsed, ...defaultStudents];
+          localStorage.setItem('ej_all_students_records', JSON.stringify(combined));
+          return combined;
         }
       }
+      localStorage.setItem('ej_all_students_records', JSON.stringify(defaultStudents));
     } catch (e) {
-      console.warn('Error reading ej_registered_students', e);
+      console.warn('Error reading ej_all_students_records', e);
     }
     return defaultStudents;
   });
@@ -139,6 +152,14 @@ export const StudentRegistrationsTab: React.FC = () => {
   useEffect(() => {
     const handleStorageChange = () => {
       try {
+        const savedMaster = localStorage.getItem('ej_all_students_records');
+        if (savedMaster) {
+          const parsed = JSON.parse(savedMaster);
+          if (Array.isArray(parsed)) {
+            setStudents(parsed);
+            return;
+          }
+        }
         const saved = localStorage.getItem('ej_registered_students');
         if (saved) {
           const parsed = JSON.parse(saved);
@@ -147,7 +168,7 @@ export const StudentRegistrationsTab: React.FC = () => {
           }
         }
       } catch (e) {
-        console.warn('Error syncing ej_registered_students', e);
+        console.warn('Error syncing student records', e);
       }
     };
     window.addEventListener('storage', handleStorageChange);
@@ -179,7 +200,13 @@ export const StudentRegistrationsTab: React.FC = () => {
       paymentStatus: newStudent.paymentStatus,
       status: 'Belum Mulai'
     };
-    setStudents([created, ...students]);
+    const updated = [created, ...students];
+    setStudents(updated);
+    try {
+      localStorage.setItem('ej_all_students_records', JSON.stringify(updated));
+    } catch (err) {
+      console.warn('Error saving new student to localStorage', err);
+    }
     setIsAddModalOpen(false);
     setNewStudent({
       name: '',
@@ -188,13 +215,47 @@ export const StudentRegistrationsTab: React.FC = () => {
       programName: 'TOEFL ITP Prediction Test (Online)',
       paymentStatus: 'Paid'
     });
+    setDeleteToast(`Siswa "${created.name}" berhasil ditambahkan.`);
+    setTimeout(() => setDeleteToast(null), 3000);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Hapus data pendaftar ini?')) {
-      setStudents(students.filter(s => s.id !== id));
-      if (selectedStudent?.id === id) setSelectedStudent(null);
+    const target = students.find((s) => s.id === id);
+    if (target) {
+      setStudentToDelete(target);
     }
+  };
+
+  const confirmDeleteStudent = () => {
+    if (!studentToDelete) return;
+    const targetId = studentToDelete.id;
+    const targetName = studentToDelete.name;
+
+    const updated = students.filter((s) => s.id !== targetId);
+    setStudents(updated);
+
+    try {
+      localStorage.setItem('ej_all_students_records', JSON.stringify(updated));
+
+      const rawRegistered = localStorage.getItem('ej_registered_students');
+      if (rawRegistered) {
+        const regList = JSON.parse(rawRegistered);
+        if (Array.isArray(regList)) {
+          const filteredReg = regList.filter((s: any) => s.id !== targetId);
+          localStorage.setItem('ej_registered_students', JSON.stringify(filteredReg));
+        }
+      }
+    } catch (err) {
+      console.warn('Error updating storage upon deletion', err);
+    }
+
+    if (selectedStudent?.id === targetId) {
+      setSelectedStudent(null);
+    }
+
+    setStudentToDelete(null);
+    setDeleteToast(`Data siswa "${targetName}" (${targetId}) berhasil dihapus.`);
+    setTimeout(() => setDeleteToast(null), 4000);
   };
 
   // Filtered list
@@ -214,42 +275,42 @@ export const StudentRegistrationsTab: React.FC = () => {
   const subText = isDark ? 'text-slate-400' : 'text-slate-500';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       
-      {/* Top Action Bar */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl border ${cardBg}`}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
-            <Users className="w-5 h-5 text-[#F7B425]" />
+      {/* Top Action Bar - Compact & Minimal Padding */}
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:px-4 sm:py-2.5 rounded-2xl border ${cardBg}`}>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
+            <Users className="w-4 h-4 text-[#F7B425]" />
           </div>
           <div>
-            <h2 className={`text-lg font-black font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h2 className={`text-sm sm:text-base font-extrabold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
               Tabel Data Pendaftar TOEFL Student
             </h2>
-            <p className={`text-xs ${subText}`}>
+            <p className={`text-[11px] ${subText}`}>
               Kelola peserta ujian TOEFL, status pembayaran, skor tes, dan verifikasi sertifikat.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="px-4 py-2.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-xl transition-all shadow-lg shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Pendaftar Baru</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>Tambah Pendaftar</span>
           </button>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-slate-400" />
-          <div className={`flex items-center gap-1 p-1 rounded-2xl border text-xs ${isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200 shadow-xs'}`}>
+      {/* Filter and Search Bar - Compact */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          <Filter className="w-3.5 h-3.5 text-slate-400" />
+          <div className={`flex items-center gap-1 p-0.5 rounded-xl border text-xs ${isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200 shadow-xs'}`}>
             {[
-              { id: 'all', label: 'Semua Siswa' },
+              { id: 'all', label: 'Semua' },
               { id: 'passed', label: 'Lolos 500+' },
               { id: 'active', label: 'Sedang Ujian' },
               { id: 'pending', label: 'Belum Mulai' }
@@ -257,7 +318,7 @@ export const StudentRegistrationsTab: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setFilterStatus(tab.id)}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-colors cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
                   filterStatus === tab.id
                     ? 'bg-[#F7B425] text-black font-extrabold shadow-xs'
                     : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
@@ -272,40 +333,56 @@ export const StudentRegistrationsTab: React.FC = () => {
         <div className="relative">
           <input
             type="text"
-            placeholder="Cari nama, WhatsApp, atau program..."
+            placeholder="Cari nama, WhatsApp, program..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full md:w-80 pl-9 pr-4 py-2 rounded-xl border text-xs focus:outline-none focus:border-[#F7B425] ${
+            className={`w-full md:w-72 pl-8 pr-3 py-1.5 rounded-xl border text-xs focus:outline-none focus:border-[#F7B425] ${
               isDark 
                 ? 'bg-[#141414] border-white/10 text-white placeholder:text-slate-500' 
                 : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 shadow-xs'
             }`}
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
         </div>
       </div>
 
-      {/* Main Table Card */}
-      <div className={`rounded-3xl border overflow-hidden ${cardBg}`}>
+      {/* Notification Toast - Compact */}
+      {deleteToast && (
+        <div className="flex items-center justify-between gap-3 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs animate-in fade-in slide-in-from-top-1">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="font-semibold">{deleteToast}</span>
+          </div>
+          <button 
+            onClick={() => setDeleteToast(null)} 
+            className="text-emerald-400/70 hover:text-emerald-300 p-0.5 rounded hover:bg-emerald-500/10 transition-colors"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
+      {/* Main Table Card - Minimal padding & compact rows */}
+      <div className={`rounded-2xl border overflow-hidden ${cardBg}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className={`border-b font-bold uppercase text-[10px] tracking-wider ${
+              <tr className={`border-b font-bold uppercase text-[9.5px] tracking-wider ${
                 isDark ? 'bg-white/5 border-white/10 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
               }`}>
-                <th className="py-3.5 px-5">ID &amp; Nama Siswa</th>
-                <th className="py-3.5 px-4">Kontak WhatsApp</th>
-                <th className="py-3.5 px-4">Program Pilihan</th>
-                <th className="py-3.5 px-3 text-center">Skor TOEFL</th>
-                <th className="py-3.5 px-3 text-center">Bayar</th>
-                <th className="py-3.5 px-3 text-center">Status Kelulusan</th>
-                <th className="py-3.5 px-5 text-right">Aksi</th>
+                <th className="py-2.5 px-3.5 sm:px-4">ID &amp; Nama Siswa</th>
+                <th className="py-2.5 px-3">Kontak WhatsApp</th>
+                <th className="py-2.5 px-3">Program Pilihan</th>
+                <th className="py-2.5 px-2.5 text-center">Skor TOEFL</th>
+                <th className="py-2.5 px-2.5 text-center">Bayar</th>
+                <th className="py-2.5 px-2.5 text-center">Status Kelulusan</th>
+                <th className="py-2.5 px-3.5 sm:px-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400">
+                  <td colSpan={7} className="py-6 text-center text-slate-400 text-xs">
                     Tidak ditemukan data pendaftar sesuai filter.
                   </td>
                 </tr>
@@ -314,41 +391,41 @@ export const StudentRegistrationsTab: React.FC = () => {
                   <tr key={student.id} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
                     
                     {/* ID & Name */}
-                    <td className="py-3.5 px-5">
-                      <span className={`font-mono text-[10px] block ${subText}`}>{student.id}</span>
-                      <span className={`font-extrabold text-xs block ${isDark ? 'text-white' : 'text-slate-900'}`}>{student.name}</span>
-                      <span className={`text-[10px] ${subText}`}>{student.email}</span>
+                    <td className="py-2 px-3.5 sm:px-4">
+                      <span className={`font-mono text-[9px] block ${subText}`}>{student.id}</span>
+                      <span className={`font-extrabold text-xs block leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{student.name}</span>
+                      <span className={`text-[9.5px] block truncate max-w-[160px] ${subText}`}>{student.email}</span>
                     </td>
 
                     {/* Contact */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-2 px-3">
                       <a
                         href={`https://wa.me/62${student.whatsapp.replace(/^0/, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 font-mono text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
+                        className="inline-flex items-center gap-1 font-mono text-emerald-600 dark:text-emerald-400 hover:underline font-semibold text-[11px]"
                       >
-                        <MessageCircle className="w-3.5 h-3.5 text-emerald-500" />
+                        <MessageCircle className="w-3 h-3 text-emerald-500 shrink-0" />
                         <span>{student.whatsapp}</span>
                       </a>
                     </td>
 
                     {/* Program */}
-                    <td className="py-3.5 px-4 max-w-[200px]">
-                      <span className={`font-semibold line-clamp-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{student.programName}</span>
-                      <span className={`text-[10px] ${subText}`}>{student.registrationDate}</span>
+                    <td className="py-2 px-3 max-w-[200px]">
+                      <span className={`font-semibold line-clamp-1 text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{student.programName}</span>
+                      <span className={`text-[9.5px] ${subText}`}>{student.registrationDate}</span>
                     </td>
 
                     {/* Score */}
-                    <td className="py-3.5 px-3 text-center">
+                    <td className="py-2 px-2.5 text-center">
                       {student.testScore ? (
                         <div>
-                          <span className={`px-2.5 py-1 rounded-md font-mono font-black text-xs ${
+                          <span className={`px-2 py-0.5 rounded font-mono font-black text-[11px] ${
                             student.testScore >= 500 ? 'bg-[#F7B425] text-black' : isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-700'
                           }`}>
                             {student.testScore}
                           </span>
-                          <span className={`block text-[9px] mt-0.5 font-mono ${subText}`}>
+                          <span className={`block text-[8.5px] mt-0.5 font-mono ${subText}`}>
                             L:{student.listeningScore} S:{student.structureScore} R:{student.readingScore}
                           </span>
                         </div>
@@ -358,8 +435,8 @@ export const StudentRegistrationsTab: React.FC = () => {
                     </td>
 
                     {/* Payment */}
-                    <td className="py-3.5 px-3 text-center">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                    <td className="py-2 px-2.5 text-center">
+                      <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black uppercase ${
                         student.paymentStatus === 'Paid' 
                           ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30' 
                           : 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30'
@@ -369,8 +446,8 @@ export const StudentRegistrationsTab: React.FC = () => {
                     </td>
 
                     {/* Status */}
-                    <td className="py-3.5 px-3 text-center">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${
+                    <td className="py-2 px-2.5 text-center">
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
                         student.status.includes('Lulus') ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30' :
                         student.status.includes('Sedang') ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30' :
                         student.status.includes('Belum') ? isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-100 text-slate-500' :
@@ -381,10 +458,10 @@ export const StudentRegistrationsTab: React.FC = () => {
                     </td>
 
                     {/* Actions */}
-                    <td className="py-3.5 px-5 text-right space-x-1.5">
+                    <td className="py-2 px-3.5 sm:px-4 text-right space-x-1 whitespace-nowrap">
                       <button
                         onClick={() => setSelectedStudent(student)}
-                        className={`px-3 py-1 rounded-lg font-bold text-[11px] transition-colors cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-md font-bold text-[10.5px] transition-colors cursor-pointer ${
                           isDark ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' : 'bg-slate-100 hover:bg-[#F7B425] text-slate-800 hover:text-black'
                         }`}
                         title="Lihat Detail & Sertifikat"
@@ -393,10 +470,10 @@ export const StudentRegistrationsTab: React.FC = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(student.id)}
-                        className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
+                        className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer inline-flex items-center justify-center align-middle"
                         title="Hapus Data"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3 h-3" />
                       </button>
                     </td>
 
@@ -554,6 +631,66 @@ export const StudentRegistrationsTab: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {studentToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+          <div className="bg-[#141414] rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-white/10 relative text-white animate-in zoom-in-95 duration-150">
+            <div className="flex items-start gap-4 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-500 flex items-center justify-center shrink-0">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base sm:text-lg font-black text-white font-heading">
+                  Hapus Data Siswa?
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  Apakah Anda yakin ingin menghapus data pendaftar ini? Tindakan ini tidak dapat dibatalkan.
+                </p>
+              </div>
+            </div>
+
+            {/* Target Student Preview Box */}
+            <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-2 mb-6 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">ID Siswa:</span>
+                <span className="font-mono font-bold text-[#F7B425]">{studentToDelete.id}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Nama Lengkap:</span>
+                <span className="font-bold text-white">{studentToDelete.name}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">WhatsApp:</span>
+                <span className="font-mono text-emerald-400">{studentToDelete.whatsapp}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Program:</span>
+                <span className="text-slate-200 line-clamp-1 max-w-[200px] text-right font-medium">{studentToDelete.programName}</span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setStudentToDelete(null)}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-white/10 font-bold text-xs text-slate-300 hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteStudent}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 font-extrabold text-xs text-white transition-colors cursor-pointer shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Ya, Hapus Data</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

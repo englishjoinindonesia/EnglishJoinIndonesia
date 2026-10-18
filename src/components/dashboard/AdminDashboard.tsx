@@ -85,7 +85,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         />
 
         {/* MAIN BODY VIEW CONTAINER */}
-        <main className={`p-3 sm:p-4 flex-1 transition-colors duration-200 ${
+        <main className={`p-1.5 sm:p-2.5 flex-1 transition-colors duration-200 ${
           isDark ? 'bg-[#0B0B0B]' : 'bg-slate-50'
         }`}>
           {activeTab === 'overview' && (
