@@ -53,12 +53,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           {isDark ? (
             <>
               <Sun className="w-4 h-4 text-[#F7B425]" />
-              <span className="hidden md:inline font-extrabold text-[#F7B425]">{t.dashboard.header.lightMode}</span>
+              <span className="hidden md:inline font-bold text-[#F7B425]">{t.dashboard.header.lightMode}</span>
             </>
           ) : (
             <>
               <Moon className="w-4 h-4 text-slate-700" />
-              <span className="hidden md:inline font-extrabold text-slate-800">{t.dashboard.header.darkMode}</span>
+              <span className="hidden md:inline font-bold text-slate-800">{t.dashboard.header.darkMode}</span>
             </>
           )}
         </button>
@@ -73,7 +73,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             {userRole === 'admin' ? <ShieldCheck className="w-4 h-4" /> : <User className="w-4 h-4" />}
           </div>
           <div className="hidden sm:block text-left">
-            <span className={`block text-xs font-black leading-tight ${
+            <span className={`block text-xs font-bold leading-tight ${
               isDark ? 'text-white' : 'text-slate-900'
             }`}>
               {displayName}

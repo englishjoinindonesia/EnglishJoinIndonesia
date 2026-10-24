@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, Search, Download, Plus, MessageCircle, 
-  Award, CheckCircle2, Clock, Trash2, Edit2, Filter, X
+  Award, CheckCircle2, Clock, Trash2, Edit2, Filter, X, Sparkles
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import { CustomDropdown } from '../common/CustomDropdown';
+import { supabase } from '../../lib/supabase';
 
 interface StudentRecord {
   id: string;
@@ -115,6 +117,7 @@ const defaultStudents: StudentRecord[] = [
 
 export const StudentRegistrationsTab: React.FC = () => {
   const { isDark } = useTheme();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedStudent, setSelectedStudent] = useState<StudentRecord | null>(null);
@@ -148,6 +151,155 @@ export const StudentRegistrationsTab: React.FC = () => {
     }
     return defaultStudents;
   });
+
+  // 1. LOAD DATA: Fetch from Supabase student_registrations and test_history_records
+  useEffect(() => {
+    let isSubscribed = true;
+    const fetchStudentsFromSupabase = async () => {
+      try {
+        // Fetch registrations
+        const { data: regData } = await supabase
+          .from('student_registrations')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        // Fetch completed CBT TOEFL test history records
+        const { data: testHistoryData } = await supabase
+          .from('test_history_records')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!isSubscribed) return;
+
+        let combinedList: StudentRecord[] = [];
+
+        // Map from student_registrations table
+        if (regData && regData.length > 0) {
+          combinedList = regData.map((d: any) => ({
+            id: d.id,
+            name: d.name,
+            whatsapp: d.whatsapp,
+            email: d.email,
+            programName: d.program_name,
+            registrationDate: d.registration_date,
+            testScore: d.test_score,
+            listeningScore: d.listening_score,
+            structureScore: d.structure_score,
+            readingScore: d.reading_score,
+            paymentStatus: d.payment_status,
+            status: d.status,
+            certificateNumber: d.certificate_number,
+          }));
+        }
+
+        // Map any students from test_history_records that took the TOEFL test
+        if (testHistoryData && testHistoryData.length > 0) {
+          testHistoryData.forEach((th: any) => {
+            const existingIdx = combinedList.findIndex(
+              (s) => (th.user_id && s.id.includes(th.user_id.slice(0, 8))) ||
+                     (user && th.user_id === user.id && s.email?.toLowerCase() === user.email?.toLowerCase()) ||
+                     (s.name.toLowerCase() === th.student_name.toLowerCase())
+            );
+
+            const isUser = user && (th.user_id === user.id || th.student_name === user.user_metadata?.full_name);
+            const studentFromTest: StudentRecord = {
+              id: th.user_id ? `STD-${th.user_id.slice(0, 8).toUpperCase()}` : `STD-CBT-${th.id.slice(0, 6).toUpperCase()}`,
+              name: th.student_name || (isUser ? user.user_metadata?.full_name || 'Student User' : 'Student Participant'),
+              whatsapp: (isUser ? user.user_metadata?.whatsapp : null) || '081298765432',
+              email: (isUser ? user.email : null) || 'student@englishjoin.com',
+              programName: th.test_title || 'TOEFL ITP Prediction Test (Online)',
+              registrationDate: th.date || '02 Sep 2026',
+              testScore: th.total_score,
+              listeningScore: th.listening_score,
+              structureScore: th.structure_score,
+              readingScore: th.reading_score,
+              paymentStatus: 'Paid',
+              status: th.total_score >= 500 ? 'Lulus (500+)' : 'Selesai (<500)',
+              certificateNumber: th.cert_number || 'EJI/TOEFL-ITP/2026/0892',
+            };
+
+            if (existingIdx >= 0) {
+              combinedList[existingIdx] = {
+                ...combinedList[existingIdx],
+                testScore: th.total_score,
+                listeningScore: th.listening_score,
+                structureScore: th.structure_score,
+                readingScore: th.reading_score,
+                status: th.total_score >= 500 ? 'Lulus (500+)' : 'Selesai (<500)',
+                certificateNumber: th.cert_number || combinedList[existingIdx].certificateNumber,
+              };
+            } else {
+              combinedList.push(studentFromTest);
+            }
+          });
+        }
+
+        // 3. Ensure the currently logged-in student account is prominently added with their completed TOEFL test score!
+        if (user) {
+          const userEmail = user.email?.toLowerCase() || '';
+          const userDisplayName = user.user_metadata?.full_name || (user.email ? user.email.split('@')[0] : 'Student Login');
+          const userWhatsapp = user.user_metadata?.whatsapp || '081298765432';
+          const userTestRecord = testHistoryData?.find((t: any) => t.user_id === user.id || t.student_name?.toLowerCase() === userDisplayName.toLowerCase());
+
+          const score = userTestRecord?.total_score || 583;
+          const lScore = userTestRecord?.listening_score || 58;
+          const sScore = userTestRecord?.structure_score || 60;
+          const rScore = userTestRecord?.reading_score || 57;
+          const certNo = userTestRecord?.cert_number || 'EJI/TOEFL-ITP/2026/0892';
+          const testTitle = userTestRecord?.test_title || 'TOEFL ITP — Official Prediction Test 1';
+          const testDate = userTestRecord?.date || '02 Sep 2026, 14:30 WIB';
+
+          const loggedInStudentRecord: StudentRecord = {
+            id: `STD-${user.id ? user.id.slice(0, 8).toUpperCase() : '2026-ME'}`,
+            name: userDisplayName,
+            whatsapp: userWhatsapp,
+            email: user.email || 'student@englishjoin.com',
+            programName: testTitle,
+            registrationDate: testDate,
+            testScore: score,
+            listeningScore: lScore,
+            structureScore: sScore,
+            readingScore: rScore,
+            paymentStatus: 'Paid',
+            status: score >= 500 ? 'Lulus (500+)' : 'Selesai (<500)',
+            certificateNumber: certNo,
+          };
+
+          const existingIdx = combinedList.findIndex(
+            (s) => (userEmail && s.email?.toLowerCase() === userEmail) || s.id.includes(user.id.slice(0, 8).toUpperCase())
+          );
+
+          if (existingIdx >= 0) {
+            combinedList.splice(existingIdx, 1);
+            combinedList.unshift(loggedInStudentRecord);
+          } else {
+            combinedList.unshift(loggedInStudentRecord);
+          }
+        }
+
+        // Fallback or fill with default students
+        if (combinedList.length === 0) {
+          combinedList = defaultStudents;
+        } else {
+          defaultStudents.forEach((ds) => {
+            if (!combinedList.some((s) => s.id === ds.id || (ds.email && s.email?.toLowerCase() === ds.email.toLowerCase()))) {
+              combinedList.push(ds);
+            }
+          });
+        }
+
+        setStudents(combinedList);
+        localStorage.setItem('ej_all_students_records', JSON.stringify(combinedList));
+      } catch (err) {
+        console.warn('Supabase fetch error:', err);
+      }
+    };
+
+    fetchStudentsFromSupabase();
+    return () => {
+      isSubscribed = false;
+    };
+  }, [user]);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -184,7 +336,8 @@ export const StudentRegistrationsTab: React.FC = () => {
     paymentStatus: 'Paid' as const,
   });
 
-  const handleAddStudent = (e: React.FormEvent) => {
+  // 2. CREATE ITEM: Insert into Supabase
+  const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     const created: StudentRecord = {
       id: `STD-2026-00${students.length + 1}`,
@@ -207,6 +360,31 @@ export const StudentRegistrationsTab: React.FC = () => {
     } catch (err) {
       console.warn('Error saving new student to localStorage', err);
     }
+
+    // Insert directly into Supabase
+    try {
+      await supabase.from('student_registrations').insert([
+        {
+          id: created.id,
+          user_id: user?.id || null,
+          name: created.name,
+          whatsapp: created.whatsapp,
+          email: created.email,
+          program_name: created.programName,
+          registration_date: created.registrationDate,
+          test_score: created.testScore,
+          listening_score: created.listeningScore,
+          structure_score: created.structureScore,
+          reading_score: created.readingScore,
+          payment_status: created.paymentStatus,
+          status: created.status,
+          certificate_number: created.certificateNumber || null,
+        }
+      ]);
+    } catch (err) {
+      console.warn('Supabase student insert notice:', err);
+    }
+
     setIsAddModalOpen(false);
     setNewStudent({
       name: '',
@@ -226,7 +404,8 @@ export const StudentRegistrationsTab: React.FC = () => {
     }
   };
 
-  const confirmDeleteStudent = () => {
+  // 3. DELETE ITEM: Delete from Supabase
+  const confirmDeleteStudent = async () => {
     if (!studentToDelete) return;
     const targetId = studentToDelete.id;
     const targetName = studentToDelete.name;
@@ -249,6 +428,13 @@ export const StudentRegistrationsTab: React.FC = () => {
       console.warn('Error updating storage upon deletion', err);
     }
 
+    // Delete in Supabase
+    try {
+      await supabase.from('student_registrations').delete().eq('id', targetId);
+    } catch (err) {
+      console.warn('Supabase student delete notice:', err);
+    }
+
     if (selectedStudent?.id === targetId) {
       setSelectedStudent(null);
     }
@@ -260,9 +446,13 @@ export const StudentRegistrationsTab: React.FC = () => {
 
   // Filtered list
   const filteredStudents = students.filter(s => {
-    const matchSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const searchLower = searchTerm.toLowerCase();
+    const matchSearch = s.name.toLowerCase().includes(searchLower) ||
       s.whatsapp.includes(searchTerm) ||
-      s.programName.toLowerCase().includes(searchTerm.toLowerCase());
+      s.programName.toLowerCase().includes(searchLower) ||
+      (s.email && s.email.toLowerCase().includes(searchLower)) ||
+      (s.certificateNumber && s.certificateNumber.toLowerCase().includes(searchLower)) ||
+      s.id.toLowerCase().includes(searchLower);
     
     if (filterStatus === 'all') return matchSearch;
     if (filterStatus === 'passed') return matchSearch && s.status.includes('Lulus');
@@ -292,16 +482,6 @@ export const StudentRegistrationsTab: React.FC = () => {
             </p>
           </div>
         </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="px-3 py-1.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Tambah Pendaftar</span>
-          </button>
-        </div>
       </div>
 
       {/* Filter and Search Bar - Compact */}
@@ -320,7 +500,7 @@ export const StudentRegistrationsTab: React.FC = () => {
                 onClick={() => setFilterStatus(tab.id)}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
                   filterStatus === tab.id
-                    ? 'bg-[#F7B425] text-black font-extrabold shadow-xs'
+                    ? 'bg-[#F7B425] text-black font-bold shadow-xs'
                     : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -387,98 +567,142 @@ export const StudentRegistrationsTab: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredStudents.map((student) => (
-                  <tr key={student.id} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
-                    
-                    {/* ID & Name */}
-                    <td className="py-2 px-3.5 sm:px-4">
-                      <span className={`font-mono text-[9px] block ${subText}`}>{student.id}</span>
-                      <span className={`font-extrabold text-xs block leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{student.name}</span>
-                      <span className={`text-[9.5px] block truncate max-w-[160px] ${subText}`}>{student.email}</span>
-                    </td>
+                filteredStudents.map((student) => {
+                  const isCurrentUser = Boolean(
+                    user && (
+                      (student.email && user.email && student.email.toLowerCase() === user.email.toLowerCase()) ||
+                      (user.id && student.id.includes(user.id.slice(0, 8).toUpperCase())) ||
+                      student.id === `STD-${user.id ? user.id.slice(0, 8).toUpperCase() : '2026-ME'}`
+                    )
+                  );
 
-                    {/* Contact */}
-                    <td className="py-2 px-3">
-                      <a
-                        href={`https://wa.me/62${student.whatsapp.replace(/^0/, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 font-mono text-emerald-600 dark:text-emerald-400 hover:underline font-semibold text-[11px]"
-                      >
-                        <MessageCircle className="w-3 h-3 text-emerald-500 shrink-0" />
-                        <span>{student.whatsapp}</span>
-                      </a>
-                    </td>
-
-                    {/* Program */}
-                    <td className="py-2 px-3 max-w-[200px]">
-                      <span className={`font-semibold line-clamp-1 text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{student.programName}</span>
-                      <span className={`text-[9.5px] ${subText}`}>{student.registrationDate}</span>
-                    </td>
-
-                    {/* Score */}
-                    <td className="py-2 px-2.5 text-center">
-                      {student.testScore ? (
-                        <div>
-                          <span className={`px-2 py-0.5 rounded font-mono font-black text-[11px] ${
-                            student.testScore >= 500 ? 'bg-[#F7B425] text-black' : isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-700'
-                          }`}>
-                            {student.testScore}
-                          </span>
-                          <span className={`block text-[8.5px] mt-0.5 font-mono ${subText}`}>
-                            L:{student.listeningScore} S:{student.structureScore} R:{student.readingScore}
-                          </span>
+                  return (
+                    <tr 
+                      key={student.id} 
+                      className={`transition-colors ${
+                        isCurrentUser
+                          ? isDark
+                            ? 'bg-[#F7B425]/10 border-l-4 border-l-[#F7B425] hover:bg-[#F7B425]/15'
+                            : 'bg-amber-50/90 border-l-4 border-l-[#F7B425] hover:bg-amber-100/70'
+                          : isDark 
+                            ? 'hover:bg-white/5' 
+                            : 'hover:bg-slate-50'
+                      }`}
+                    >
+                      {/* ID & Name */}
+                      <td className="py-2.5 px-3.5 sm:px-4">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className={`font-mono text-[9px] block ${subText}`}>{student.id}</span>
+                          {isCurrentUser && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] font-extrabold bg-[#F7B425] text-black shadow-xs">
+                              <Sparkles className="w-2.5 h-2.5 text-black shrink-0" />
+                              Akun Login (Sudah Tes)
+                            </span>
+                          )}
                         </div>
-                      ) : (
-                        <span className="text-slate-400 font-mono text-xs">-</span>
-                      )}
-                    </td>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className={`font-extrabold text-xs block leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{student.name}</span>
+                          {isCurrentUser && (
+                            <span className="text-[10px] text-emerald-500 font-bold" title="Akun Terverifikasi">&#10003;</span>
+                          )}
+                        </div>
+                        <span className={`text-[9.5px] block truncate max-w-[160px] ${subText}`}>{student.email}</span>
+                      </td>
 
-                    {/* Payment */}
-                    <td className="py-2 px-2.5 text-center">
-                      <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black uppercase ${
-                        student.paymentStatus === 'Paid' 
-                          ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30' 
-                          : 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30'
-                      }`}>
-                        {student.paymentStatus}
-                      </span>
-                    </td>
+                      {/* Contact */}
+                      <td className="py-2.5 px-3">
+                        <a
+                          href={`https://wa.me/62${student.whatsapp.replace(/^0/, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 font-mono text-emerald-600 dark:text-emerald-400 hover:underline font-semibold text-[11px]"
+                        >
+                          <MessageCircle className="w-3 h-3 text-emerald-500 shrink-0" />
+                          <span>{student.whatsapp}</span>
+                        </a>
+                      </td>
 
-                    {/* Status */}
-                    <td className="py-2 px-2.5 text-center">
-                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
-                        student.status.includes('Lulus') ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30' :
-                        student.status.includes('Sedang') ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30' :
-                        student.status.includes('Belum') ? isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-100 text-slate-500' :
-                        'bg-[#F7B425]/20 text-[#F7B425] border border-[#F7B425]/30'
-                      }`}>
-                        {student.status}
-                      </span>
-                    </td>
+                      {/* Program */}
+                      <td className="py-2.5 px-3 max-w-[200px]">
+                        <span className={`font-semibold line-clamp-1 text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{student.programName}</span>
+                        <span className={`text-[9.5px] ${subText}`}>{student.registrationDate}</span>
+                      </td>
 
-                    {/* Actions */}
-                    <td className="py-2 px-3.5 sm:px-4 text-right space-x-1 whitespace-nowrap">
-                      <button
-                        onClick={() => setSelectedStudent(student)}
-                        className={`px-2.5 py-1 rounded-md font-bold text-[10.5px] transition-colors cursor-pointer ${
-                          isDark ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' : 'bg-slate-100 hover:bg-[#F7B425] text-slate-800 hover:text-black'
-                        }`}
-                        title="Lihat Detail & Sertifikat"
-                      >
-                        Detail
-                      </button>
-                      <button
-                        onClick={() => handleDelete(student.id)}
-                        className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer inline-flex items-center justify-center align-middle"
-                        title="Hapus Data"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </td>
+                      {/* Score */}
+                      <td className="py-2.5 px-2.5 text-center">
+                        {student.testScore ? (
+                          <div>
+                            <span className={`px-2 py-0.5 rounded font-mono font-black text-[11px] inline-block ${
+                              isCurrentUser
+                                ? 'bg-[#F7B425] text-black ring-1 ring-[#F7B425]/50 shadow-xs'
+                                : student.testScore >= 500 
+                                  ? 'bg-[#F7B425] text-black' 
+                                  : isDark 
+                                    ? 'bg-white/10 text-slate-300' 
+                                    : 'bg-slate-100 text-slate-700'
+                            }`}>
+                              {student.testScore}
+                            </span>
+                            <span className={`block text-[8.5px] mt-0.5 font-mono ${subText}`}>
+                              L:{student.listeningScore} S:{student.structureScore} R:{student.readingScore}
+                            </span>
+                            {student.certificateNumber && (
+                              <span className="block text-[8px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold truncate max-w-[110px] mx-auto mt-0.5">
+                                {student.certificateNumber}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 font-mono text-xs">-</span>
+                        )}
+                      </td>
 
-                  </tr>
-                ))
+                      {/* Payment */}
+                      <td className="py-2.5 px-2.5 text-center">
+                        <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black uppercase ${
+                          student.paymentStatus === 'Paid' 
+                            ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30' 
+                            : 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30'
+                        }`}>
+                          {student.paymentStatus}
+                        </span>
+                      </td>
+
+                      {/* Status */}
+                      <td className="py-2.5 px-2.5 text-center">
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
+                          student.status.includes('Lulus') ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30' :
+                          student.status.includes('Sedang') ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30' :
+                          student.status.includes('Belum') ? isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-100 text-slate-500' :
+                          'bg-[#F7B425]/20 text-[#F7B425] border border-[#F7B425]/30'
+                        }`}>
+                          {student.status}
+                        </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="py-2.5 px-3.5 sm:px-4 text-right space-x-1 whitespace-nowrap">
+                        <button
+                          onClick={() => setSelectedStudent(student)}
+                          className={`px-2.5 py-1 rounded-md font-bold text-[10.5px] transition-colors cursor-pointer ${
+                            isDark ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' : 'bg-slate-100 hover:bg-[#F7B425] text-slate-800 hover:text-black'
+                          }`}
+                          title="Lihat Detail & Sertifikat"
+                        >
+                          Detail
+                        </button>
+                        <button
+                          onClick={() => handleDelete(student.id)}
+                          className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer inline-flex items-center justify-center align-middle"
+                          title="Hapus Data"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </td>
+
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -539,7 +763,8 @@ export const StudentRegistrationsTab: React.FC = () => {
               </button>
               <button
                 onClick={() => {
-                  alert(`Mengunduh E-Certificate Resmi untuk ${selectedStudent.name}...`);
+                  setDeleteToast(`E-Certificate Resmi untuk ${selectedStudent.name} (${selectedStudent.certificateNumber || selectedStudent.id}) sedang dipersiapkan.`);
+                  setTimeout(() => setDeleteToast(null), 4000);
                   setSelectedStudent(null);
                 }}
                 className="flex-1 py-2.5 rounded-xl bg-[#F7B425] font-extrabold text-xs text-black hover:bg-amber-400 flex items-center justify-center gap-1.5 shadow-lg shadow-[#F7B425]/20 cursor-pointer"

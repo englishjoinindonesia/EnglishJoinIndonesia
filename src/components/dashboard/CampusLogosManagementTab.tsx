@@ -224,7 +224,7 @@ export const CampusLogosManagementTab: React.FC = () => {
               className="px-2.5 py-1.5 rounded-lg bg-[#F7B425] hover:bg-[#ffbe33] text-black font-bold text-xs flex items-center gap-1.5 shadow-xs hover:shadow transition-all cursor-pointer active:scale-95 font-['Poppins',sans-serif]"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span className="text-[11px] leading-[15px] font-bold font-['Poppins',sans-serif]">{tr('Tambah Logo Kampus', 'Add Campus Logo')}</span>
+              <span className="text-[12px] leading-[18px] font-bold font-['Poppins',sans-serif]">{tr('Tambah Logo Kampus', 'Add Campus Logo')}</span>
             </button>
           </div>
         </div>
@@ -256,7 +256,7 @@ export const CampusLogosManagementTab: React.FC = () => {
             title={tr('Tampilan Grid (Kartu)', 'Grid (Card) View')}
           >
             <LayoutGrid className="w-3 h-3" />
-            <span className="font-['Poppins',sans-serif] text-[11px] leading-[14px] font-bold">{tr('Grid', 'Grid')}</span>
+            <span className="font-['Poppins',sans-serif] text-[11px] leading-[18px] font-bold">{tr('Grid', 'Grid')}</span>
           </button>
           <button
             type="button"
@@ -269,7 +269,7 @@ export const CampusLogosManagementTab: React.FC = () => {
             title={tr('Tampilan Tabel (Daftar Terorganisir)', 'Table View')}
           >
             <Table className="w-3 h-3" />
-            <span className="font-['Poppins',sans-serif] text-[11px] font-bold">{tr('Tabel', 'Table')}</span>
+            <span className="font-['Poppins',sans-serif] text-[11px] leading-[18px] font-bold">{tr('Tabel', 'Table')}</span>
           </button>
         </div>
       </div>
@@ -375,9 +375,11 @@ export const CampusLogosManagementTab: React.FC = () => {
                     <span className={`px-1 py-0.2 rounded font-semibold ${
                       logo.category === 'PTN / Dalam Negeri'
                         ? 'bg-amber-500/10 text-amber-500'
-                        : 'bg-blue-500/10 text-blue-500'
+                        : logo.category === 'PTS / Swasta'
+                          ? 'bg-emerald-500/10 text-emerald-500'
+                          : 'bg-blue-500/10 text-blue-500'
                     }`}>
-                      {logo.category === 'PTN / Dalam Negeri' ? 'PTN' : 'LN'}
+                      {logo.category === 'PTN / Dalam Negeri' ? 'PTN' : logo.category === 'PTS / Swasta' ? 'PTS' : 'LN'}
                     </span>
                     <span>•</span>
                     <span className="truncate">{logo.country}</span>
@@ -543,9 +545,11 @@ export const CampusLogosManagementTab: React.FC = () => {
                         <span className={`inline-block px-1.5 py-0.2 rounded-full text-[8.5px] font-bold ${
                           logo.category === 'PTN / Dalam Negeri'
                             ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                            : 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
+                            : logo.category === 'PTS / Swasta'
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                              : 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
                         }`}>
-                          {logo.category === 'PTN / Dalam Negeri' ? 'PTN' : 'LN'}
+                          {logo.category === 'PTN / Dalam Negeri' ? 'PTN' : logo.category === 'PTS / Swasta' ? 'PTS' : 'LN'}
                         </span>
                         <span className={`block text-[9px] mt-0.5 font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                           {logo.country}
@@ -718,7 +722,7 @@ export const CampusLogosManagementTab: React.FC = () => {
                     value={editingLogo.category}
                     onChange={(e) => setEditingLogo({ 
                       ...editingLogo, 
-                      category: e.target.value as 'PTN / Dalam Negeri' | 'Luar Negeri / International' 
+                      category: e.target.value as 'PTN / Dalam Negeri' | 'PTS / Swasta' | 'Luar Negeri / Internasional' 
                     })}
                     className={`w-full px-3 py-1.5 sm:py-2 rounded-lg text-xs outline-none cursor-pointer ${
                       isDark 
@@ -727,7 +731,8 @@ export const CampusLogosManagementTab: React.FC = () => {
                     }`}
                   >
                     <option value="PTN / Dalam Negeri">PTN / Dalam Negeri</option>
-                    <option value="Luar Negeri / International">Luar Negeri / International</option>
+                    <option value="PTS / Swasta">PTS / Swasta</option>
+                    <option value="Luar Negeri / Internasional">Luar Negeri / Internasional</option>
                   </select>
                 </div>
 
@@ -841,7 +846,7 @@ export const CampusLogosManagementTab: React.FC = () => {
                   className="px-4 py-1.5 rounded-lg bg-[#F7B425] hover:bg-[#ffbe33] text-black font-black text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95"
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>{tr('Simpan Logo Kampus', 'Save Campus Logo')}</span>
+                  <span className="font-bold">{tr('Simpan Logo Kampus', 'Save Campus Logo')}</span>
                 </button>
               </div>
             </form>

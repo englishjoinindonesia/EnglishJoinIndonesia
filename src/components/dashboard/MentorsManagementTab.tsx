@@ -239,10 +239,10 @@ export const MentorsManagementTab: React.FC = () => {
           <button
             type="button"
             onClick={openCreateModal}
-            className="px-3 py-1.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98"
+            className="px-3 py-1.5 bg-[#F7B425] hover:bg-amber-400 text-black font-bold text-xs rounded-lg transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Tambah Mentor</span>
+            <span className="font-bold leading-[18px]">Tambah Mentor</span>
           </button>
         </div>
       </div>
@@ -264,7 +264,7 @@ export const MentorsManagementTab: React.FC = () => {
                 onClick={() => setFilterRole(tab.id)}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
                   filterRole === tab.id
-                    ? 'bg-[#F7B425] text-black font-extrabold shadow-xs'
+                    ? 'bg-[#F7B425] text-black font-bold shadow-xs'
                     : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -440,7 +440,7 @@ export const MentorsManagementTab: React.FC = () => {
 
                     {/* Badge Pill */}
                     <div className="mb-2">
-                      <span className="inline-block px-2 py-0.5 rounded-md text-[9px] font-extrabold bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                      <span className="inline-block px-2 py-0.5 rounded-md text-[9px] font-bold bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
                         {mentor.badge}
                       </span>
                     </div>

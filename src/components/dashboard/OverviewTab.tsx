@@ -190,7 +190,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
             </div>
           </div>
           <div>
-            <div className={`text-2xl font-black font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>1,548+</div>
+            <div className={`text-2xl font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>1,548+</div>
             <p className="text-[10px] font-semibold text-[#F7B425] mt-0.5 flex items-center gap-1">
               <TrendingUp className="w-3 h-3 text-[#F7B425]" />
               <span className="text-[#F7B425]">{tr('+38 minggu ini', '+38 this week')}</span>
@@ -201,13 +201,13 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
         {/* Rata-Rata Skor TOEFL */}
         <div className="bg-[#F7B425] rounded-2xl p-3.5 sm:p-4 shadow-lg flex flex-col justify-between h-28 text-black relative overflow-hidden group hover:scale-[1.01] transition-transform">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-black uppercase tracking-wider">{tr('Rata-Rata Skor TOEFL', 'Average TOEFL Score')}</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider">{tr('Rata-Rata Skor TOEFL', 'Average TOEFL Score')}</span>
             <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center">
               <Star className="w-3.5 h-3.5 fill-[#F7B425] text-[#F7B425]" />
             </div>
           </div>
           <div>
-            <div className="text-2xl font-black font-heading text-black">535.4</div>
+            <div className="text-2xl font-bold font-heading text-black">535.4</div>
             <p className="text-[10px] font-bold mt-0.5 text-black/80">{tr('94% lolos target 500+', '94% reached 500+ target')}</p>
           </div>
         </div>
@@ -221,7 +221,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
             </div>
           </div>
           <div>
-            <div className={`text-2xl font-black font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>1,420</div>
+            <div className={`text-2xl font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>1,420</div>
             <p className={`text-[10px] mt-0.5 font-mono ${subText}`}>{tr('Verifikasi Digital', 'Digital Verified')}</p>
           </div>
         </div>
@@ -235,7 +235,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
             </div>
           </div>
           <div>
-            <div id="stat-total-question-banks" className={`text-xl font-black font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <div id="stat-total-question-banks" className={`text-xl font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {questionBanksList.length} {tr('Paket Soal', 'Question Banks')}
             </div>
             <p className={`text-[10px] mt-0.5 ${subText} truncate`}>
@@ -249,7 +249,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
       <div className={`rounded-2xl p-3.5 sm:p-4 border space-y-3 ${cardBg}`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
-            <h3 className={`text-sm sm:text-base font-extrabold font-heading flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h3 className={`text-sm sm:text-base font-bold font-heading flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               <span className="w-2 h-2 rounded-full bg-[#F7B425] shadow-xs shadow-[#F7B425]/50" />
               {tr('Daftar Bank Soal TOEFL (Question Bank)', 'TOEFL Question Bank List')}
               <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 font-bold ml-1 font-mono">
@@ -267,10 +267,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
             <button
               type="button"
               onClick={() => onNavigateTab('questions')}
-              className="text-[11px] font-extrabold text-black bg-[#F7B425] hover:bg-amber-400 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 active:scale-95"
+              className="text-[11px] font-bold text-black bg-[#F7B425] hover:bg-amber-400 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 active:scale-95"
             >
               <FolderOpen className="w-3 h-3 stroke-[2.5]" />
-              <span>{tr('Kelola Bank Soal', 'Manage Question Banks')}</span>
+              <span className="font-bold">{tr('Kelola Bank Soal', 'Manage Question Banks')}</span>
               <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>

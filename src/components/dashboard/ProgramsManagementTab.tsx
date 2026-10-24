@@ -230,10 +230,10 @@ export const ProgramsManagementTab: React.FC = () => {
           <button
             type="button"
             onClick={openCreateModal}
-            className="px-3 py-1.5 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98"
+            className="px-3 py-1.5 bg-[#F7B425] hover:bg-amber-400 text-black font-bold text-xs rounded-lg transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Tambah Program</span>
+            <span className="font-bold leading-4">Tambah Program</span>
           </button>
         </div>
       </div>
@@ -258,11 +258,11 @@ export const ProgramsManagementTab: React.FC = () => {
                   onClick={() => setActiveCategory(cat.id)}
                   className={`px-2.5 py-1 rounded-lg font-bold transition-all flex items-center gap-1.5 cursor-pointer text-[11px] ${
                     activeCategory === cat.id
-                      ? 'bg-[#F7B425] text-black font-extrabold shadow-xs'
+                      ? 'bg-[#F7B425] text-black font-bold shadow-xs'
                       : 'text-slate-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <span>{cat.label}</span>
+                  <span className="font-bold">{cat.label}</span>
                   <span className={`text-[9px] px-1 py-0.2 rounded-full font-bold ${
                     activeCategory === cat.id ? 'bg-black text-[#F7B425]' : 'bg-white/10 text-slate-300'
                   }`}>
@@ -324,9 +324,9 @@ export const ProgramsManagementTab: React.FC = () => {
                 >
                   {/* Featured Ribbon */}
                   {isFeatured && (
-                    <div className="absolute -top-2.5 left-4 px-2 py-0.5 rounded-full bg-[#F7B425] text-black text-[9px] font-black uppercase tracking-wider shadow-md flex items-center gap-1 z-10">
+                    <div className="absolute -top-2.5 left-4 px-2 py-0.5 rounded-full bg-[#F7B425] text-black text-[9px] font-bold uppercase tracking-wider shadow-md flex items-center gap-1 z-10">
                       <Star className="w-2.5 h-2.5 fill-black" />
-                      <span>POPULER</span>
+                      <span className="font-bold">POPULER</span>
                     </div>
                   )}
 
@@ -373,7 +373,7 @@ export const ProgramsManagementTab: React.FC = () => {
                     {/* Header Badges & Status */}
                     <div className="flex items-center justify-between mb-2 pt-0.5">
                       <div className="flex items-center gap-1 flex-wrap">
-                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wide ${
+                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wide ${
                           program.category === 'Landing Page'
                             ? 'bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30'
                             : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'

@@ -49,10 +49,10 @@ export const ScoreSettingsTab: React.FC = () => {
             <Settings2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div>
-            <h2 className={`text-xs sm:text-sm font-bold font-['Poppins',sans-serif] tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h2 className={`text-[16px] font-bold font-['Poppins',sans-serif] tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {tr('Pengaturan Score Test TOEFL ITP', 'TOEFL ITP Test Score Settings')}
             </h2>
-            <p className={`text-[10px] sm:text-[10.5px] font-['Poppins',sans-serif] mt-0.2 leading-tight ${subText}`}>
+            <p className={`text-[11px] font-['Poppins',sans-serif] mt-0.2 leading-tight ${subText}`}>
               {tr(
                 'Konfigurasi skala scoring resmi (310 - 677), passing grade sertifikat, dan rumus konversi.',
                 'Official score scale configuration (310 - 677), passing grade, and conversion formulas.'
@@ -63,10 +63,10 @@ export const ScoreSettingsTab: React.FC = () => {
 
         <button
           onClick={handleSave}
-          className="px-2.5 py-1 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[11px] rounded-lg transition-all shadow-xs flex items-center gap-1 cursor-pointer active:scale-95 shrink-0"
+          className="px-2.5 py-1 bg-[#F7B425] hover:bg-amber-400 text-black rounded-lg transition-all shadow-xs flex items-center gap-1 cursor-pointer active:scale-95 shrink-0"
         >
           <Save className="w-3 h-3" />
-          <span>{isSaved ? tr('Pengaturan Disimpan!', 'Settings Saved!') : tr('Simpan Pengaturan', 'Save Settings')}</span>
+          <span className="text-[12px] font-bold">{isSaved ? tr('Pengaturan Disimpan!', 'Settings Saved!') : tr('Simpan Pengaturan', 'Save Settings')}</span>
         </button>
       </div>
 

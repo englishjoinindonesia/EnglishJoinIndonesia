@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  FolderKanban, Plus, Trash2, Calendar, FileText, 
+  FolderKanban, Plus, Trash2, Edit2, Calendar, FileText, 
   Sparkles, CheckCircle2, AlertCircle, Loader2 
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
@@ -25,13 +25,24 @@ export const ProjectsTab: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // 1. LOAD USER'S DATA (SELECT from Supabase)
   const fetchProjects = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -58,7 +69,34 @@ export const ProjectsTab: React.FC = () => {
     fetchProjects();
   }, [user]);
 
-  const handleCreateProject = async (e: React.FormEvent) => {
+  // Open modal for creating new project
+  const handleOpenCreate = () => {
+    setEditingProject(null);
+    setNewTitle('');
+    setNewDescription('');
+    setErrorMessage(null);
+    setIsModalOpen(true);
+  };
+
+  // Open modal for editing existing project
+  const handleOpenEdit = (proj: Project) => {
+    setEditingProject(proj);
+    setNewTitle(proj.title);
+    setNewDescription(proj.description || '');
+    setErrorMessage(null);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingProject(null);
+    setNewTitle('');
+    setNewDescription('');
+    setErrorMessage(null);
+  };
+
+  // 2. CREATE & UPDATE ITEM (INSERT & UPDATE in Supabase)
+  const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !user) return;
 
@@ -66,24 +104,45 @@ export const ProjectsTab: React.FC = () => {
     setErrorMessage(null);
 
     try {
-      const { data, error } = await supabase
-        .from('projects')
-        .insert([
-          {
+      if (editingProject) {
+        // UPDATE ITEM
+        const { data, error } = await supabase
+          .from('projects')
+          .update({
             title: newTitle.trim(),
             description: newDescription.trim() || null,
-            user_id: user.id,
-          },
-        ])
-        .select();
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', editingProject.id)
+          .select();
 
-      if (error) {
-        setErrorMessage(error.message);
-      } else if (data && data.length > 0) {
-        setProjects([data[0], ...projects]);
-        setNewTitle('');
-        setNewDescription('');
-        setIsModalOpen(false);
+        if (error) {
+          setErrorMessage(error.message);
+        } else if (data && data.length > 0) {
+          setProjects(projects.map((p) => (p.id === editingProject.id ? data[0] : p)));
+          handleCloseModal();
+          showToast(tr('Proyek berhasil diperbarui!', 'Project successfully updated!'));
+        }
+      } else {
+        // CREATE ITEM
+        const { data, error } = await supabase
+          .from('projects')
+          .insert([
+            {
+              title: newTitle.trim(),
+              description: newDescription.trim() || null,
+              user_id: user.id,
+            },
+          ])
+          .select();
+
+        if (error) {
+          setErrorMessage(error.message);
+        } else if (data && data.length > 0) {
+          setProjects([data[0], ...projects]);
+          handleCloseModal();
+          showToast(tr('Proyek baru berhasil disimpan!', 'New project successfully saved!'));
+        }
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -93,8 +152,9 @@ export const ProjectsTab: React.FC = () => {
     }
   };
 
-  const handleDeleteProject = async (id: string) => {
-    if (!confirm(tr('Hapus proyek ini?', 'Delete this project?'))) return;
+  // 3. DELETE ITEM (DELETE in Supabase)
+  const handleDeleteProject = async (id: string, title: string) => {
+    if (!confirm(tr(`Hapus proyek "${title}"?`, `Delete project "${title}"?`))) return;
 
     try {
       const { error } = await supabase
@@ -106,6 +166,7 @@ export const ProjectsTab: React.FC = () => {
         alert(error.message);
       } else {
         setProjects(projects.filter((p) => p.id !== id));
+        showToast(tr('Proyek berhasil dihapus.', 'Project deleted.'));
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -115,6 +176,14 @@ export const ProjectsTab: React.FC = () => {
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto animate-fadeIn">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#F7B425]" />
+          <span className="text-xs font-semibold">{toastMessage}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -135,7 +204,7 @@ export const ProjectsTab: React.FC = () => {
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleOpenCreate}
           className="px-3.5 py-2 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-xl transition-all shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 cursor-pointer active:scale-98 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
@@ -171,7 +240,7 @@ export const ProjectsTab: React.FC = () => {
             )}
           </p>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenCreate}
             className="mt-4 px-4 py-2 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -194,13 +263,22 @@ export const ProjectsTab: React.FC = () => {
                   <h3 className={`font-bold text-sm line-clamp-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {proj.title}
                   </h3>
-                  <button
-                    onClick={() => handleDeleteProject(proj.id)}
-                    className="text-slate-400 hover:text-rose-400 p-1 rounded-lg transition-colors cursor-pointer"
-                    title={tr('Hapus Proyek', 'Delete Project')}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleOpenEdit(proj)}
+                      className="text-slate-400 hover:text-[#F7B425] p-1 rounded-lg transition-colors cursor-pointer"
+                      title={tr('Edit Proyek', 'Edit Project')}
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProject(proj.id, proj.title)}
+                      className="text-slate-400 hover:text-rose-400 p-1 rounded-lg transition-colors cursor-pointer"
+                      title={tr('Hapus Proyek', 'Delete Project')}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 <p className={`text-xs mt-1.5 line-clamp-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
@@ -222,20 +300,25 @@ export const ProjectsTab: React.FC = () => {
         </div>
       )}
 
-      {/* New Project Modal */}
+      {/* Create / Edit Project Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
           <div className={`w-full max-w-md rounded-2xl border p-5 sm:p-6 shadow-2xl ${
             isDark ? 'bg-[#141414] border-white/15 text-white' : 'bg-white border-slate-200 text-slate-900'
           }`}>
             <h2 className="text-lg font-bold">
-              {tr('Buat Proyek Baru', 'Create New Project')}
+              {editingProject 
+                ? tr('Edit Proyek', 'Edit Project') 
+                : tr('Buat Proyek Baru', 'Create New Project')}
             </h2>
             <p className={`text-xs mt-1 mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              {tr('Proyek ini disimpan secara aman dan hanya dapat diakses oleh akun Anda.', 'This project is stored securely and accessible only by your account.')}
+              {tr(
+                'Proyek ini disimpan secara aman dan hanya dapat diakses oleh akun Anda.',
+                'This project is stored securely and accessible only by your account.'
+              )}
             </p>
 
-            <form onSubmit={handleCreateProject} className="space-y-3.5">
+            <form onSubmit={handleSaveProject} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-bold mb-1">
                   {tr('Nama / Judul Proyek', 'Project Title')} *
@@ -266,7 +349,7 @@ export const ProjectsTab: React.FC = () => {
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={handleCloseModal}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                     isDark ? 'border-white/10 hover:bg-white/5 text-slate-300' : 'border-slate-300 hover:bg-slate-100 text-slate-700'
                   }`}
@@ -278,7 +361,11 @@ export const ProjectsTab: React.FC = () => {
                   disabled={isSubmitting || !newTitle.trim()}
                   className="px-4 py-2 bg-[#F7B425] hover:bg-amber-400 disabled:opacity-50 text-black font-extrabold text-xs rounded-xl transition-all cursor-pointer"
                 >
-                  {isSubmitting ? tr('Menyimpan...', 'Saving...') : tr('Simpan Proyek', 'Save Project')}
+                  {isSubmitting 
+                    ? tr('Menyimpan...', 'Saving...') 
+                    : editingProject 
+                    ? tr('Perbarui Proyek', 'Update Project') 
+                    : tr('Simpan Proyek', 'Save Project')}
                 </button>
               </div>
             </form>
