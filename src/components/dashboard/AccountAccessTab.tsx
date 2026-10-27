@@ -190,33 +190,6 @@ export const AccountAccessTab: React.FC = () => {
     refreshRequests();
   };
 
-  // Quick simulate a new registrant
-  const handleSimulateNewRegistrant = (role: UserRole) => {
-    const randomNum = Math.floor(100 + Math.random() * 900);
-    const mockNames = role === 'admin' 
-      ? ['Ahmad Fauzi, S.Pd.', 'Dina Anggraeni, M.Hum.', 'Hendro Wijaya, S.Kom.', 'Ratna Sari Dewi, M.Ed.']
-      : ['Anisa Putri', 'Fajar Ramadhan', 'Maya Kusuma', 'Rizky Pratama', 'Tiara Andini'];
-    const chosenName = mockNames[Math.floor(Math.random() * mockNames.length)];
-    const cleanName = chosenName.split(',')[0].toLowerCase().replace(/\s+/g, '.');
-    const mockEmail = `${cleanName}${randomNum}@${role === 'admin' ? 'englishjoin.sch.id' : 'gmail.com'}`;
-
-    addAccountAccessRequest({
-      name: `${chosenName} (${randomNum})`,
-      email: mockEmail,
-      whatsapp: `0812${Math.floor(10000000 + Math.random() * 90000000)}`,
-      role,
-      notes: role === 'admin' 
-        ? 'Pendaftar staf admin/tutor baru via portal registrasi' 
-        : 'Pendaftar student kursus TOEFL baru'
-    });
-
-    showNotification(tr(
-      `Simulasi pendaftaran akun baru (${role.toUpperCase()}): ${mockEmail} berhasil dibuat dengan status MENUNGGU PERSETUJUAN!`,
-      `Simulated new (${role.toUpperCase()}) registration: ${mockEmail} created with PENDING status!`
-    ));
-    refreshRequests();
-  };
-
   return (
     <div className="space-y-2.5 sm:space-y-3">
       {/* SUCCESS TOAST NOTIFICATION */}
@@ -409,34 +382,8 @@ export const AccountAccessTab: React.FC = () => {
             />
           </div>
 
-          {/* SIMULATOR & ACTION BUTTONS */}
+          {/* ACTION BUTTONS */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <button
-              onClick={() => handleSimulateNewRegistrant('admin')}
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer border ${
-                isDark 
-                  ? 'bg-white/5 hover:bg-[#F7B425] hover:text-black text-slate-300 border-white/10' 
-                  : 'bg-slate-100 hover:bg-[#F7B425] hover:text-black text-slate-700 border-slate-200'
-              }`}
-              title={tr('Simulasi pendaftar akun Admin baru', 'Simulate new Admin applicant')}
-            >
-              <Shield className="w-3 h-3 text-[#F7B425]" />
-              <span>+ Admin</span>
-            </button>
-
-            <button
-              onClick={() => handleSimulateNewRegistrant('student')}
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer border ${
-                isDark 
-                  ? 'bg-white/5 hover:bg-[#F7B425] hover:text-black text-slate-300 border-white/10' 
-                  : 'bg-slate-100 hover:bg-[#F7B425] hover:text-black text-slate-700 border-slate-200'
-              }`}
-              title={tr('Simulasi pendaftar akun Student baru', 'Simulate new Student applicant')}
-            >
-              <GraduationCap className="w-3 h-3 text-blue-400" />
-              <span>+ Student</span>
-            </button>
-
             <button
               onClick={() => setActionModal({ type: 'add' })}
               className="px-3 py-1.5 rounded-xl text-xs font-black bg-[#F7B425] text-black hover:bg-[#ffc247] shadow-xs transition-all flex items-center gap-1 cursor-pointer"
@@ -551,7 +498,7 @@ export const AccountAccessTab: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                {filteredRequests.map((req) => {
+                {filteredRequests.map((req, idx) => {
                   const isPrimary = isPrimaryAdmin(req.email);
                   const isPending = req.status === 'pending';
                   const isApproved = req.status === 'approved';
@@ -559,7 +506,7 @@ export const AccountAccessTab: React.FC = () => {
 
                   return (
                     <tr 
-                      key={req.id}
+                      key={`${req.id}-${req.email}-${idx}`}
                       className={`transition-colors ${
                         isPending 
                           ? isDark ? 'bg-amber-950/10 hover:bg-amber-950/20' : 'bg-amber-50/40 hover:bg-amber-50/70' 
@@ -739,22 +686,6 @@ export const AccountAccessTab: React.FC = () => {
             </table>
           </div>
         )}
-      </div>
-
-      {/* COMPACT FOOTER NOTICE */}
-      <div className={`p-2.5 rounded-xl border flex items-center gap-2 text-[11px] ${
-        isDark ? 'bg-white/2 border-white/5 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
-      }`}>
-        <Info className="w-3.5 h-3.5 text-[#F7B425] flex-shrink-0" />
-        <div className="truncate">
-          <strong className="text-[#F7B425] font-bold">
-            {tr('Kebijakan Akses:', 'Access Policy:')}
-          </strong>{' '}
-          {tr(
-            'Akun baru berstatus "Menunggu Persetujuan" dan hanya dapat login setelah disetujui Admin EJI (englishjoinindonesia@gmail.com).',
-            'New accounts are "Pending Approval" and can only log in after approval by Admin EJI (englishjoinindonesia@gmail.com).'
-          )}
-        </div>
       </div>
 
       {/* ========================================================================= */}

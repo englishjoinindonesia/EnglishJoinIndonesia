@@ -567,7 +567,7 @@ export const StudentRegistrationsTab: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredStudents.map((student) => {
+                filteredStudents.map((student, idx) => {
                   const isCurrentUser = Boolean(
                     user && (
                       (student.email && user.email && student.email.toLowerCase() === user.email.toLowerCase()) ||
@@ -578,7 +578,7 @@ export const StudentRegistrationsTab: React.FC = () => {
 
                   return (
                     <tr 
-                      key={student.id} 
+                      key={`${student.id}-${idx}`} 
                       className={`transition-colors ${
                         isCurrentUser
                           ? isDark

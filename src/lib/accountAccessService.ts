@@ -71,6 +71,35 @@ export function isPrimaryAdmin(email?: string | null): boolean {
 }
 
 /**
+ * Helper to generate a strictly unique ID that never collides with existing entries
+ */
+function generateUniqueRequestId(list: AccountAccessRequest[]): string {
+  const currentYear = new Date().getFullYear();
+  const existingIds = new Set(list.map(r => r.id));
+  
+  let maxNum = 0;
+  for (const item of list) {
+    const match = item.id?.match(/REQ-\d+-(\d+)/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (!isNaN(num) && num > maxNum) {
+        maxNum = num;
+      }
+    }
+  }
+
+  let nextNum = Math.max(maxNum + 1, list.length + 1);
+  let candidate = `REQ-${currentYear}-${String(nextNum).padStart(3, '0')}`;
+  
+  while (existingIds.has(candidate)) {
+    nextNum++;
+    candidate = `REQ-${currentYear}-${String(nextNum).padStart(3, '0')}`;
+  }
+  
+  return candidate;
+}
+
+/**
  * Fetch all account access requests from localStorage or fallback
  */
 export function getAccountAccessRequests(): AccountAccessRequest[] {
@@ -86,7 +115,39 @@ export function getAccountAccessRequests(): AccountAccessRequest[] {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_ACCOUNT_REQUESTS));
       return DEFAULT_ACCOUNT_REQUESTS;
     }
-    return parsed;
+
+    // Ensure all requests have strictly unique IDs and repair any duplicate keys
+    const seenIds = new Set<string>();
+    let hasDuplicates = false;
+    const sanitizedList: AccountAccessRequest[] = [];
+
+    for (let i = 0; i < parsed.length; i++) {
+      const item = parsed[i];
+      if (!item || typeof item !== 'object') continue;
+
+      let id = item.id;
+      if (!id || seenIds.has(id)) {
+        hasDuplicates = true;
+        const year = new Date().getFullYear();
+        let counter = parsed.length + i + 1;
+        while (seenIds.has(`REQ-${year}-${String(counter).padStart(3, '0')}`)) {
+          counter++;
+        }
+        id = `REQ-${year}-${String(counter).padStart(3, '0')}`;
+      }
+
+      seenIds.add(id);
+      sanitizedList.push({
+        ...item,
+        id
+      });
+    }
+
+    if (hasDuplicates) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizedList));
+    }
+
+    return sanitizedList;
   } catch (err) {
     console.warn('Failed to parse account requests from localStorage:', err);
     return DEFAULT_ACCOUNT_REQUESTS;
@@ -131,11 +192,28 @@ export function addAccountAccessRequest(data: {
   // If primary admin, auto-approve
   const autoApprove = isPrimaryAdmin(lowerEmail);
 
-  // Check if already exists
+  // Check if already exists by email
   const existingIndex = list.findIndex(r => r.email.trim().toLowerCase() === lowerEmail);
 
+  if (existingIndex >= 0) {
+    // If it exists, update it cleanly without duplicating ID
+    const existing = list[existingIndex];
+    const updatedRecord: AccountAccessRequest = {
+      ...existing,
+      name: data.name.trim() || existing.name,
+      whatsapp: data.whatsapp?.trim() || existing.whatsapp,
+      role: data.role,
+      status: autoApprove ? 'approved' : existing.status,
+      notes: data.notes || existing.notes
+    };
+    list[existingIndex] = updatedRecord;
+    saveRequests(list);
+    return updatedRecord;
+  }
+
+  const uniqueId = generateUniqueRequestId(list);
   const newRequest: AccountAccessRequest = {
-    id: `REQ-${new Date().getFullYear()}-${String(list.length + 1).padStart(3, '0')}`,
+    id: uniqueId,
     name: data.name.trim() || 'Pengguna Baru',
     email: lowerEmail,
     whatsapp: data.whatsapp?.trim() || '-',
@@ -147,20 +225,9 @@ export function addAccountAccessRequest(data: {
     notes: data.notes || (autoApprove ? 'Akun Utama Otomatis Disetujui' : `Permohonan registrasi akun ${data.role}`)
   };
 
-  if (existingIndex >= 0) {
-    // If it exists, update it if it was rejected or pending
-    list[existingIndex] = {
-      ...list[existingIndex],
-      ...newRequest,
-      id: list[existingIndex].id
-    };
-    saveRequests(list);
-    return list[existingIndex];
-  } else {
-    const updated = [newRequest, ...list];
-    saveRequests(updated);
-    return newRequest;
-  }
+  const updated = [newRequest, ...list];
+  saveRequests(updated);
+  return newRequest;
 }
 
 /**
