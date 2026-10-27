@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutGrid, Users, BookOpen, Settings2, HelpCircle, 
   PlayCircle, Award, LogOut, ShieldCheck, User, GraduationCap, Building2,
-  PanelLeftClose, PanelLeftOpen
+  PanelLeftClose, PanelLeftOpen, UserCheck
 } from 'lucide-react';
 import { UserRole } from '../../types';
 import { Logo } from '../common/Logo';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { getPendingAccountRequestsCount } from '../../lib/accountAccessService';
 
 interface SidebarProps {
   activeTab: string;
@@ -29,6 +30,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { isDark } = useTheme();
   const { t, language } = useLanguage();
+  const [pendingApprovalsCount, setPendingApprovalsCount] = useState<number>(0);
+
+  useEffect(() => {
+    const updateCount = () => {
+      setPendingApprovalsCount(getPendingAccountRequestsCount());
+    };
+    updateCount();
+
+    window.addEventListener('ej_account_requests_updated', updateCount);
+    window.addEventListener('storage', updateCount);
+    return () => {
+      window.removeEventListener('ej_account_requests_updated', updateCount);
+      window.removeEventListener('storage', updateCount);
+    };
+  }, []);
 
   const [internalCollapsed, setInternalCollapsed] = useState<boolean>(() => {
     try {
@@ -58,6 +74,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const adminNavItems = [
     { id: 'overview', label: t.dashboard.sidebar.overview, icon: LayoutGrid },
+    { 
+      id: 'account_access', 
+      label: language === 'id' ? 'Akses Akun' : 'Account Access', 
+      icon: UserCheck,
+      badge: pendingApprovalsCount
+    },
     { id: 'students', label: t.dashboard.sidebar.students, icon: Users },
     { id: 'programs', label: t.dashboard.sidebar.programs, icon: BookOpen },
     { id: 'mentors', label: t.dashboard.sidebar.mentors, icon: GraduationCap },
@@ -162,12 +184,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
+            const hasBadge = 'badge' in item && typeof item.badge === 'number' && item.badge > 0;
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 title={item.label}
-                className={`w-full flex items-center ${
+                className={`w-full flex items-center relative ${
                   isCollapsed ? 'justify-center px-0 py-3' : 'gap-3 px-3.5 py-3'
                 } rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 text-left cursor-pointer ${
                   isActive
@@ -177,8 +200,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
                 }`}
               >
-                <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-black' : isDark ? 'text-[#F7B425]' : 'text-[#D97706]'}`} />
-                {!isCollapsed && <span className="truncate text-[12px]">{item.label}</span>}
+                <div className="relative">
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-black' : isDark ? 'text-[#F7B425]' : 'text-[#D97706]'}`} />
+                  {isCollapsed && hasBadge && (
+                    <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-amber-500 border-2 border-black rounded-full animate-ping" />
+                  )}
+                  {isCollapsed && hasBadge && (
+                    <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-amber-500 border-2 border-black rounded-full" />
+                  )}
+                </div>
+                {!isCollapsed && <span className="truncate text-[12px] flex-1">{item.label}</span>}
+                {!isCollapsed && hasBadge && (
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black tracking-wider transition-colors ${
+                    isActive 
+                      ? 'bg-black text-[#F7B425]' 
+                      : 'bg-[#F7B425] text-black shadow-xs'
+                  }`}>
+                    {item.badge}
+                  </span>
+                )}
               </button>
             );
           })}

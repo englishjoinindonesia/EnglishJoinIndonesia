@@ -878,24 +878,31 @@ export const StudentTestSimulationTab: React.FC = () => {
               <div className="space-y-3 sm:space-y-4">
                 {/* Audio Narration Player if Listening */}
                 {questions[currentIdx].section === 'Listening' && (
-                  <div className="p-2.5 rounded-xl border border-blue-500/30 bg-blue-950/30 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-blue-600/30 text-blue-400 flex items-center justify-center">
-                        <Headphones className="w-4 h-4" />
+                  <div className="p-3 rounded-xl border border-blue-500/30 bg-blue-950/30 space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-blue-600/30 text-blue-400 flex items-center justify-center">
+                          <Headphones className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-xs text-white">Audio Narration Player</div>
+                          <div className="text-[10px] text-blue-300">{questions[currentIdx].part || 'Listening Comprehension'}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-bold text-xs text-white">Audio Narration Player</div>
-                        <div className="text-[10px] text-blue-300">Listening Comprehension Part A</div>
-                      </div>
+                      {!(questions[currentIdx] as any).audioUrl && (
+                        <button
+                          type="button"
+                          onClick={handleTestAudioSample}
+                          className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1 cursor-pointer shadow-2xs"
+                        >
+                          <Volume2 className="w-3 h-3" />
+                          <span>{audioPlaying ? 'Memutar...' : 'Putar Audio'}</span>
+                        </button>
+                      )}
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleTestAudioSample}
-                      className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1 cursor-pointer shadow-2xs"
-                    >
-                      <Volume2 className="w-3 h-3" />
-                      <span>{audioPlaying ? 'Memutar...' : 'Putar Audio'}</span>
-                    </button>
+                    {(questions[currentIdx] as any).audioUrl && (
+                      <audio controls src={(questions[currentIdx] as any).audioUrl} className="w-full h-8 rounded" />
+                    )}
                   </div>
                 )}
 

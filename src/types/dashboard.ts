@@ -25,6 +25,7 @@ export interface ToeflQuestion {
   part?: string;
   questionText: string;
   audioUrl?: string;
+  audioFileName?: string;
   passageText?: string;
   options: {
     A: string;

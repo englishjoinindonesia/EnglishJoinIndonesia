@@ -322,3 +322,186 @@ USING (
   AND name LIKE (auth.uid()::text || '/%')
 );
 
+
+-- ==============================================================================
+-- TABLE 7: toefl_question_banks (Bank Soal Test TOEFL & Format Ujian)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.toefl_question_banks (
+  id TEXT PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE DEFAULT auth.uid(),
+  title TEXT NOT NULL,                           -- Nama Bank Soal
+  category TEXT NOT NULL DEFAULT 'TOEFL ITP',    -- Kategori/Format: Listening, Structure, Reading, TOEFL ITP
+  tag TEXT DEFAULT 'Resmi',                      -- Label tag / badge
+  duration TEXT NOT NULL DEFAULT '115 Menit',    -- Alokasi Waktu
+  question_count TEXT NOT NULL DEFAULT '140 Soal', -- Jumlah Soal
+  score_target TEXT DEFAULT 'Skala 310 - 677',   -- Target Skor
+  benefits TEXT[] DEFAULT '{}',                  -- Rincian alokasi per seksi
+  sections_data JSONB DEFAULT '[]'::jsonb,       -- Struktur rinci seksi (durasi & jumlah soal)
+  is_active BOOLEAN NOT NULL DEFAULT true,       -- Status Aktif / Published
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.toefl_question_banks ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if any
+DROP POLICY IF EXISTS "Public can view active question banks" ON public.toefl_question_banks;
+DROP POLICY IF EXISTS "Authenticated users can create question banks" ON public.toefl_question_banks;
+DROP POLICY IF EXISTS "Authenticated users can update question banks" ON public.toefl_question_banks;
+DROP POLICY IF EXISTS "Authenticated users can delete question banks" ON public.toefl_question_banks;
+
+-- RLS Policies
+CREATE POLICY "Public can view active question banks"
+  ON public.toefl_question_banks FOR SELECT
+  USING (true);
+
+CREATE POLICY "Authenticated users can create question banks"
+  ON public.toefl_question_banks FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() IS NOT NULL);
+
+CREATE POLICY "Authenticated users can update question banks"
+  ON public.toefl_question_banks FOR UPDATE
+  TO authenticated
+  USING (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);
+
+CREATE POLICY "Authenticated users can delete question banks"
+  ON public.toefl_question_banks FOR DELETE
+  TO authenticated
+  USING (auth.uid() IS NOT NULL);
+
+-- Trigger for auto updated_at
+DROP TRIGGER IF EXISTS trigger_toefl_question_banks_updated_at ON public.toefl_question_banks;
+CREATE TRIGGER trigger_toefl_question_banks_updated_at
+  BEFORE UPDATE ON public.toefl_question_banks
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_updated_at();
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_toefl_question_banks_user_id ON public.toefl_question_banks(user_id);
+CREATE INDEX IF NOT EXISTS idx_toefl_question_banks_category ON public.toefl_question_banks(category);
+CREATE INDEX IF NOT EXISTS idx_toefl_question_banks_created_at ON public.toefl_question_banks(created_at DESC);
+
+
+-- ==============================================================================
+-- TABLE 8: toefl_questions (Butir Soal TOEFL dalam Bank Soal)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.toefl_questions (
+  id TEXT PRIMARY KEY,
+  program_id TEXT REFERENCES public.toefl_question_banks(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE DEFAULT auth.uid(),
+  section TEXT NOT NULL,                         -- 'Listening' | 'Structure' | 'Reading'
+  part TEXT NOT NULL,                            -- 'Part A (Short Dialogue)', 'Part A (Sentence Completion)', dsb.
+  question_text TEXT NOT NULL,                   -- Narasi / teks pertanyaan
+  audio_url TEXT,                                -- URL audio audio listening jika ada
+  options JSONB NOT NULL DEFAULT '{"A":"","B":"","C":"","D":""}'::jsonb, -- Pilihan jawaban A, B, C, D
+  correct_answer TEXT NOT NULL,                  -- 'A' | 'B' | 'C' | 'D'
+  explanation TEXT,                              -- Pembahasan kunci jawaban
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.toefl_questions ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if any
+DROP POLICY IF EXISTS "Public can view toefl questions" ON public.toefl_questions;
+DROP POLICY IF EXISTS "Authenticated users can create toefl questions" ON public.toefl_questions;
+DROP POLICY IF EXISTS "Authenticated users can update toefl questions" ON public.toefl_questions;
+DROP POLICY IF EXISTS "Authenticated users can delete toefl questions" ON public.toefl_questions;
+
+-- RLS Policies
+CREATE POLICY "Public can view toefl questions"
+  ON public.toefl_questions FOR SELECT
+  USING (true);
+
+CREATE POLICY "Authenticated users can create toefl questions"
+  ON public.toefl_questions FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() IS NOT NULL);
+
+CREATE POLICY "Authenticated users can update toefl questions"
+  ON public.toefl_questions FOR UPDATE
+  TO authenticated
+  USING (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);
+
+CREATE POLICY "Authenticated users can delete toefl questions"
+  ON public.toefl_questions FOR DELETE
+  TO authenticated
+  USING (auth.uid() IS NOT NULL);
+
+-- Trigger for auto updated_at
+DROP TRIGGER IF EXISTS trigger_toefl_questions_updated_at ON public.toefl_questions;
+CREATE TRIGGER trigger_toefl_questions_updated_at
+  BEFORE UPDATE ON public.toefl_questions
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_updated_at();
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_toefl_questions_program_id ON public.toefl_questions(program_id);
+CREATE INDEX IF NOT EXISTS idx_toefl_questions_section ON public.toefl_questions(section);
+CREATE INDEX IF NOT EXISTS idx_toefl_questions_created_at ON public.toefl_questions(created_at DESC);
+
+-- ==============================================================================
+-- TABLE 8: account_access_requests (Persetujuan Akses Akun Admin & Student)
+-- Admin Utama: englishjoinindonesia@gmail.com (Admin EJI)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.account_access_requests (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  whatsapp TEXT,
+  role TEXT NOT NULL DEFAULT 'student',          -- 'admin' | 'student'
+  status TEXT NOT NULL DEFAULT 'pending',        -- 'pending' | 'approved' | 'rejected'
+  requested_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  reviewed_by TEXT,                              -- Admin EJI email (englishjoinindonesia@gmail.com)
+  reviewed_at TIMESTAMPTZ,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.account_access_requests ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if any
+DROP POLICY IF EXISTS "Public can view own or all requests" ON public.account_access_requests;
+DROP POLICY IF EXISTS "Anyone can submit access request" ON public.account_access_requests;
+DROP POLICY IF EXISTS "Admins can update access requests" ON public.account_access_requests;
+DROP POLICY IF EXISTS "Admins can delete access requests" ON public.account_access_requests;
+
+-- RLS Policies
+CREATE POLICY "Public can view own or all requests"
+  ON public.account_access_requests FOR SELECT
+  USING (true);
+
+CREATE POLICY "Anyone can submit access request"
+  ON public.account_access_requests FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "Admins can update access requests"
+  ON public.account_access_requests FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Admins can delete access requests"
+  ON public.account_access_requests FOR DELETE
+  USING (true);
+
+-- Trigger for auto updated_at
+DROP TRIGGER IF EXISTS trigger_account_access_requests_updated_at ON public.account_access_requests;
+CREATE TRIGGER trigger_account_access_requests_updated_at
+  BEFORE UPDATE ON public.account_access_requests
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_updated_at();
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_account_access_requests_email ON public.account_access_requests(email);
+CREATE INDEX IF NOT EXISTS idx_account_access_requests_status ON public.account_access_requests(status);
+CREATE INDEX IF NOT EXISTS idx_account_access_requests_role ON public.account_access_requests(role);
+
+
+

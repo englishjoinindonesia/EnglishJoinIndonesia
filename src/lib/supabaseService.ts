@@ -340,3 +340,344 @@ export async function deleteUserFile(path: string): Promise<{ error: Error | nul
   }
 }
 
+// ============================================================================
+// 5. TOEFL QUESTION BANKS & QUESTIONS CRUD
+// ============================================================================
+
+export interface QuestionBankItem {
+  id: string;
+  user_id?: string;
+  title: string;
+  category: string;
+  tag?: string;
+  duration: string;
+  question_count: string;
+  score_target?: string;
+  benefits?: string[];
+  sections_data?: any;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ToeflQuestionDbItem {
+  id: string;
+  program_id: string;
+  user_id?: string;
+  section: string;
+  part: string;
+  question_text: string;
+  audio_url?: string | null;
+  options: { A: string; B: string; C: string; D: string };
+  correct_answer: string;
+  explanation?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/**
+ * Load all TOEFL question banks
+ */
+export async function loadQuestionBanks(): Promise<{ data: QuestionBankItem[] | null; error: Error | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('toefl_question_banks')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Create a new question bank
+ */
+export async function createQuestionBank(
+  item: Omit<QuestionBankItem, 'created_at' | 'updated_at'>
+): Promise<{ data: QuestionBankItem | null; error: Error | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('toefl_question_banks')
+      .insert([
+        {
+          id: item.id,
+          title: item.title,
+          category: item.category,
+          tag: item.tag || 'Resmi',
+          duration: item.duration,
+          question_count: item.question_count,
+          score_target: item.score_target || 'Skala 310 - 677',
+          benefits: item.benefits || [],
+          sections_data: item.sections_data || [],
+          is_active: item.is_active !== false,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Update an existing question bank
+ */
+export async function updateQuestionBank(
+  item: Partial<QuestionBankItem> & { id: string }
+): Promise<{ data: QuestionBankItem | null; error: Error | null }> {
+  try {
+    const payload: any = {};
+    if (item.title !== undefined) payload.title = item.title;
+    if (item.category !== undefined) payload.category = item.category;
+    if (item.tag !== undefined) payload.tag = item.tag;
+    if (item.duration !== undefined) payload.duration = item.duration;
+    if (item.question_count !== undefined) payload.question_count = item.question_count;
+    if (item.score_target !== undefined) payload.score_target = item.score_target;
+    if (item.benefits !== undefined) payload.benefits = item.benefits;
+    if (item.sections_data !== undefined) payload.sections_data = item.sections_data;
+    if (item.is_active !== undefined) payload.is_active = item.is_active;
+
+    const { data, error } = await supabase
+      .from('toefl_question_banks')
+      .update(payload)
+      .eq('id', item.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Delete a question bank and cascade delete its questions
+ */
+export async function deleteQuestionBank(id: string): Promise<{ error: Error | null }> {
+  try {
+    const { error } = await supabase
+      .from('toefl_question_banks')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { error: null };
+  } catch (err: any) {
+    return { error: err };
+  }
+}
+
+/**
+ * Load TOEFL questions (optionally filtered by program_id / bank_id)
+ */
+export async function loadToeflQuestions(
+  programId?: string
+): Promise<{ data: ToeflQuestionDbItem[] | null; error: Error | null }> {
+  try {
+    let query = supabase.from('toefl_questions').select('*').order('created_at', { ascending: true });
+
+    if (programId) {
+      query = query.eq('program_id', programId);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Create a new TOEFL question
+ */
+export async function createToeflQuestion(
+  item: Omit<ToeflQuestionDbItem, 'created_at' | 'updated_at'>
+): Promise<{ data: ToeflQuestionDbItem | null; error: Error | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('toefl_questions')
+      .insert([
+        {
+          id: item.id,
+          program_id: item.program_id,
+          section: item.section,
+          part: item.part,
+          question_text: item.question_text,
+          audio_url: item.audio_url || null,
+          options: item.options,
+          correct_answer: item.correct_answer,
+          explanation: item.explanation || '',
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Update an existing TOEFL question
+ */
+export async function updateToeflQuestion(
+  item: Partial<ToeflQuestionDbItem> & { id: string }
+): Promise<{ data: ToeflQuestionDbItem | null; error: Error | null }> {
+  try {
+    const payload: any = {};
+    if (item.program_id !== undefined) payload.program_id = item.program_id;
+    if (item.section !== undefined) payload.section = item.section;
+    if (item.part !== undefined) payload.part = item.part;
+    if (item.question_text !== undefined) payload.question_text = item.question_text;
+    if (item.audio_url !== undefined) payload.audio_url = item.audio_url;
+    if (item.options !== undefined) payload.options = item.options;
+    if (item.correct_answer !== undefined) payload.correct_answer = item.correct_answer;
+    if (item.explanation !== undefined) payload.explanation = item.explanation;
+
+    const { data, error } = await supabase
+      .from('toefl_questions')
+      .update(payload)
+      .eq('id', item.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Delete a TOEFL question
+ */
+export async function deleteToeflQuestion(id: string): Promise<{ error: Error | null }> {
+  try {
+    const { error } = await supabase
+      .from('toefl_questions')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { error: null };
+  } catch (err: any) {
+    return { error: err };
+  }
+}
+
+// ============================================================================
+// 7. ACCOUNT ACCESS REQUESTS (Admin & Student approvals by Admin EJI)
+// ============================================================================
+
+export interface AccountAccessDbItem {
+  id: string;
+  name: string;
+  email: string;
+  whatsapp?: string;
+  role: 'admin' | 'student';
+  status: 'pending' | 'approved' | 'rejected';
+  requested_at: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/**
+ * Load all account access requests from Supabase
+ */
+export async function loadAccountAccessRequests(): Promise<{ data: AccountAccessDbItem[] | null; error: Error | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('account_access_requests')
+      .select('*')
+      .order('requested_at', { ascending: false });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Create a new account access request
+ */
+export async function createAccountAccessRequest(
+  item: Omit<AccountAccessDbItem, 'created_at' | 'updated_at'>
+): Promise<{ data: AccountAccessDbItem | null; error: Error | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('account_access_requests')
+      .insert([item])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Update request status (approve or reject)
+ */
+export async function updateAccountAccessRequestStatus(
+  id: string,
+  status: 'pending' | 'approved' | 'rejected',
+  reviewedBy: string = 'englishjoinindonesia@gmail.com',
+  notes?: string
+): Promise<{ data: AccountAccessDbItem | null; error: Error | null }> {
+  try {
+    const payload: any = {
+      status,
+      reviewed_by: status === 'pending' ? null : reviewedBy,
+      reviewed_at: status === 'pending' ? null : new Date().toISOString()
+    };
+    if (notes !== undefined) payload.notes = notes;
+
+    const { data, error } = await supabase
+      .from('account_access_requests')
+      .update(payload)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Delete an access request
+ */
+export async function deleteAccountAccessRequestDb(id: string): Promise<{ error: Error | null }> {
+  try {
+    const { error } = await supabase
+      .from('account_access_requests')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { error: null };
+  } catch (err: any) {
+    return { error: err };
+  }
+}
+
+
+

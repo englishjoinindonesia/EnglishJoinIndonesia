@@ -9,6 +9,11 @@ import { UserRole } from '../../types';
 import { usePrograms } from '../../context/ProgramsContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { 
+  PRIMARY_ADMIN_EMAIL, 
+  addAccountAccessRequest, 
+  checkAccountApprovalStatus 
+} from '../../lib/accountAccessService';
 
 export type AuthMode = 'sign-in' | 'sign-up' | 'forgot-password' | 'update-password';
 
@@ -62,6 +67,27 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       return;
     }
 
+    const cleanEmail = email.trim().toLowerCase();
+    const isPrimary = cleanEmail === PRIMARY_ADMIN_EMAIL.toLowerCase();
+    const approvalStatus = checkAccountApprovalStatus(cleanEmail);
+
+    // Enforce approval requirement by primary admin
+    if (!isPrimary && approvalStatus === 'pending') {
+      setErrorMessage(tr(
+        `Akun Anda sedang MENUNGGU PERSETUJUAN dari Admin Utama EJI (${PRIMARY_ADMIN_EMAIL}). Silakan hubungi admin atau tunggu hingga akun Anda disetujui untuk dapat masuk.`,
+        `Your account is PENDING APPROVAL by Primary Admin EJI (${PRIMARY_ADMIN_EMAIL}). Please contact admin or wait until access is approved.`
+      ));
+      return;
+    }
+
+    if (!isPrimary && approvalStatus === 'rejected') {
+      setErrorMessage(tr(
+        `Permohonan akses akun Anda DITOLAK oleh Admin EJI. Silakan hubungi ${PRIMARY_ADMIN_EMAIL} jika ada pertanyaan.`,
+        `Your account request has been REJECTED by Admin EJI. Please contact ${PRIMARY_ADMIN_EMAIL} for inquiry.`
+      ));
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await signIn(email, password);
@@ -110,11 +136,24 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
     setIsLoading(true);
     try {
+      // 1. Submit signup to auth
       const { session, error } = await signUp(email, password, fullName, selectedRole, whatsapp.trim());
       if (error) {
         setErrorMessage(error.message);
       } else {
-        // If student role, also store into local directory for Academic Admin student table
+        const cleanEmail = email.trim().toLowerCase();
+        const isPrimary = cleanEmail === PRIMARY_ADMIN_EMAIL.toLowerCase();
+
+        // 2. Register account access request for Admin EJI approval
+        addAccountAccessRequest({
+          name: fullName.trim() || (selectedRole === 'admin' ? 'Pendaftar Admin Baru' : 'Pendaftar Student Baru'),
+          email: cleanEmail,
+          whatsapp: whatsapp.trim(),
+          role: selectedRole,
+          notes: `Pendaftaran ${selectedRole} baru via portal registrasi`
+        });
+
+        // 3. If student role, also queue into local directory
         if (selectedRole === 'student') {
           try {
             const existingRaw = localStorage.getItem('ej_registered_students');
@@ -123,7 +162,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               id: `STD-2026-${String(existingList.length + 7).padStart(3, '0')}`,
               name: fullName || 'Siswa Baru',
               whatsapp: whatsapp.trim(),
-              email: email,
+              email: cleanEmail,
               programName: 'TOEFL ITP Prediction Test (Online)',
               registrationDate: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
               testScore: null,
@@ -140,18 +179,18 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           }
         }
 
-        if (session) {
-          // Automatic session granted
-          setSuccessMessage(tr('Pendaftaran berhasil! Mengalihkan ke dashboard...', 'Sign up successful! Redirecting...'));
+        // 4. Handle response & feedback
+        if (isPrimary) {
+          setSuccessMessage(tr('Akun Admin Utama EJI berhasil didaftarkan! Mengalihkan ke dashboard...', 'Primary Admin EJI account registered! Redirecting...'));
           setTimeout(() => {
             if (onSuccessRedirect) onSuccessRedirect();
             else onNavigate('/dashboard');
           }, 800);
         } else {
-          // Email confirmation required
+          // Account registered and sent for Admin EJI approval
           setSuccessMessage(tr(
-            'Pendaftaran berhasil! Tautan konfirmasi telah dikirim ke email Anda. Silakan verifikasi email Anda sebelum masuk.',
-            'Sign up successful! A confirmation email has been sent. Please verify your email before signing in.'
+            `Pendaftaran berhasil! Akun ${selectedRole === 'admin' ? 'Admin' : 'Student'} Anda kini berstatus MENUNGGU PERSETUJUAN dari Admin Utama (Admin EJI: ${PRIMARY_ADMIN_EMAIL}). Anda akan dapat login setelah permohonan disetujui.`,
+            `Sign up successful! Your ${selectedRole === 'admin' ? 'Admin' : 'Student'} account is now PENDING APPROVAL by Primary Admin (Admin EJI: ${PRIMARY_ADMIN_EMAIL}). You may log in once approved.`
           ));
         }
       }

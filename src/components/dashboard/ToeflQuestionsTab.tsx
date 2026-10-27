@@ -5,7 +5,7 @@ import {
   X, ArrowLeft, ChevronRight, ChevronDown, Layers, Clock, 
   Award, Eye, FolderOpen, ArrowUpRight, Sparkles,
   Settings, Check, FolderPlus, Sliders, ToggleLeft, ToggleRight,
-  Headphones, FileEdit, PenTool, LayoutGrid, Table2
+  Headphones, FileEdit, PenTool, LayoutGrid, Table2, Upload, Play, Pause, Music, FileAudio
 } from 'lucide-react';
 import { ToeflQuestion, ToeflTestProgram } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
@@ -13,6 +13,17 @@ import { useLanguage } from '../../context/LanguageContext';
 import { usePrograms } from '../../context/ProgramsContext';
 import { CustomDropdown } from '../common/CustomDropdown';
 import { TOEFL_PROGRAMS } from '../../data/toeflData';
+import { 
+  loadQuestionBanks, 
+  createQuestionBank, 
+  updateQuestionBank, 
+  deleteQuestionBank, 
+  loadToeflQuestions, 
+  createToeflQuestion, 
+  updateToeflQuestion, 
+  deleteToeflQuestion 
+} from '../../lib/supabaseService';
+import { supabase } from '../../lib/supabase';
 
 export interface SectionStructureItem {
   id: string;
@@ -337,6 +348,92 @@ export const ToeflQuestionsTab: React.FC = () => {
     }
   }, [programsList]);
 
+  // Synchronize Bank Soal & Questions with Supabase on mount
+  useEffect(() => {
+    let isSubscribed = true;
+
+    const syncWithSupabase = async () => {
+      try {
+        // 1. Load Question Banks from Supabase
+        const { data: dbBanks, error: banksErr } = await loadQuestionBanks();
+        if (!banksErr && dbBanks && dbBanks.length > 0 && isSubscribed) {
+          const mappedPrograms: ToeflTestProgram[] = dbBanks.map((b) => ({
+            id: b.id,
+            title: b.title,
+            tag: b.tag || 'Resmi',
+            category: b.category,
+            duration: b.duration,
+            questionCount: b.question_count,
+            scoreTarget: b.score_target || 'Skala 310 - 677',
+            benefits: b.benefits || [],
+            isActive: b.is_active,
+          }));
+          const sanitized = mappedPrograms.filter(isStudentTestProgram);
+          if (sanitized.length > 0) {
+            setProgramsList(sanitized);
+            localStorage.setItem('ej_toefl_test_programs', JSON.stringify(sanitized));
+          }
+        } else if (!banksErr && dbBanks && dbBanks.length === 0) {
+          // Seed default programs to Supabase
+          for (const prog of AVAILABLE_PROGRAMS) {
+            await createQuestionBank({
+              id: prog.id,
+              title: prog.title,
+              category: prog.category,
+              tag: prog.tag || 'Resmi',
+              duration: prog.duration,
+              question_count: prog.questionCount,
+              score_target: prog.scoreTarget,
+              benefits: prog.benefits || [],
+              is_active: prog.isActive !== false,
+            });
+          }
+        }
+
+        // 2. Load Questions from Supabase
+        const { data: dbQuestions, error: qErr } = await loadToeflQuestions();
+        if (!qErr && dbQuestions && dbQuestions.length > 0 && isSubscribed) {
+          const mappedQuestions: ToeflQuestion[] = dbQuestions.map((q) => ({
+            id: q.id,
+            programId: q.program_id,
+            section: q.section as any,
+            part: q.part,
+            questionText: q.question_text,
+            audioUrl: q.audio_url || undefined,
+            options: q.options,
+            correctAnswer: (q.correct_answer || 'A') as 'A' | 'B' | 'C' | 'D',
+            explanation: q.explanation || '',
+          }));
+          setQuestions(mappedQuestions);
+          localStorage.setItem('ej_toefl_questions_bank', JSON.stringify(mappedQuestions));
+        } else if (!qErr && dbQuestions && dbQuestions.length === 0) {
+          // Seed initial questions to Supabase
+          for (const q of INITIAL_QUESTIONS) {
+            await createToeflQuestion({
+              id: q.id,
+              program_id: q.programId,
+              section: q.section,
+              part: q.part,
+              question_text: q.questionText,
+              audio_url: q.audioUrl || null,
+              options: q.options,
+              correct_answer: q.correctAnswer,
+              explanation: q.explanation || '',
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Supabase sync notice:', err);
+      }
+    };
+
+    syncWithSupabase();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, []);
+
   // Quick Add Dropdown state & ref
   const [isProgramDropdownOpen, setIsProgramDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -392,6 +489,7 @@ export const ToeflQuestionsTab: React.FC = () => {
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<ToeflQuestion | null>(null);
+  const audioFileInputRef = useRef<HTMLInputElement>(null);
 
   // Program Modal state (Tambah Bank Soal Baru / Edit Bank Soal)
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
@@ -425,22 +523,37 @@ export const ToeflQuestionsTab: React.FC = () => {
   const [deletingQuestion, setDeletingQuestion] = useState<ToeflQuestion | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
-  const handleToggleProgramStatus = (programId: string) => {
+  const handleToggleProgramStatus = async (programId: string) => {
+    const target = programsList.find(p => p.id === programId);
+    const newActiveState = target ? !(target.isActive !== false) : true;
+
     setProgramsList(prev => prev.map(p => {
       if (p.id === programId) {
-        const currentActive = p.isActive !== false;
-        return { ...p, isActive: !currentActive };
+        return { ...p, isActive: newActiveState };
       }
       return p;
     }));
     if (toggleProgramActive) {
       toggleProgramActive(programId);
     }
+
+    try {
+      await updateQuestionBank({ id: programId, is_active: newActiveState });
+      setActionNotice(tr(
+        newActiveState ? 'Bank Soal aktif di Supabase.' : 'Bank Soal dinonaktifkan di Supabase.',
+        newActiveState ? 'Question bank enabled in Supabase.' : 'Question bank disabled in Supabase.'
+      ));
+      setTimeout(() => setActionNotice(null), 3000);
+    } catch (e) {
+      console.warn('Error updating status in Supabase', e);
+    }
   };
 
-  const handleConfirmDeleteProgram = () => {
+  const handleConfirmDeleteProgram = async () => {
     if (!deletingProgram) return;
     const targetId = deletingProgram.id;
+    const targetTitle = deletingProgram.title;
+
     setProgramsList(prev => prev.filter(p => p.id !== targetId));
     setQuestions(prev => prev.filter(q => q.programId !== targetId));
     if (selectedProgram && selectedProgram.id === targetId) {
@@ -450,6 +563,14 @@ export const ToeflQuestionsTab: React.FC = () => {
       deleteContextProgram(targetId);
     }
     setDeletingProgram(null);
+
+    try {
+      await deleteQuestionBank(targetId);
+      setActionNotice(tr(`Bank Soal "${targetTitle}" berhasil dihapus dari Supabase.`, `Question bank "${targetTitle}" deleted from Supabase.`));
+      setTimeout(() => setActionNotice(null), 3500);
+    } catch (err) {
+      console.warn('Error deleting question bank from Supabase', err);
+    }
   };
 
   // Styling helper
@@ -511,7 +632,7 @@ export const ToeflQuestionsTab: React.FC = () => {
     }
   };
 
-  const handleConfirmDeleteQuestion = () => {
+  const handleConfirmDeleteQuestion = async () => {
     if (!deletingQuestion) return;
     const targetId = deletingQuestion.id;
     setQuestions(prev => {
@@ -525,36 +646,162 @@ export const ToeflQuestionsTab: React.FC = () => {
       return next;
     });
     setDeletingQuestion(null);
-    setActionNotice(tr('Butir soal berhasil dihapus.', 'Question item successfully deleted.'));
-    setTimeout(() => {
-      setActionNotice(null);
-    }, 3000);
+
+    try {
+      await deleteToeflQuestion(targetId);
+      setActionNotice(tr('Butir soal berhasil dihapus dari Supabase.', 'Question item deleted from Supabase.'));
+      setTimeout(() => {
+        setActionNotice(null);
+      }, 3000);
+    } catch (err) {
+      console.warn('Error deleting question from Supabase', err);
+    }
   };
 
-  const handleSaveQuestion = (e: React.FormEvent) => {
+  const handleAudioFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('audio/') && !file.name.match(/\.(mp3|wav|m4a|ogg|aac|flac)$/i)) {
+      setActionNotice(tr('Format tidak didukung. Harap upload file audio (MP3, WAV, M4A, OGG).', 'Unsupported format. Please upload an audio file (MP3, WAV, M4A, OGG).'));
+      setTimeout(() => setActionNotice(null), 3500);
+      return;
+    }
+
+    if (file.size > 25 * 1024 * 1024) {
+      setActionNotice(tr('Ukuran file audio terlalu besar (maksimal 25MB).', 'Audio file is too large (max 25MB).'));
+      setTimeout(() => setActionNotice(null), 3500);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      setEditingQuestion(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          audioUrl: result,
+          audioFileName: file.name,
+          questionText: prev.questionText && prev.questionText.trim().length > 0 
+            ? prev.questionText 
+            : tr(`Dengarkan rekaman audio "${file.name}" untuk menjawab soal ini.`, `Listen to the audio recording "${file.name}" to answer this question.`)
+        };
+      });
+      setActionNotice(tr(`File audio "${file.name}" berhasil diunggah!`, `Audio file "${file.name}" uploaded successfully!`));
+      setTimeout(() => setActionNotice(null), 3000);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUseSampleAudio = () => {
+    // Standard educational sample listening recording (short dialogue / audio prompt)
+    const sampleAudioUrl = 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg';
+    setEditingQuestion(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        audioUrl: sampleAudioUrl,
+        audioFileName: 'sample_toefl_dialogue_part_a.mp3',
+        questionText: prev.questionText && prev.questionText.trim().length > 0
+          ? prev.questionText
+          : '(Narrator): Listen to a short conversation between two students on campus.\n(Woman): Did you already register for the advanced syntax seminar?\n(Man): I haven’t made up my mind yet.'
+      };
+    });
+    setActionNotice(tr('Audio sampel TOEFL percakapan berhasil dimuat.', 'Sample TOEFL listening audio loaded.'));
+    setTimeout(() => setActionNotice(null), 3000);
+  };
+
+  const handleSaveQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingQuestion) return;
     const targetProgramId = editingQuestion.programId || selectedProgram?.id || testBasedPrograms[0]?.id;
     if (!targetProgramId) return;
 
+    // For listening comprehension:
+    let finalQuestionText = (editingQuestion.questionText || '').trim();
+    if (editingQuestion.section === 'Listening') {
+      if (!editingQuestion.audioUrl && !finalQuestionText) {
+        setActionNotice(tr('Harap upload file audio untuk soal Listening Comprehension.', 'Please upload an audio file for the Listening Comprehension question.'));
+        setTimeout(() => setActionNotice(null), 3500);
+        return;
+      }
+      if (!finalQuestionText) {
+        finalQuestionText = tr('Dengarkan rekaman audio untuk menjawab pertanyaan berikut.', 'Listen to the audio recording to answer the question.');
+      }
+    } else if (!finalQuestionText) {
+      setActionNotice(tr('Teks pertanyaan / soal wajib diisi.', 'Question text prompt is required.'));
+      setTimeout(() => setActionNotice(null), 3500);
+      return;
+    }
+
+    const questionToSave: ToeflQuestion = {
+      ...editingQuestion,
+      programId: targetProgramId,
+      questionText: finalQuestionText
+    };
+
     if (editingQuestion.id) {
-      setQuestions(questions.map(q => q.id === editingQuestion.id ? { ...editingQuestion, programId: targetProgramId } : q));
+      const updatedQuestion = questionToSave;
+      setQuestions(questions.map(q => q.id === editingQuestion.id ? updatedQuestion : q));
+      setIsAddModalOpen(false);
+      setEditingQuestion(null);
+
+      try {
+        await updateToeflQuestion({
+          id: updatedQuestion.id,
+          program_id: targetProgramId,
+          section: updatedQuestion.section,
+          part: updatedQuestion.part,
+          question_text: updatedQuestion.questionText,
+          audio_url: updatedQuestion.audioUrl || null,
+          options: updatedQuestion.options,
+          correct_answer: updatedQuestion.correctAnswer,
+          explanation: updatedQuestion.explanation || '',
+        });
+        setActionNotice(tr('Butir soal berhasil diperbarui di Supabase.', 'Question updated in Supabase.'));
+        setTimeout(() => setActionNotice(null), 3000);
+      } catch (err) {
+        console.warn('Error updating question in Supabase', err);
+      }
     } else {
       const newId = `q${Date.now()}`;
-      setQuestions([...questions, { ...editingQuestion, id: newId, programId: targetProgramId }]);
+      const newQuestion = { ...questionToSave, id: newId };
+      setQuestions([...questions, newQuestion]);
+      setIsAddModalOpen(false);
+      setEditingQuestion(null);
+
+      try {
+        await createToeflQuestion({
+          id: newId,
+          program_id: targetProgramId,
+          section: newQuestion.section,
+          part: newQuestion.part,
+          question_text: newQuestion.questionText,
+          audio_url: newQuestion.audioUrl || null,
+          options: newQuestion.options,
+          correct_answer: newQuestion.correctAnswer,
+          explanation: newQuestion.explanation || '',
+        });
+        setActionNotice(tr('Butir soal baru berhasil ditambahkan ke Supabase.', 'New question added to Supabase.'));
+        setTimeout(() => setActionNotice(null), 3000);
+      } catch (err) {
+        console.warn('Error creating question in Supabase', err);
+      }
     }
-    setIsAddModalOpen(false);
-    setEditingQuestion(null);
   };
 
   const handleOpenAddQuestionWithProgram = (targetProg?: ToeflTestProgram) => {
     const prog = targetProg || selectedProgram || testBasedPrograms[0];
+    const isListeningProg = (prog?.category || '').toLowerCase().includes('listening') || selectedSection === 'listening';
     setEditingQuestion({
       id: '',
       programId: prog ? prog.id : (testBasedPrograms[0]?.id || 'toefl-pred-1'),
-      section: 'Structure',
-      part: 'Part A (Sentence Completion)',
+      section: isListeningProg ? 'Listening' : 'Structure',
+      part: isListeningProg ? 'Part A (Short Conversations)' : 'Part A (Sentence Completion)',
       questionText: '',
+      audioUrl: undefined,
+      audioFileName: undefined,
       options: { A: '', B: '', C: '', D: '' },
       correctAnswer: 'A',
       explanation: ''
@@ -742,6 +989,44 @@ export const ToeflQuestionsTab: React.FC = () => {
 
       setProgramsList(prev => [newProgram, ...prev]);
       setQuestions(prev => [...initialSeedQuestions, ...prev]);
+      setIsProgramModalOpen(false);
+
+      // Async save to Supabase
+      (async () => {
+        try {
+          await createQuestionBank({
+            id: newProgram.id,
+            title: newProgram.title,
+            category: newProgram.category,
+            tag: newProgram.tag,
+            duration: newProgram.duration,
+            question_count: newProgram.questionCount,
+            score_target: newProgram.scoreTarget,
+            benefits: newProgram.benefits,
+            sections_data: programFormData.sections,
+            is_active: newProgram.isActive,
+          });
+
+          for (const sq of initialSeedQuestions) {
+            await createToeflQuestion({
+              id: sq.id,
+              program_id: sq.programId,
+              section: sq.section,
+              part: sq.part,
+              question_text: sq.questionText,
+              audio_url: sq.audioUrl || null,
+              options: sq.options,
+              correct_answer: sq.correctAnswer,
+              explanation: sq.explanation || '',
+            });
+          }
+
+          setActionNotice(tr('Bank Soal baru berhasil disimpan ke Supabase.', 'New question bank successfully saved to Supabase.'));
+          setTimeout(() => setActionNotice(null), 3500);
+        } catch (err) {
+          console.warn('Error saving question bank to Supabase', err);
+        }
+      })();
     } else {
       const updatedProgram: ToeflTestProgram = {
         id: programFormData.id,
@@ -759,9 +1044,31 @@ export const ToeflQuestionsTab: React.FC = () => {
       if (selectedProgram && selectedProgram.id === updatedProgram.id) {
         setSelectedProgram(updatedProgram);
       }
-    }
+      setIsProgramModalOpen(false);
 
-    setIsProgramModalOpen(false);
+      // Async update to Supabase
+      (async () => {
+        try {
+          await updateQuestionBank({
+            id: updatedProgram.id,
+            title: updatedProgram.title,
+            category: updatedProgram.category,
+            tag: updatedProgram.tag,
+            duration: updatedProgram.duration,
+            question_count: updatedProgram.questionCount,
+            score_target: updatedProgram.scoreTarget,
+            benefits: updatedProgram.benefits,
+            sections_data: programFormData.sections,
+            is_active: updatedProgram.isActive,
+          });
+
+          setActionNotice(tr('Perubahan Bank Soal berhasil disimpan ke Supabase.', 'Question bank changes saved to Supabase.'));
+          setTimeout(() => setActionNotice(null), 3500);
+        } catch (err) {
+          console.warn('Error updating question bank in Supabase', err);
+        }
+      })();
+    }
   };
 
   // =========================================================================
@@ -784,6 +1091,10 @@ export const ToeflQuestionsTab: React.FC = () => {
                 <h1 className={`text-base font-bold font-['Poppins',sans-serif] tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {tr('Bank Soal TOEFL per Program Tersedia', 'TOEFL Question Bank by Available Program')}
                 </h1>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full text-[9px] font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Supabase Database
+                </span>
               </div>
               <p className={`text-[11px] font-['Poppins',sans-serif] mt-0.2 leading-tight max-w-2xl ${subText}`}>
                 {tr(
@@ -1348,13 +1659,38 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </div>
               </div>
 
-              {/* Question Text */}
-              <div className={`p-2 rounded-lg border text-[11px] font-medium whitespace-pre-line leading-relaxed ${
+              {/* Question Text & Audio Player */}
+              <div className={`p-2 rounded-lg border text-[11px] font-medium leading-relaxed ${
                 isDark 
                   ? 'bg-white/5 border-white/5 text-slate-200' 
                   : 'bg-slate-50 border-slate-200 text-slate-800'
               }`}>
-                {item.questionText}
+                {item.audioUrl && (
+                  <div className="mb-2 p-2 rounded-lg bg-[#F7B425]/10 border border-[#F7B425]/30">
+                    <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Volume2 className="w-3.5 h-3.5 text-[#F7B425] shrink-0" />
+                        <span className="text-[10px] font-bold text-[#F7B425]">
+                          {tr('Audio Soal Listening:', 'Listening Question Audio:')}
+                        </span>
+                        {item.audioFileName && (
+                          <span className="text-[9.5px] opacity-80 truncate">{item.audioFileName}</span>
+                        )}
+                      </div>
+                      <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-[#F7B425]/20 text-[#F7B425] font-bold">
+                        AUDIO
+                      </span>
+                    </div>
+                    <audio controls src={item.audioUrl} className="w-full h-7 rounded" />
+                  </div>
+                )}
+                {item.questionText ? (
+                  <div className="whitespace-pre-line">{item.questionText}</div>
+                ) : (
+                  <div className="text-slate-400 italic text-[10.5px]">
+                    {tr('Dengarkan rekaman audio di atas untuk menjawab soal.', 'Listen to the audio recording above to answer the question.')}
+                  </div>
+                )}
               </div>
 
               {/* Options Grid */}
@@ -1430,7 +1766,13 @@ export const ToeflQuestionsTab: React.FC = () => {
                       <span className={`block text-[9px] mt-0.2 ${subText}`}>{q.part}</span>
                     </td>
                     <td className="py-1 px-2.5 max-w-xs truncate font-medium text-[11px]">
-                      {q.questionText}
+                      {q.audioUrl && (
+                        <span className="inline-flex items-center gap-1 mr-1.5 px-1.5 py-0.2 rounded bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[9px] font-bold">
+                          <Volume2 className="w-2.5 h-2.5" />
+                          Audio
+                        </span>
+                      )}
+                      <span>{q.questionText}</span>
                     </td>
                     <td className="py-1 px-2.5 text-center">
                       <span className="w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[9.5px] font-black bg-emerald-500 text-black">
@@ -1537,7 +1879,22 @@ export const ToeflQuestionsTab: React.FC = () => {
                   <CustomDropdown
                     label={tr('Section *', 'Section *')}
                     value={editingQuestion.section}
-                    onChange={(val) => setEditingQuestion({ ...editingQuestion, section: val as any })}
+                    onChange={(val) => {
+                      const newSection = val as 'Listening' | 'Structure' | 'Reading';
+                      let defaultPart = editingQuestion.part;
+                      if (newSection === 'Listening' && (!defaultPart || defaultPart.includes('Sentence') || defaultPart.includes('Passage'))) {
+                        defaultPart = 'Part A (Short Conversations)';
+                      } else if (newSection === 'Structure' && (!defaultPart || defaultPart.includes('Conversations') || defaultPart.includes('Passage'))) {
+                        defaultPart = 'Part A (Sentence Completion)';
+                      } else if (newSection === 'Reading' && (!defaultPart || defaultPart.includes('Sentence') || defaultPart.includes('Conversations'))) {
+                        defaultPart = 'Passage 1 (Reading Comprehension)';
+                      }
+                      setEditingQuestion({
+                        ...editingQuestion,
+                        section: newSection,
+                        part: defaultPart,
+                      });
+                    }}
                     buttonClassName={isDark ? '!border-[#3a3a3a] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
                     options={[
                       { value: 'Structure', label: 'Structure & Written Expression', badge: 'Section 2' },
@@ -1555,7 +1912,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                     type="text"
                     value={editingQuestion.part}
                     onChange={(e) => setEditingQuestion({ ...editingQuestion, part: e.target.value })}
-                    placeholder="Contoh: Part A (Sentence Completion)"
+                    placeholder={editingQuestion.section === 'Listening' ? 'Contoh: Part A (Short Conversations)' : 'Contoh: Part A (Sentence Completion)'}
                     className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                       isDark 
                         ? 'bg-[#1e1e1e] border-[#4b4b4b] text-white' 
@@ -1565,23 +1922,169 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </div>
               </div>
 
-              <div>
-                <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                  {tr('Teks Pertanyaan / Soal *', 'Question Prompt / Text *')}
-                </label>
-                <textarea
-                  rows={2}
-                  required
-                  value={editingQuestion.questionText}
-                  onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
-                  placeholder={tr('Ketik kalimat soal TOEFL di sini...', 'Type the TOEFL question here...')}
-                  className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
-                    isDark 
-                      ? 'bg-[#1e1e1e] border-white/10 text-white' 
-                      : 'bg-slate-50 border-slate-300 text-slate-900'
-                  }`}
-                />
-              </div>
+              {/* Teks Pertanyaan / Soal OR Upload File Audio Soal Listening */}
+              {editingQuestion.section === 'Listening' ? (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className={`block font-bold text-[11px] flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                      <Headphones className="w-3.5 h-3.5 text-[#F7B425]" />
+                      <span>{tr('Upload File Audio Soal Listening', 'Upload Listening Audio Question File')}</span>
+                      <span className="text-rose-500 font-bold">*</span>
+                    </label>
+                    <span className="text-[9.5px] font-mono text-[#F7B425] bg-[#F7B425]/10 px-1.5 py-0.2 rounded border border-[#F7B425]/20 font-bold">
+                      Format: MP3, WAV, M4A, OGG
+                    </span>
+                  </div>
+
+                  {/* Hidden file input */}
+                  <input
+                    type="file"
+                    ref={audioFileInputRef}
+                    accept="audio/mp3,audio/wav,audio/m4a,audio/ogg,audio/mpeg,audio/*"
+                    onChange={handleAudioFileUpload}
+                    className="hidden"
+                  />
+
+                  {/* Audio Upload Box / Dropzone */}
+                  {!editingQuestion.audioUrl ? (
+                    <div 
+                      onClick={() => audioFileInputRef.current?.click()}
+                      className={`p-3.5 sm:p-4 rounded-xl border-2 border-dashed transition-all cursor-pointer text-center group flex flex-col items-center justify-center gap-1.5 ${
+                        isDark 
+                          ? 'border-[#F7B425]/40 bg-[#F7B425]/5 hover:bg-[#F7B425]/10 hover:border-[#F7B425]' 
+                          : 'border-[#F7B425]/50 bg-amber-50/50 hover:bg-amber-50 hover:border-[#F7B425]'
+                      }`}
+                    >
+                      <div className="w-9 h-9 rounded-full bg-[#F7B425]/20 text-[#F7B425] flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Upload className="w-4 h-4 stroke-[2.5]" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {tr('Klik untuk Upload File Audio Soal Listening', 'Click to Upload Listening Audio File')}
+                        </p>
+                        <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                          {tr('Pilih rekaman suara audio soal (.mp3, .wav, .m4a, .ogg maks. 25MB)', 'Choose audio recording file (.mp3, .wav, .m4a, .ogg max 25MB)')}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <button
+                          type="button"
+                          className="px-2.5 py-1 rounded-lg bg-[#F7B425] text-black font-extrabold text-[10.5px] shadow-xs hover:bg-amber-400 transition-colors pointer-events-none"
+                        >
+                          {tr('Pilih File Audio', 'Select Audio File')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUseSampleAudio();
+                          }}
+                          className={`px-2.5 py-1 rounded-lg border text-[10.5px] font-bold transition-all cursor-pointer pointer-events-auto ${
+                            isDark 
+                              ? 'bg-white/10 hover:bg-white/20 border-white/15 text-slate-200' 
+                              : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700'
+                          }`}
+                        >
+                          ⚡ {tr('Gunakan Sampel Percakapan', 'Use Sample Dialogue')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`p-3 rounded-xl border space-y-2 ${
+                      isDark ? 'bg-white/5 border-[#F7B425]/30' : 'bg-amber-50/70 border-amber-200'
+                    }`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-7 h-7 rounded-lg bg-[#F7B425] text-black flex items-center justify-center shrink-0 font-bold">
+                            <Volume2 className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                {tr('Audio Siap Diujikan', 'Audio Ready')}
+                              </span>
+                            </div>
+                            <p className={`text-[11px] font-semibold truncate ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                              {editingQuestion.audioFileName || tr('File Audio Soal Listening', 'Listening Question Audio File')}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => audioFileInputRef.current?.click()}
+                            className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#F7B425]/15 text-[#F7B425] hover:bg-[#F7B425]/25 border border-[#F7B425]/30 transition-colors cursor-pointer"
+                          >
+                            {tr('Ganti File Audio', 'Change Audio')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingQuestion(prev => prev ? { ...prev, audioUrl: undefined, audioFileName: undefined } : null);
+                              if (audioFileInputRef.current) audioFileInputRef.current.value = '';
+                            }}
+                            className="p-1 rounded-lg text-rose-500 hover:bg-rose-500/15 border border-rose-500/20 transition-colors cursor-pointer"
+                            title={tr('Hapus Audio', 'Remove Audio')}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Native HTML5 Audio Player */}
+                      <div className="pt-0.5">
+                        <audio 
+                          controls 
+                          src={editingQuestion.audioUrl} 
+                          className="w-full h-8 rounded-lg outline-none" 
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Optional transcript or question instruction note */}
+                  <div>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <label className={`block font-semibold text-[10px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        {tr('Transkrip Percakapan / Pertanyaan Narator (Opsional)', 'Conversation Transcript / Narrator Prompt (Optional)')}
+                      </label>
+                      <span className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        {tr('Opsional • Teks pendukung bagi penguji/peserta', 'Optional • Supporting prompt')}
+                      </span>
+                    </div>
+                    <textarea
+                      rows={2}
+                      value={editingQuestion.questionText}
+                      onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
+                      placeholder={tr('Contoh: (Narrator): What does the man imply? (Atau ketik transkrip percakapan)', 'Example: (Narrator): What does the man imply? (Or enter conversation transcript)')}
+                      className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                        isDark 
+                          ? 'bg-[#1e1e1e] border-white/10 text-white' 
+                          : 'bg-slate-50 border-slate-300 text-slate-900'
+                      }`}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {tr('Teks Pertanyaan / Soal *', 'Question Prompt / Text *')}
+                  </label>
+                  <textarea
+                    rows={2}
+                    required
+                    value={editingQuestion.questionText}
+                    onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
+                    placeholder={tr('Ketik kalimat soal TOEFL di sini...', 'Type the TOEFL question here...')}
+                    className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                      isDark 
+                        ? 'bg-[#1e1e1e] border-white/10 text-white' 
+                        : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
+                  />
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -1820,12 +2323,12 @@ export const ToeflQuestionsTab: React.FC = () => {
                         </div>
 
                         <div>
-                          <div className={`font-black font-heading text-[11px] flex items-center gap-1 ${
+                          <div className={`font-black font-heading text-[12px] flex items-center gap-1 ${
                             isSelected 
                               ? isDark ? 'text-white font-extrabold' : 'text-slate-900 font-extrabold' 
                               : isDark ? 'text-slate-200' : 'text-slate-800'
                           }`}>
-                            <span>{catItem.name}</span>
+                            <span style={{ fontSize: '12px' }} className="text-[12px]">{catItem.name}</span>
                           </div>
                           <p className={`text-[9.5px] mt-0.2 leading-tight ${
                             isSelected ? 'text-[#F7B425] font-semibold' : subText

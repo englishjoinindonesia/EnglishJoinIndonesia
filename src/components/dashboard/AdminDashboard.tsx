@@ -12,6 +12,7 @@ import { CampusLogosManagementTab } from './CampusLogosManagementTab';
 import { StudentTestSimulationTab } from './StudentTestSimulationTab';
 import { StudentScoresAndCertificateTab } from './StudentScoresAndCertificateTab';
 import { ProjectsTab } from './ProjectsTab';
+import { AccountAccessTab } from './AccountAccessTab';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -35,6 +36,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     switch (activeTab) {
       case 'overview':
         return tr('Ringkasan & Dashboard Utama', 'Overview & Main Dashboard');
+      case 'account_access':
+        return tr('Persetujuan Akses Akun (Admin & Student)', 'Account Access Approvals (Admin & Student)');
       case 'projects':
         return tr('Proyek Saya', 'My Projects');
       case 'students':
@@ -90,6 +93,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         }`}>
           {activeTab === 'overview' && (
             <OverviewTab onNavigateTab={(tab) => setActiveTab(tab)} />
+          )}
+
+          {activeTab === 'account_access' && (
+            <AccountAccessTab />
           )}
 
           {activeTab === 'projects' && (
