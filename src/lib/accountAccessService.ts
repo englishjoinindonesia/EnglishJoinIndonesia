@@ -5,65 +5,24 @@ export const PRIMARY_ADMIN_EMAIL = 'englishjoinindonesia@gmail.com';
 
 const STORAGE_KEY = 'ej_account_access_requests';
 
-// Default initial data for rich demonstration and initial state
-const DEFAULT_ACCOUNT_REQUESTS: AccountAccessRequest[] = [
-  {
-    id: 'REQ-2026-001',
-    name: 'Rahmat Hidayat, M.Pd.',
-    email: 'rahmat.admin@gmail.com',
-    whatsapp: '081234567890',
-    role: 'admin',
-    requestedAt: '2026-03-29 08:30:15',
-    status: 'pending',
-    notes: 'Permohonan akun Staff Pengajar & Administrator TOEFL'
-  },
-  {
-    id: 'REQ-2026-002',
-    name: 'Siti Nurhaliza',
-    email: 'sitinurhaliza@gmail.com',
-    whatsapp: '085712345678',
-    role: 'student',
-    requestedAt: '2026-03-29 10:15:40',
-    status: 'pending',
-    notes: 'Pendaftar program TOEFL ITP Intensive Test'
-  },
-  {
-    id: 'REQ-2026-003',
-    name: 'Admin EJI Utama',
-    email: 'englishjoinindonesia@gmail.com',
-    whatsapp: '081234567000',
-    role: 'admin',
-    requestedAt: '2026-01-01 00:00:00',
-    status: 'approved',
-    reviewedBy: 'Super Admin EJI (System)',
-    reviewedAt: '2026-01-01 00:00:00',
-    notes: 'Pemilik Sistem & Admin Utama English Join Indonesia'
-  },
-  {
-    id: 'REQ-2026-004',
-    name: 'Budi Santoso',
-    email: 'budisantoso@gmail.com',
-    whatsapp: '082198765432',
-    role: 'student',
-    requestedAt: '2026-03-28 14:20:00',
-    status: 'approved',
-    reviewedBy: 'englishjoinindonesia@gmail.com',
-    reviewedAt: '2026-03-28 15:00:10',
-    notes: 'Verifikasi pendaftaran TOEFL lulus'
-  },
-  {
-    id: 'REQ-2026-005',
-    name: 'Dedi Kurniawan',
-    email: 'dedi.k@spammail.com',
-    whatsapp: '089900112233',
-    role: 'student',
-    requestedAt: '2026-03-27 11:05:22',
-    status: 'rejected',
-    reviewedBy: 'englishjoinindonesia@gmail.com',
-    reviewedAt: '2026-03-27 13:45:00',
-    notes: 'Nomor WhatsApp dan email tidak valid / terindikasi spam'
-  }
-];
+// Default initial data: empty array (no unnecessary dummy seed data)
+const DEFAULT_ACCOUNT_REQUESTS: AccountAccessRequest[] = [];
+
+// Known dummy seed identifiers to automatically purge from localStorage
+const DUMMY_SEED_IDS = new Set([
+  'REQ-2026-001',
+  'REQ-2026-002',
+  'REQ-2026-003',
+  'REQ-2026-004',
+  'REQ-2026-005'
+]);
+
+const DUMMY_SEED_EMAILS = new Set([
+  'rahmat.admin@gmail.com',
+  'sitinurhaliza@gmail.com',
+  'budisantoso@gmail.com',
+  'dedi.k@spammail.com'
+]);
 
 export function isPrimaryAdmin(email?: string | null): boolean {
   if (!email) return false;
@@ -103,33 +62,45 @@ function generateUniqueRequestId(list: AccountAccessRequest[]): string {
  * Fetch all account access requests from localStorage or fallback
  */
 export function getAccountAccessRequests(): AccountAccessRequest[] {
-  if (typeof window === 'undefined') return DEFAULT_ACCOUNT_REQUESTS;
+  if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_ACCOUNT_REQUESTS));
-      return DEFAULT_ACCOUNT_REQUESTS;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      return [];
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_ACCOUNT_REQUESTS));
-      return DEFAULT_ACCOUNT_REQUESTS;
+    if (!Array.isArray(parsed)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      return [];
     }
+
+    // Filter out unwanted dummy seeding data if present in localStorage
+    const filteredParsed = parsed.filter(item => {
+      if (!item || typeof item !== 'object') return false;
+      const id = String(item.id || '');
+      const email = String(item.email || '').toLowerCase().trim();
+      if (DUMMY_SEED_IDS.has(id)) return false;
+      if (email && DUMMY_SEED_EMAILS.has(email)) return false;
+      return true;
+    });
+
+    const hadDummySeed = filteredParsed.length !== parsed.length;
 
     // Ensure all requests have strictly unique IDs and repair any duplicate keys
     const seenIds = new Set<string>();
     let hasDuplicates = false;
     const sanitizedList: AccountAccessRequest[] = [];
 
-    for (let i = 0; i < parsed.length; i++) {
-      const item = parsed[i];
+    for (let i = 0; i < filteredParsed.length; i++) {
+      const item = filteredParsed[i];
       if (!item || typeof item !== 'object') continue;
 
       let id = item.id;
       if (!id || seenIds.has(id)) {
         hasDuplicates = true;
         const year = new Date().getFullYear();
-        let counter = parsed.length + i + 1;
+        let counter = filteredParsed.length + i + 1;
         while (seenIds.has(`REQ-${year}-${String(counter).padStart(3, '0')}`)) {
           counter++;
         }
@@ -143,14 +114,14 @@ export function getAccountAccessRequests(): AccountAccessRequest[] {
       });
     }
 
-    if (hasDuplicates) {
+    if (hasDuplicates || hadDummySeed) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizedList));
     }
 
     return sanitizedList;
   } catch (err) {
     console.warn('Failed to parse account requests from localStorage:', err);
-    return DEFAULT_ACCOUNT_REQUESTS;
+    return [];
   }
 }
 
@@ -311,10 +282,17 @@ export function deleteAccountAccessRequest(id: string): boolean {
 }
 
 /**
- * Reset to default sample data
+ * Reset / clear all requests (defaults to empty)
  */
 export function resetToDefaultAccountRequests(): void {
   saveRequests(DEFAULT_ACCOUNT_REQUESTS);
+}
+
+/**
+ * Clear all account access requests
+ */
+export function clearAllAccountRequests(): void {
+  saveRequests([]);
 }
 
 /**

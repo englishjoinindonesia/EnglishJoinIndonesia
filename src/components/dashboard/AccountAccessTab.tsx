@@ -258,9 +258,11 @@ export const AccountAccessTab: React.FC = () => {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-              {tr('Total Permohonan', 'Total Requests')}
-            </span>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                {tr('Total Permohonan', 'Total Requests')}
+              </span>
+            </div>
             <div className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-slate-300">
               <UserCheck className="w-3.5 h-3.5" />
             </div>
@@ -269,9 +271,9 @@ export const AccountAccessTab: React.FC = () => {
             {totalCount}
           </div>
           <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-            <span>Admin: <strong>{adminRequestsCount}</strong></span>
+            <span className="font-bold">Admin: <strong>{adminRequestsCount}</strong></span>
             <span>•</span>
-            <span>Student: <strong>{studentRequestsCount}</strong></span>
+            <span className="font-bold">Student: <strong>{studentRequestsCount}</strong></span>
           </div>
         </div>
 
@@ -300,7 +302,7 @@ export const AccountAccessTab: React.FC = () => {
           <div className="text-xl sm:text-2xl font-black mt-1 font-heading text-amber-600 dark:text-amber-400">
             {pendingCount}
           </div>
-          <div className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 mt-0.5 truncate">
+          <div className="text-[10px] font-normal text-[#90a1b9] mt-0.5 truncate">
             {tr('Perlu persetujuan Admin EJI', 'Needs Admin EJI approval')}
           </div>
         </div>
@@ -392,23 +394,25 @@ export const AccountAccessTab: React.FC = () => {
               <span className="font-bold">{tr('Tambah Manual', 'Add Manual')}</span>
             </button>
 
-            <button
-              onClick={() => {
-                if (window.confirm(tr('Kembalikan data ke contoh default?', 'Reset data to default sample?'))) {
-                  resetToDefaultAccountRequests();
-                  showNotification(tr('Data permohonan akses direset ke default.', 'Data reset to default.'));
-                  refreshRequests();
-                }
-              }}
-              className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
-                isDark 
-                  ? 'border-white/10 text-slate-400 hover:text-white hover:bg-white/5' 
-                  : 'border-slate-200 text-slate-500 hover:text-black hover:bg-slate-100'
-              }`}
-              title={tr('Reset Data Demo', 'Reset Demo Data')}
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
+            {requests.length > 0 && (
+              <button
+                onClick={() => {
+                  if (window.confirm(tr('Hapus semua permohonan yang ada di tabel ini?', 'Clear all requests in this table?'))) {
+                    resetToDefaultAccountRequests();
+                    showNotification(tr('Semua data permohonan telah dibersihkan.', 'All request records cleared.'));
+                    refreshRequests();
+                  }
+                }}
+                className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                  isDark 
+                    ? 'border-white/10 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10' 
+                    : 'border-slate-200 text-slate-500 hover:text-rose-600 hover:bg-rose-50'
+                }`}
+                title={tr('Bersihkan Semua Data Permohonan', 'Clear All Request Records')}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -474,13 +478,20 @@ export const AccountAccessTab: React.FC = () => {
         </div>
 
         {filteredRequests.length === 0 ? (
-          <div className="py-10 text-center px-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-2">
-              <UserCheck className="w-5 h-5" />
+          <div className="py-12 text-center px-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#F7B425] flex items-center justify-center mx-auto mb-3 border border-amber-500/20">
+              <UserCheck className="w-6 h-6" />
             </div>
-            <h4 className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200">
-              {tr('Tidak ada data permohonan yang sesuai kriteria.', 'No requests match the selected criteria.')}
+            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+              {searchTerm || statusFilter !== 'all'
+                ? tr('Tidak ada data permohonan yang sesuai kriteria.', 'No requests match the selected criteria.')
+                : tr('Belum Ada Permohonan Akses Akun', 'No Account Access Requests Yet')}
             </h4>
+            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+              {searchTerm || statusFilter !== 'all'
+                ? tr('Coba ubah kata kunci pencarian atau ganti filter status.', 'Try changing your search term or filter.')
+                : tr('Data seeding dummy telah dibersihkan. Setiap calon pendaftar atau akun baru yang membutuhkan persetujuan akan masuk ke daftar ini secara langsung.', 'Dummy seed data has been removed. Any new account applicants requiring approval will appear here in real-time.')}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
