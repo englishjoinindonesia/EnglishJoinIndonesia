@@ -3,14 +3,15 @@ import {
   CheckCircle2, Clock, Award, RotateCcw, 
   ArrowRight, ArrowLeft, Volume2, Download,
   Filter, PlayCircle, ShieldAlert, Check, Headphones, FileText,
-  AlertTriangle, Monitor, Sparkles, HelpCircle,
-  Lock, Shield, Maximize, Minimize, AlertCircle, CheckSquare
+  AlertTriangle, Monitor, Sparkles, HelpCircle, BookOpen,
+  Lock, Shield, Maximize, Minimize, AlertCircle, CheckSquare, X
 } from 'lucide-react';
 import { SAMPLE_TOEFL_QUESTIONS } from '../../data/toeflData';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { loadQuestionBanks, loadToeflQuestions } from '../../lib/supabaseService';
 
 interface TestItem {
   id: string;
@@ -22,6 +23,7 @@ interface TestItem {
   score?: string;
   duration: string;
   questionsCount: number;
+  isFullscreen?: boolean;
 }
 
 export const StudentTestSimulationTab: React.FC = () => {
@@ -51,49 +53,84 @@ export const StudentTestSimulationTab: React.FC = () => {
       const saved = localStorage.getItem('ej_toefl_test_programs');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          const valid = parsed.filter(p => {
-            const id = (p.id || '').toLowerCase();
-            const title = (p.title || '').toLowerCase();
-            const cat = (p.category || '').toLowerCase();
-            if (id === 'toefl-guarantee' || id === 'toefl-fasttrack' || id === 'prog-beginners' || id === 'prog-conversation') return false;
-            if (cat.includes('intensif') || cat.includes('bootcamp') || cat.includes('short course')) return false;
-            if (id.includes('ibt') || title.includes('ibt') || cat.includes('ibt')) return false;
-            return p.isActive !== false;
-          });
-          if (valid.length > 0) {
-            return valid.map(p => ({
-              id: p.id,
-              title: p.title,
-              type: 'TOEFL ITP' as const,
-              category: 'ITP' as const,
-              status: 'NOT STARTED' as const,
-              description: p.benefits ? p.benefits.join(' • ') : 'Diagnostic Practice Test with complete Structure, Written Expression, and Reading Comprehension.',
-              score: '—',
-              duration: p.duration || '115 Menit',
-              questionsCount: 140,
-            }));
-          }
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.filter(p => p.isActive !== false).map(p => ({
+            id: p.id,
+            title: p.title,
+            type: (p.category === 'TOEFL iBT' ? 'TOEFL iBT' : 'TOEFL ITP') as 'TOEFL ITP' | 'TOEFL iBT',
+            category: (p.category === 'TOEFL iBT' ? 'iBT' : 'ITP') as 'ITP' | 'iBT',
+            status: 'NOT STARTED' as const,
+            description: p.benefits && p.benefits.length > 0 ? p.benefits.join(' • ') : 'Diagnostic Practice Test with complete Structure, Written Expression, and Reading Comprehension.',
+            score: '—',
+            duration: p.duration || '115 Menit',
+            questionsCount: parseInt(p.questionCount) || 140,
+            isFullscreen: p.isFullscreen !== false,
+          }));
         }
       }
     } catch (e) {
       console.warn('Error loading student tests from localStorage', e);
     }
-    return [
-      {
-        id: 'toefl-pred-1',
-        title: 'TOEFL ITP — Prediction Test 02',
-        type: 'TOEFL ITP',
-        category: 'ITP',
-        status: 'NOT STARTED',
-        description: 'Diagnostic Practice Test with complete Structure, Written Expression, and Reading Comprehension.',
-        score: '—',
-        duration: '115 Menit',
-        questionsCount: 140,
-      }
-    ];
+    return [];
   });
 
+  const [isLoadingTests, setIsLoadingTests] = useState(false);
+  const [dbQuestions, setDbQuestions] = useState<any[]>([]);
+
+  // Load question banks strictly from Supabase database
+  useEffect(() => {
+    let isMounted = true;
+    const fetchProgramsFromDatabase = async () => {
+      setIsLoadingTests(true);
+      try {
+        const { data: dbBanks, error } = await loadQuestionBanks();
+        if (!error && dbBanks && isMounted) {
+          // Filter ONLY programs that are actually stored in the database and active
+          const validDbPrograms = dbBanks.filter(p => p.is_active !== false);
+          const mapped: TestItem[] = validDbPrograms.map(p => ({
+            id: p.id,
+            title: p.title,
+            type: (p.category === 'TOEFL iBT' ? 'TOEFL iBT' : 'TOEFL ITP') as 'TOEFL ITP' | 'TOEFL iBT',
+            category: (p.category === 'TOEFL iBT' ? 'iBT' : 'ITP') as 'ITP' | 'iBT',
+            status: 'NOT STARTED' as const,
+            description: p.benefits && p.benefits.length > 0 
+              ? p.benefits.join(' • ') 
+              : 'Diagnostic Practice Test with complete Structure, Written Expression, and Reading Comprehension.',
+            score: '—',
+            duration: p.duration || '115 Menit',
+            questionsCount: parseInt(p.question_count) || 140,
+            isFullscreen: (p as any).is_fullscreen !== false && (p as any).isFullscreen !== false,
+          }));
+
+          setAvailableTests(mapped);
+
+          // Overwrite localStorage with ONLY valid database programs so old/deleted test data is purged
+          const sanitizedForStorage = validDbPrograms.map(p => ({
+            id: p.id,
+            title: p.title,
+            tag: p.tag || 'Resmi',
+            category: p.category,
+            duration: p.duration,
+            questionCount: p.question_count,
+            scoreTarget: p.score_target || 'Skala 310 - 677',
+            benefits: p.benefits || [],
+            isActive: p.is_active,
+            isFullscreen: (p as any).is_fullscreen !== false && (p as any).isFullscreen !== false,
+          }));
+          localStorage.setItem('ej_toefl_test_programs', JSON.stringify(sanitizedForStorage));
+        }
+      } catch (err) {
+        console.warn('Error fetching question banks from Supabase:', err);
+      } finally {
+        if (isMounted) setIsLoadingTests(false);
+      }
+    };
+
+    fetchProgramsFromDatabase();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Sync when storage event is fired from other tabs
   useEffect(() => {
     const handleStorageChange = () => {
       try {
@@ -101,28 +138,19 @@ export const StudentTestSimulationTab: React.FC = () => {
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) {
-            const valid = parsed.filter(p => {
-              const id = (p.id || '').toLowerCase();
-              const title = (p.title || '').toLowerCase();
-              const cat = (p.category || '').toLowerCase();
-              if (id === 'toefl-guarantee' || id === 'toefl-fasttrack' || id === 'prog-beginners' || id === 'prog-conversation') return false;
-              if (cat.includes('intensif') || cat.includes('bootcamp') || cat.includes('short course')) return false;
-              if (id.includes('ibt') || title.includes('ibt') || cat.includes('ibt')) return false;
-              return p.isActive !== false;
-            });
-            if (valid.length > 0) {
-              setAvailableTests(valid.map(p => ({
-                id: p.id,
-                title: p.title,
-                type: 'TOEFL ITP' as const,
-                category: 'ITP' as const,
-                status: 'NOT STARTED' as const,
-                description: p.benefits ? p.benefits.join(' • ') : 'Diagnostic Practice Test with complete Structure, Written Expression, and Reading Comprehension.',
-                score: '—',
-                duration: p.duration || '115 Menit',
-                questionsCount: 140,
-              })));
-            }
+            const mapped: TestItem[] = parsed.filter(p => p.isActive !== false).map(p => ({
+              id: p.id,
+              title: p.title,
+              type: (p.category === 'TOEFL iBT' ? 'TOEFL iBT' : 'TOEFL ITP') as 'TOEFL ITP' | 'TOEFL iBT',
+              category: (p.category === 'TOEFL iBT' ? 'iBT' : 'ITP') as 'ITP' | 'iBT',
+              status: 'NOT STARTED' as const,
+              description: p.benefits && p.benefits.length > 0 ? p.benefits.join(' • ') : 'Diagnostic Practice Test with complete Structure, Written Expression, and Reading Comprehension.',
+              score: '—',
+              duration: p.duration || '115 Menit',
+              questionsCount: parseInt(p.questionCount) || 140,
+              isFullscreen: p.isFullscreen !== false,
+            }));
+            setAvailableTests(mapped);
           }
         }
       } catch (e) {
@@ -133,12 +161,50 @@ export const StudentTestSimulationTab: React.FC = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  // Fetch real questions from Supabase for the active test program
+  useEffect(() => {
+    if (!activeTest?.id) return;
+    let isMounted = true;
+    const fetchQuestions = async () => {
+      try {
+        const { data, error } = await loadToeflQuestions(activeTest.id);
+        if (!error && data && data.length > 0 && isMounted) {
+          const mapped = data.map(q => {
+            let passageText: string | undefined = (q as any).passage_text || (q as any).passageText;
+            let cleanQuestionText = q.question_text || '';
+            const passageMatch = cleanQuestionText.match(/\[PASSAGE\]([\s\S]*?)\[\/PASSAGE\]\s*([\s\S]*)/);
+            if (passageMatch) {
+              passageText = passageMatch[1].trim();
+              cleanQuestionText = passageMatch[2].trim();
+            }
+            return {
+              id: q.id,
+              section: q.section,
+              part: q.part,
+              questionText: cleanQuestionText,
+              passageText: passageText,
+              audioUrl: q.audio_url || undefined,
+              options: q.options,
+              correctAnswer: q.correct_answer,
+              explanation: q.explanation || '',
+            };
+          });
+          setDbQuestions(mapped);
+        }
+      } catch (e) {
+        console.warn('Error fetching questions from Supabase:', e);
+      }
+    };
+    fetchQuestions();
+    return () => { isMounted = false; };
+  }, [activeTest?.id]);
+
   const filteredTests = availableTests.filter((test) => {
     if (selectedFilter === 'All') return true;
     return test.category === selectedFilter;
   });
 
-  const questions = [
+  const fallbackQuestions = [
     ...SAMPLE_TOEFL_QUESTIONS,
     {
       id: 'q3',
@@ -169,6 +235,8 @@ export const StudentTestSimulationTab: React.FC = () => {
       explanation: 'Pembicara wanita menjelaskan bahwa ia terjebak macet selama dua jam sehingga tidak bisa menghadiri seminar.'
     }
   ];
+
+  const questions = dbQuestions.length > 0 ? dbQuestions : fallbackQuestions;
 
   // Request browser fullscreen mode with fallback
   const requestBrowserFullscreen = async () => {
@@ -210,7 +278,8 @@ export const StudentTestSimulationTab: React.FC = () => {
     if (testState !== 'running') return;
 
     const handleFullscreenChange = () => {
-      if (!document.fullscreenElement && fullscreenEnabled) {
+      // Only warn if fullscreen is strictly required for this test program
+      if (activeTest?.isFullscreen !== false && !document.fullscreenElement && fullscreenEnabled) {
         setShowFullscreenWarning(true);
       }
     };
@@ -289,7 +358,13 @@ export const StudentTestSimulationTab: React.FC = () => {
 
   // Start the actual exam after preparation
   const handleStartExam = () => {
-    requestBrowserFullscreen();
+    const isFullscreenRequired = activeTest?.isFullscreen !== false;
+    if (isFullscreenRequired) {
+      requestBrowserFullscreen();
+    } else {
+      setFullscreenEnabled(false);
+      setShowFullscreenWarning(false);
+    }
     setTestState('running');
     setCurrentIdx(0);
     setUserAnswers({});
@@ -474,10 +549,16 @@ export const StudentTestSimulationTab: React.FC = () => {
           </div>
 
           {/* Test Cards Grid */}
-          {filteredTests.length === 0 ? (
-            <div className={`p-6 text-center rounded-xl border ${cardBg}`}>
-              <FileText className="w-8 h-8 mx-auto mb-1.5 opacity-30 text-[#2563EB]" />
-              <p className="text-xs font-semibold">{tr('Tidak ada simulasi tes pada kategori ini.', 'No test simulations available for this category.')}</p>
+          {isLoadingTests ? (
+            <div className={`p-8 text-center rounded-xl border ${cardBg}`}>
+              <div className="w-6 h-6 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+              <p className="text-xs font-semibold text-slate-400">{tr('Memuat daftar program tes dari database...', 'Loading test programs from database...')}</p>
+            </div>
+          ) : filteredTests.length === 0 ? (
+            <div className={`p-8 text-center rounded-xl border ${cardBg}`}>
+              <FileText className="w-8 h-8 mx-auto mb-2 opacity-30 text-[#2563EB]" />
+              <h3 className="text-xs sm:text-sm font-bold">{tr('Belum Ada Program Tes yang Tersedia di Database', 'No Test Programs Available in Database')}</h3>
+              <p className="text-[11px] text-slate-400 mt-1 max-w-sm mx-auto">{tr('Hanya program ujian resmi yang terdaftar di database Supabase yang akan ditampilkan di sini.', 'Only official exam programs registered in Supabase database will appear here.')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
@@ -488,14 +569,16 @@ export const StudentTestSimulationTab: React.FC = () => {
                 >
                   <div className="space-y-2">
                     {/* Top Badges */}
-                    <div className="flex items-center justify-between gap-1.5">
-                      <span className={`px-2 py-0.5 rounded-md text-[9.5px] font-bold tracking-wide uppercase ${
-                        test.type === 'TOEFL ITP'
-                          ? 'bg-blue-500/15 text-blue-500 border border-blue-500/30'
-                          : 'bg-amber-500/15 text-amber-500 border border-amber-500/30'
-                      }`}>
-                        {test.type}
-                      </span>
+                    <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`px-2 py-0.5 rounded-md text-[9.5px] font-bold tracking-wide uppercase ${
+                          test.type === 'TOEFL ITP'
+                            ? 'bg-blue-500/15 text-blue-500 border border-blue-500/30'
+                            : 'bg-amber-500/15 text-amber-500 border border-amber-500/30'
+                        }`}>
+                          {test.type}
+                        </span>
+                      </div>
 
                       <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold tracking-wider uppercase ${
                         test.status === 'IN PROGRESS'
@@ -726,6 +809,34 @@ export const StudentTestSimulationTab: React.FC = () => {
                 </li>
               </ul>
 
+              {/* Mode Fullscreen Status Notice */}
+              {activeTest?.isFullscreen === false ? (
+                <div className="mt-2 p-2 sm:p-2.5 rounded-lg border bg-amber-500/10 border-amber-500/30 text-amber-400 text-xs flex items-center gap-2">
+                  <Minimize className="w-4 h-4 shrink-0 text-amber-400" />
+                  <div className="min-w-0">
+                    <div className="font-extrabold text-[11px] text-amber-300 flex items-center gap-1">
+                      <span>{tr('Mode Fullscreen Dinonaktifkan (Mode Windowed / Edit UI Aktif)', 'Fullscreen Mode Disabled (Windowed / UI Edit Mode)')}</span>
+                    </div>
+                    <div className="text-[10px] text-amber-400/90 leading-tight mt-0.5">
+                      {tr(
+                        'Program tes ini diatur tanpa isolasi layar penuh, sehingga Anda leluasa menginspeksi atau mengedit tampilan UI tes tanpa terkunci.',
+                        'This test program runs without fullscreen isolation, allowing you to freely inspect or edit test UI.'
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-2 p-2 sm:p-2.5 rounded-lg border bg-blue-500/10 border-blue-500/25 text-blue-400 text-xs flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 shrink-0 text-blue-400" />
+                  <div className="text-[10.5px] leading-tight">
+                    {tr(
+                      'Mode Fullscreen CBT Aktif: Ujian resmi akan berjalan dalam mode layar penuh (isolasi CBT).',
+                      'CBT Fullscreen Mode Active: Official exam will run in fullscreen isolation.'
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Agreement Checkbox */}
               <div className="pt-2">
                 <label className={`flex items-center gap-2.5 p-2 sm:p-2.5 rounded-lg border cursor-pointer select-none transition-all ${
@@ -740,10 +851,16 @@ export const StudentTestSimulationTab: React.FC = () => {
                     className="w-3.5 h-3.5 accent-[#2563EB] rounded cursor-pointer"
                   />
                   <span className="text-[11px] font-bold">
-                    {tr(
-                      'Saya telah membaca instruksi dan siap memulai ujian dalam mode layar penuh.',
-                      'I have read the instructions and am ready to start the exam in fullscreen mode.'
-                    )}
+                    {activeTest?.isFullscreen === false
+                      ? tr(
+                          'Saya telah membaca instruksi dan siap memulai simulasi ujian (Mode Windowed / Preview Aktif).',
+                          'I have read the instructions and am ready to start the test (Windowed / Preview Mode Active).'
+                        )
+                      : tr(
+                          'Saya telah membaca instruksi dan siap memulai ujian dalam mode layar penuh.',
+                          'I have read the instructions and am ready to start the exam in fullscreen mode.'
+                        )
+                    }
                   </span>
                 </label>
               </div>
@@ -771,9 +888,19 @@ export const StudentTestSimulationTab: React.FC = () => {
                     : 'bg-slate-500/30 text-slate-400 cursor-not-allowed border border-transparent'
                 }`}
               >
-                <Maximize className="w-3.5 h-3.5" />
-                <span>{tr('Masuk Layar Penuh & Mulai Ujian', 'Enter Fullscreen & Start Exam')}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                {activeTest?.isFullscreen === false ? (
+                  <>
+                    <PlayCircle className="w-3.5 h-3.5" />
+                    <span>{tr('Mulai Ujian (Mode Windowed / Edit UI)', 'Start Exam (Windowed / UI Edit Mode)')}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </>
+                ) : (
+                  <>
+                    <Maximize className="w-3.5 h-3.5" />
+                    <span>{tr('Masuk Layar Penuh & Mulai Ujian', 'Enter Fullscreen & Start Exam')}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </>
+                )}
               </button>
             </div>
 
@@ -799,10 +926,17 @@ export const StudentTestSimulationTab: React.FC = () => {
                   <span className="font-bold text-xs text-white">
                     ENGLISH JOIN INDONESIA
                   </span>
-                  <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-blue-500/15 text-blue-400 font-mono text-[9px] font-bold border border-blue-500/30">
-                    <Shield className="w-2.5 h-2.5" />
-                    CBT LOCKDOWN
-                  </span>
+                  {activeTest?.isFullscreen === false ? (
+                    <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-400 font-mono text-[9px] font-bold border border-amber-500/30">
+                      <Minimize className="w-2.5 h-2.5" />
+                      WINDOWED (EDIT UI)
+                    </span>
+                  ) : (
+                    <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-blue-500/15 text-blue-400 font-mono text-[9px] font-bold border border-blue-500/30">
+                      <Shield className="w-2.5 h-2.5" />
+                      CBT LOCKDOWN
+                    </span>
+                  )}
                 </div>
                 <div className="text-[10px] text-slate-400 truncate max-w-[180px] sm:max-w-xs">
                   {activeTest?.title || 'TOEFL ITP Prediction'}
@@ -811,13 +945,52 @@ export const StudentTestSimulationTab: React.FC = () => {
             </div>
 
             {/* Center: Badge */}
-            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold font-mono">
-              <Lock className="w-2.5 h-2.5 animate-pulse" />
-              <span>ISOLASI TERKUNCI</span>
-            </div>
+            {activeTest?.isFullscreen === false ? (
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[10px] font-bold font-mono">
+                <Minimize className="w-2.5 h-2.5" />
+                <span>MODE WINDOWED / EDIT UI AKTIF</span>
+              </div>
+            ) : (
+              <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold font-mono">
+                <Lock className="w-2.5 h-2.5 animate-pulse" />
+                <span>ISOLASI TERKUNCI</span>
+              </div>
+            )}
 
-            {/* Right: Timer & Submit */}
+            {/* Right: Timer, Live Fullscreen Switch & Submit */}
             <div className="flex items-center gap-2">
+              {/* Live Fullscreen Toggle Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (document.fullscreenElement) {
+                    exitBrowserFullscreen();
+                  } else {
+                    requestBrowserFullscreen();
+                  }
+                }}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10.5px] font-bold border border-white/20 bg-white/10 hover:bg-white/20 transition-all text-slate-200 cursor-pointer"
+                title={tr('Klik untuk toggle layar penuh', 'Toggle fullscreen')}
+              >
+                {fullscreenEnabled ? <Minimize className="w-3 h-3 text-amber-400" /> : <Maximize className="w-3 h-3 text-blue-400" />}
+                <span className="hidden md:inline">{fullscreenEnabled ? tr('Layar Penuh: ON', 'Fullscreen: ON') : tr('Layar Penuh: OFF', 'Fullscreen: OFF')}</span>
+              </button>
+
+              {/* Close / Return Button when in windowed / edit mode */}
+              {activeTest?.isFullscreen === false && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    exitBrowserFullscreen();
+                    setTestState('list');
+                  }}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10.5px] font-bold border border-rose-500/40 bg-rose-500/15 hover:bg-rose-500/25 transition-all text-rose-300 cursor-pointer"
+                  title={tr('Tutup & Kembali ke Daftar Tes (Mode Preview Edit)', 'Exit to Test List (Preview Edit Mode)')}
+                >
+                  <X className="w-3 h-3" />
+                  <span className="hidden sm:inline">{tr('Tutup Preview', 'Exit Preview')}</span>
+                </button>
+              )}
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 font-mono font-black text-amber-400 text-xs shadow-2xs">
                 <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <span className="tracking-wider">{formatTime(timeLeft)}</span>
@@ -906,9 +1079,22 @@ export const StudentTestSimulationTab: React.FC = () => {
                   </div>
                 )}
 
+                {/* Reading Passage Card if present */}
+                {((questions[currentIdx] as any).passageText || questions[currentIdx].questionText.includes('[PASSAGE]')) && (
+                  <div className="p-3.5 sm:p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 text-slate-100 text-xs sm:text-sm font-serif leading-relaxed whitespace-pre-line shadow-inner">
+                    <div className="text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#F7B425] mb-2 flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>Reading Passage / Teks Paragraf Cerita</span>
+                    </div>
+                    {(questions[currentIdx] as any).passageText || (
+                      questions[currentIdx].questionText.match(/\[PASSAGE\]([\s\S]*?)\[\/PASSAGE\]/)?.[1]?.trim()
+                    )}
+                  </div>
+                )}
+
                 {/* Question Prompt */}
                 <div className="p-3.5 sm:p-4 rounded-xl border border-white/10 bg-[#0E1524] text-white text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line shadow-inner">
-                  {questions[currentIdx].questionText}
+                  {questions[currentIdx].questionText.replace(/\[PASSAGE\][\s\S]*?\[\/PASSAGE\]\s*/, '')}
                 </div>
 
                 {/* Multiple Choice Options */}

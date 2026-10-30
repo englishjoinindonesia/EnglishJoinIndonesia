@@ -9,6 +9,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { usePrograms } from '../../context/ProgramsContext';
 import { TOEFL_PROGRAMS } from '../../data/toeflData';
+import { loadQuestionBanks } from '../../lib/supabaseService';
 
 interface OverviewTabProps {
   onNavigateTab: (tab: string) => void;
@@ -47,6 +48,37 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
     return null;
   });
 
+  // Fetch question banks directly from Supabase database
+  useEffect(() => {
+    let isMounted = true;
+    const fetchDbPrograms = async () => {
+      try {
+        const { data: dbBanks, error } = await loadQuestionBanks();
+        if (!error && dbBanks && isMounted) {
+          const mapped = dbBanks.map(p => ({
+            id: p.id,
+            title: p.title,
+            tag: p.tag || 'Resmi',
+            category: p.category,
+            duration: p.duration,
+            questionCount: p.question_count,
+            scoreTarget: p.score_target || 'Skala 310 - 677',
+            benefits: p.benefits || [],
+            isActive: p.is_active,
+            isFullscreen: (p as any).is_fullscreen !== false && (p as any).isFullscreen !== false,
+          }));
+          setLocalProgramsList(mapped);
+          localStorage.setItem('ej_toefl_test_programs', JSON.stringify(mapped));
+        }
+      } catch (err) {
+        console.warn('Error fetching question banks in OverviewTab', err);
+      }
+    };
+
+    fetchDbPrograms();
+    return () => { isMounted = false; };
+  }, []);
+
   // Load registered questions from localStorage to get exact question bank counts
   const [questionsBank, setQuestionsBank] = useState<any[]>(() => {
     try {
@@ -79,15 +111,15 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
   const questionBanksList: QuestionBankItem[] = useMemo(() => {
     const map = new Map<string, any>();
 
-    // 1. Base list of programs (from localStorage or standard test programs matching student role)
+    // 1. Base list of programs (from database / localProgramsList)
     const basePrograms = localProgramsList || [
       {
         id: 'toefl-pred-1',
-        title: 'TOEFL ITP — Prediction Test 02',
+        title: 'TOEFL ITP — Test',
         tag: 'Simulasi Resmi',
         category: 'TOEFL ITP',
         duration: '115 Menit',
-        questionCount: '140 Soal (L, S, R)',
+        questionCount: '140 Soal (Section 1, Section 2, Section 3)',
         scoreTarget: 'Skala 310 - 677',
         benefits: ['Listening, Structure, Reading'],
         isActive: true
@@ -270,7 +302,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
               className="text-[11px] font-bold text-black bg-[#F7B425] hover:bg-amber-400 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-md shadow-[#F7B425]/20 flex items-center gap-1.5 active:scale-95"
             >
               <FolderOpen className="w-3 h-3 stroke-[2.5]" />
-              <span className="font-bold">{tr('Kelola Bank Soal', 'Manage Question Banks')}</span>
+              <span 
+                style={{ fontSize: '12px', lineHeight: '17px' }}
+                className="font-bold text-[12px] leading-[17px]"
+              >
+                {tr('Kelola Bank Soal', 'Manage Question Banks')}
+              </span>
               <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>

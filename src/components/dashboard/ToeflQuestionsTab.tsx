@@ -5,7 +5,8 @@ import {
   X, ArrowLeft, ChevronRight, ChevronDown, Layers, Clock, 
   Award, Eye, FolderOpen, ArrowUpRight, Sparkles,
   Settings, Check, FolderPlus, Sliders, ToggleLeft, ToggleRight,
-  Headphones, FileEdit, PenTool, LayoutGrid, Table2, Upload, Play, Pause, Music, FileAudio
+  Headphones, FileEdit, PenTool, LayoutGrid, Table2, Upload, Play, Pause, Music, FileAudio,
+  Maximize, Minimize
 } from 'lucide-react';
 import { ToeflQuestion, ToeflTestProgram } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
@@ -45,22 +46,23 @@ const IBT_TOEFL_SECTIONS: SectionStructureItem[] = [
   { id: 'sec-4', name: 'Section 4: Writing Section', questionCount: 2, durationMinutes: 29 },
 ];
 
-// List of Available Test Programs (matching the test simulations available in student role)
+// List of Available Test Programs (strictly matching records in Supabase toefl_question_banks)
 const AVAILABLE_PROGRAMS: ToeflTestProgram[] = [
   {
     id: 'toefl-pred-1',
-    title: 'TOEFL ITP — Prediction Test 02',
+    title: 'TOEFL ITP — Test',
     tag: 'Simulasi Resmi',
     category: 'TOEFL ITP',
     duration: '115 Menit',
-    questionCount: '140 Soal (L, S, R)',
+    questionCount: '140 Soal (Section 1, Section 2, Section 3)',
     scoreTarget: 'Skala 310 - 677',
     benefits: [
       'Section 1: Listening Comprehension (50 Soal • 35 Menit)',
       'Section 2: Structure & Written Expression (40 Soal • 25 Menit)',
       'Section 3: Reading Comprehension (50 Soal • 55 Menit)'
     ],
-    isActive: true
+    isActive: true,
+    isFullscreen: true
   }
 ];
 
@@ -132,6 +134,7 @@ const INITIAL_QUESTIONS: ToeflQuestion[] = [
     programId: 'toefl-pred-1',
     section: 'Reading',
     part: 'Academic Reading Comprehension',
+    passageText: 'Sand dunes are dynamic geological formations created along coastlines and arid deserts. They are primarily shaped by steady onshore winds transporting dry sand particles inland, where vegetation or topography impedes further movement, leading to gradual accumulation.',
     questionText: 'Based on the passage, what is the primary factor that causes the formation of coastal sand dunes?',
     options: {
       A: 'Rapid ocean currents eroding coral reefs',
@@ -142,114 +145,37 @@ const INITIAL_QUESTIONS: ToeflQuestion[] = [
     correctAnswer: 'B',
     explanation: 'Teks menyatakan pembentukan bukit pasir pantai diakibatkan oleh angin pantai konstan yang membawa butiran pasir kering.'
   },
-
-  // --- Program: TOEFL Preparation & Test (Garansi 500+) [toefl-guarantee] ---
   {
-    id: 'q6',
-    programId: 'toefl-guarantee',
-    section: 'Structure',
-    part: 'Part A (Inversion & Advanced Grammar)',
-    questionText: 'Not until the seventeenth century ______ to measure the speed of light with any accuracy.',
-    options: {
-      A: 'scientists were able',
-      B: 'were scientists able',
-      C: 'scientists able were',
-      D: 'did scientists able'
-    },
-    correctAnswer: 'B',
-    explanation: 'Frasa negatif di awal kalimat "Not until..." mewajibkan struktur inversi (auxiliary verb mendahului subjek): "were scientists able".'
-  },
-  {
-    id: 'q7',
-    programId: 'toefl-guarantee',
-    section: 'Structure',
-    part: 'Part B (Subject-Verb Agreement)',
-    questionText: 'Each of the modern (A) laboratory computers are (B) connected to (C) the centralized mainframe server (D).',
-    options: {
-      A: 'modern',
-      B: 'are -> is (Singular agreement)',
-      C: 'connected to',
-      D: 'centralized mainframe server'
-    },
-    correctAnswer: 'B',
-    explanation: 'Subjek kalimat diawali dengan "Each of...", yang bernilai singular, sehingga auxiliary verb yang tepat adalah "is", bukan "are".'
-  },
-  {
-    id: 'q8',
-    programId: 'toefl-guarantee',
-    section: 'Listening',
-    part: 'Part C (Academic Lecture)',
-    questionText: '(Professor): Today we explore how desert flora adapt to extreme diurnal temperature swings...\n(Narrator): What is the main purpose of the professor’s lecture?',
-    options: {
-      A: 'To compare nocturnal desert predators',
-      B: 'To illustrate plant physiological adaptations in arid environments',
-      C: 'To explain water evaporation rates in rainforests',
-      D: 'To summarize agricultural advancements in irrigation'
-    },
-    correctAnswer: 'B',
-    explanation: 'Topik utama kuliah adalah adaptasi fisiologis tumbuhan gurun terhadap perubahan suhu ekstrem.'
-  },
-  {
-    id: 'q9',
-    programId: 'toefl-guarantee',
+    id: 'q-adams-1',
+    programId: 'toefl-pred-1',
     section: 'Reading',
-    part: 'Inference & Vocabulary',
-    questionText: 'The author uses the word "resilient" in line 14 to imply that the community:',
+    part: 'Passage 1 (Reading Comprehension)',
+    passageText: 'John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829, is today recognized for his masterful statesmanship and diplomacy. He dedicated his life to public service, both in the presidency and in the various other political offers that he held. Throughout his political career he demonstrated his unswerving belief in freedom of speech, the antislavery cause, and the right of Americans to be free from European and Asian domination.',
+    questionText: 'To what did John Quincy Adams devote his life?',
     options: {
-      A: 'succumbed quickly to external economic pressures',
-      B: 'was capable of recovering readily from adversity',
-      C: 'remained resistant to adopting modern technology',
-      D: 'isolated itself from neighboring populations'
+      A: 'improving his personal life',
+      B: 'Serving the public',
+      C: 'increasing his fortune',
+      D: 'Working on his private business'
     },
     correctAnswer: 'B',
-    explanation: 'Kata "resilient" berarti tangguh dan mampu bangkit kembali dengan cepat dari kesulitan (recovering from adversity).'
-  },
-
-  // --- Program: TOEFL Fast-Track Weekend Bootcamp [toefl-fasttrack] ---
-  {
-    id: 'q10',
-    programId: 'toefl-fasttrack',
-    section: 'Structure',
-    part: 'Part A (Noun Clauses)',
-    questionText: '______ is essential for maintaining strong cardiovascular health has been proven repeatedly.',
-    options: {
-      A: 'That regular aerobic exercise',
-      B: 'Regular aerobic exercise',
-      C: 'Because regular aerobic exercise',
-      D: 'It is regular aerobic exercise'
-    },
-    correctAnswer: 'A',
-    explanation: 'Kalimat membutuhkan noun clause yang diawali dengan konjungsi "That" untuk berfungsi sebagai subjek utama kalimat.'
+    explanation: 'Paragraf menyatakan secara eksplisit: "He dedicated his life to public service, both in the presidency and in the various other political offers that he held."'
   },
   {
-    id: 'q11',
-    programId: 'toefl-fasttrack',
-    section: 'Listening',
-    part: 'Part A (Idiomatic Expressions)',
-    questionText: '(Woman): Are you going to take the advanced linguistics seminar next term?\n(Man): I’m on the fence about it.\n(Narrator): What does the man mean?',
-    options: {
-      A: 'He definitely plans to register.',
-      B: 'He is undecided about taking the course.',
-      C: 'He will watch the seminar from outside.',
-      D: 'He dropped the course last week.'
-    },
-    correctAnswer: 'B',
-    explanation: 'Idiom "on the fence" berarti belum bisa memutuskan atau masih ragu-ragu (undecided).'
-  },
-  {
-    id: 'q12',
-    programId: 'toefl-fasttrack',
+    id: 'q-adams-2',
+    programId: 'toefl-pred-1',
     section: 'Reading',
-    part: 'Main Idea & Details',
-    questionText: 'What is the passage primarily concerned with?',
+    part: 'Passage 1 (Reading Comprehension)',
+    passageText: 'John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829, is today recognized for his masterful statesmanship and diplomacy. He dedicated his life to public service, both in the presidency and in the various other political offers that he held. Throughout his political career he demonstrated his unswerving belief in freedom of speech, the antislavery cause, and the right of Americans to be free from European and Asian domination.',
+    questionText: 'In line 5, the word “unswerving” is closest in meaning to ….',
     options: {
-      A: 'The economic impact of the transcontinental railroad',
-      B: 'The architectural flaws of early steam locomotives',
-      C: 'The biography of George Stephenson',
-      D: 'The decline of riverboat transport in the Midwest'
+      A: 'moveable',
+      B: 'insignificant',
+      C: 'unchanging',
+      D: 'diplomatic'
     },
-    correctAnswer: 'A',
-    explanation: 'Paragraf awal dan tesis teks berfokus pada dampak ekonomi dari pembangunan jalur kereta api lintas benua.'
+    correctAnswer: 'C',
+    explanation: 'Kata "unswerving" bermakna teguh, tidak menyimpang, atau tidak berubah (unchanging).'
   },
 
   // --- Additional Practice Items [toefl-pred-1] ---
@@ -367,6 +293,7 @@ export const ToeflQuestionsTab: React.FC = () => {
             scoreTarget: b.score_target || 'Skala 310 - 677',
             benefits: b.benefits || [],
             isActive: b.is_active,
+            isFullscreen: (b as any).is_fullscreen !== false && (b as any).isFullscreen !== false,
           }));
           const sanitized = mappedPrograms.filter(isStudentTestProgram);
           if (sanitized.length > 0) {
@@ -393,17 +320,28 @@ export const ToeflQuestionsTab: React.FC = () => {
         // 2. Load Questions from Supabase
         const { data: dbQuestions, error: qErr } = await loadToeflQuestions();
         if (!qErr && dbQuestions && dbQuestions.length > 0 && isSubscribed) {
-          const mappedQuestions: ToeflQuestion[] = dbQuestions.map((q) => ({
-            id: q.id,
-            programId: q.program_id,
-            section: q.section as any,
-            part: q.part,
-            questionText: q.question_text,
-            audioUrl: q.audio_url || undefined,
-            options: q.options,
-            correctAnswer: (q.correct_answer || 'A') as 'A' | 'B' | 'C' | 'D',
-            explanation: q.explanation || '',
-          }));
+          const mappedQuestions: ToeflQuestion[] = dbQuestions.map((q) => {
+            let passageText: string | undefined = (q as any).passage_text || (q as any).passageText;
+            let cleanQuestionText = q.question_text || '';
+            const passageMatch = cleanQuestionText.match(/\[PASSAGE\]([\s\S]*?)\[\/PASSAGE\]\s*([\s\S]*)/);
+            if (passageMatch) {
+              passageText = passageMatch[1].trim();
+              cleanQuestionText = passageMatch[2].trim();
+            }
+
+            return {
+              id: q.id,
+              programId: q.program_id,
+              section: q.section as any,
+              part: q.part,
+              questionText: cleanQuestionText,
+              audioUrl: q.audio_url || undefined,
+              passageText: passageText,
+              options: q.options,
+              correctAnswer: (q.correct_answer || 'A') as 'A' | 'B' | 'C' | 'D',
+              explanation: q.explanation || '',
+            };
+          });
           setQuestions(mappedQuestions);
           localStorage.setItem('ej_toefl_questions_bank', JSON.stringify(mappedQuestions));
         } else if (!qErr && dbQuestions && dbQuestions.length === 0) {
@@ -414,7 +352,7 @@ export const ToeflQuestionsTab: React.FC = () => {
               program_id: q.programId,
               section: q.section,
               part: q.part,
-              question_text: q.questionText,
+              question_text: q.passageText ? `[PASSAGE]\n${q.passageText}\n[/PASSAGE]\n${q.questionText}` : q.questionText,
               audio_url: q.audioUrl || null,
               options: q.options,
               correct_answer: q.correctAnswer,
@@ -491,6 +429,121 @@ export const ToeflQuestionsTab: React.FC = () => {
   const [editingQuestion, setEditingQuestion] = useState<ToeflQuestion | null>(null);
   const audioFileInputRef = useRef<HTMLInputElement>(null);
 
+  // Reading Comprehension form state (Story Paragraph / Passage + Multiple questions)
+  const [readingPassage, setReadingPassage] = useState('');
+  const [readingQuestions, setReadingQuestions] = useState<Array<{
+    id?: string;
+    questionText: string;
+    options: { A: string; B: string; C: string; D: string };
+    correctAnswer: 'A' | 'B' | 'C' | 'D';
+    explanation: string;
+  }>>([
+    {
+      questionText: '',
+      options: { A: '', B: '', C: '', D: '' },
+      correctAnswer: 'A',
+      explanation: ''
+    }
+  ]);
+
+  const handleAddReadingQuestion = () => {
+    setReadingQuestions(prev => [
+      ...prev,
+      {
+        questionText: '',
+        options: { A: '', B: '', C: '', D: '' },
+        correctAnswer: 'A',
+        explanation: ''
+      }
+    ]);
+  };
+
+  const handleRemoveReadingQuestion = (index: number) => {
+    if (readingQuestions.length <= 1) return;
+    setReadingQuestions(prev => prev.filter((_, idx) => idx !== index));
+  };
+
+  const handleUpdateReadingQuestion = (index: number, field: string, value: any) => {
+    setReadingQuestions(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const handleUpdateReadingOption = (index: number, key: 'A' | 'B' | 'C' | 'D', value: string) => {
+    setReadingQuestions(prev => {
+      const copy = [...prev];
+      copy[index] = {
+        ...copy[index],
+        options: { ...copy[index].options, [key]: value }
+      };
+      return copy;
+    });
+  };
+
+  const handleLoadSampleReadingPassage = () => {
+    setReadingPassage(
+      'John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829, is today recognized for his masterful statesmanship and diplomacy. He dedicated his life to public service, both in the presidency and in the various other political offers that he held. Throughout his political career he demonstrated his unswerving belief in freedom of speech, the antislavery cause, and the right of Americans to be free from European and Asian domination.'
+    );
+    if (editingQuestion) {
+      setEditingQuestion(prev => prev ? { ...prev, part: 'Passage 1 (Reading Comprehension)' } : null);
+    }
+    setReadingQuestions([
+      {
+        questionText: 'To what did John Quincy Adams devote his life?',
+        options: {
+          A: 'improving his personal life',
+          B: 'Serving the public',
+          C: 'increasing his fortune',
+          D: 'Working on his private business',
+        },
+        correctAnswer: 'B',
+        explanation: 'Paragraf menyatakan secara eksplisit: "He dedicated his life to public service, both in the presidency and in the various other political offers that he held."',
+      },
+      {
+        questionText: 'In line 5, the word “unswerving” is closest in meaning to ….',
+        options: {
+          A: 'moveable',
+          B: 'insignificant',
+          C: 'unchanging',
+          D: 'diplomatic',
+        },
+        correctAnswer: 'C',
+        explanation: 'Kata "unswerving" bermakna teguh, tidak menyimpang, atau tidak berubah (unchanging).',
+      },
+    ]);
+    setActionNotice(tr('Contoh teks wacana & 2 soal John Quincy Adams berhasil dimuat.', 'Sample John Quincy Adams passage & 2 questions loaded.'));
+    setTimeout(() => setActionNotice(null), 3000);
+  };
+
+  const handleOpenEditQuestion = (q: ToeflQuestion) => {
+    setEditingQuestion(q);
+    if (q.section === 'Reading') {
+      setReadingPassage(q.passageText || '');
+      setReadingQuestions([
+        {
+          id: q.id,
+          questionText: q.questionText,
+          options: { ...q.options },
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation || '',
+        }
+      ]);
+    } else {
+      setReadingPassage('');
+      setReadingQuestions([
+        {
+          questionText: '',
+          options: { A: '', B: '', C: '', D: '' },
+          correctAnswer: 'A',
+          explanation: ''
+        }
+      ]);
+    }
+    setIsAddModalOpen(true);
+  };
+
   // Program Modal state (Tambah Bank Soal Baru / Edit Bank Soal)
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
   const [programModalMode, setProgramModalMode] = useState<'create' | 'edit'>('create');
@@ -504,6 +557,7 @@ export const ToeflQuestionsTab: React.FC = () => {
     scoreTarget: string;
     sections: SectionStructureItem[];
     isActive: boolean;
+    isFullscreen: boolean;
   }>({
     id: '',
     title: '',
@@ -514,6 +568,7 @@ export const ToeflQuestionsTab: React.FC = () => {
     scoreTarget: 'Skala 310 - 677',
     sections: DEFAULT_TOEFL_SECTIONS,
     isActive: true,
+    isFullscreen: true,
   });
 
   // Delete Program Modal state
@@ -546,6 +601,46 @@ export const ToeflQuestionsTab: React.FC = () => {
       setTimeout(() => setActionNotice(null), 3000);
     } catch (e) {
       console.warn('Error updating status in Supabase', e);
+    }
+  };
+
+  const handleToggleProgramFullscreen = async (programId: string) => {
+    const target = programsList.find(p => p.id === programId);
+    const currentFullscreen = target?.isFullscreen !== false;
+    const newFullscreenState = !currentFullscreen;
+
+    const updated = programsList.map(p => {
+      if (p.id === programId) {
+        return { ...p, isFullscreen: newFullscreenState };
+      }
+      return p;
+    });
+
+    setProgramsList(updated);
+
+    if (selectedProgram && selectedProgram.id === programId) {
+      setSelectedProgram(prev => prev ? { ...prev, isFullscreen: newFullscreenState } : null);
+    }
+
+    try {
+      localStorage.setItem('ej_toefl_test_programs', JSON.stringify(updated));
+      window.dispatchEvent(new Event('storage'));
+    } catch (e) {
+      console.warn('Error saving to localStorage', e);
+    }
+
+    try {
+      await updateQuestionBank({ 
+        id: programId, 
+        ...( { is_fullscreen: newFullscreenState } as any)
+      });
+      setActionNotice(tr(
+        newFullscreenState ? 'Mode Fullscreen AKTIF (Peserta wajib layar penuh).' : 'Mode Fullscreen NONAKTIF (Mode Windowed / Edit UI Aktif).',
+        newFullscreenState ? 'Fullscreen Mode ON (Full lockdown).' : 'Fullscreen Mode OFF (Windowed / UI Edit Mode).'
+      ));
+      setTimeout(() => setActionNotice(null), 3500);
+    } catch (e) {
+      console.warn('Error updating fullscreen status in Supabase', e);
     }
   };
 
@@ -718,6 +813,154 @@ export const ToeflQuestionsTab: React.FC = () => {
     const targetProgramId = editingQuestion.programId || selectedProgram?.id || testBasedPrograms[0]?.id;
     if (!targetProgramId) return;
 
+    // Reading Comprehension: Multiple questions linked to a single passage
+    if (editingQuestion.section === 'Reading') {
+      const cleanPassage = readingPassage.trim();
+      if (!cleanPassage) {
+        setActionNotice(tr('Teks Paragraf Cerita / Wacana (Reading Passage) wajib diisi.', 'Reading passage text is required.'));
+        setTimeout(() => setActionNotice(null), 3500);
+        return;
+      }
+      if (readingQuestions.length === 0) {
+        setActionNotice(tr('Minimal harus ada 1 butir pertanyaan untuk wacana ini.', 'At least 1 question is required for this passage.'));
+        setTimeout(() => setActionNotice(null), 3500);
+        return;
+      }
+
+      for (let i = 0; i < readingQuestions.length; i++) {
+        const sq = readingQuestions[i];
+        if (!sq.questionText.trim()) {
+          setActionNotice(tr(`Teks pertanyaan ke-${i + 1} wajib diisi.`, `Question text #${i + 1} is required.`));
+          setTimeout(() => setActionNotice(null), 3500);
+          return;
+        }
+        if (!sq.options.A.trim() || !sq.options.B.trim() || !sq.options.C.trim() || !sq.options.D.trim()) {
+          setActionNotice(tr(`Semua opsi A, B, C, D untuk pertanyaan ke-${i + 1} wajib diisi.`, `All options A, B, C, D for question #${i + 1} are required.`));
+          setTimeout(() => setActionNotice(null), 3500);
+          return;
+        }
+      }
+
+      const defaultPart = editingQuestion.part || 'Passage 1 (Reading Comprehension)';
+
+      if (editingQuestion.id) {
+        // Updating existing question
+        const firstSq = readingQuestions[0];
+        const updatedQuestion: ToeflQuestion = {
+          ...editingQuestion,
+          programId: targetProgramId,
+          section: 'Reading',
+          part: defaultPart,
+          passageText: cleanPassage,
+          questionText: firstSq.questionText.trim(),
+          options: { ...firstSq.options },
+          correctAnswer: firstSq.correctAnswer,
+          explanation: firstSq.explanation || '',
+        };
+
+        const extraQuestions: ToeflQuestion[] = readingQuestions.slice(1).map((sq, idx) => ({
+          id: sq.id || `q${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
+          programId: targetProgramId,
+          section: 'Reading',
+          part: defaultPart,
+          passageText: cleanPassage,
+          questionText: sq.questionText.trim(),
+          options: { ...sq.options },
+          correctAnswer: sq.correctAnswer,
+          explanation: sq.explanation || '',
+        }));
+
+        const newQuestionList = questions.map(q => q.id === editingQuestion.id ? updatedQuestion : q).concat(extraQuestions);
+        setQuestions(newQuestionList);
+        try {
+          localStorage.setItem('ej_toefl_questions_bank', JSON.stringify(newQuestionList));
+          window.dispatchEvent(new Event('storage'));
+        } catch (e) {
+          console.warn(e);
+        }
+        setIsAddModalOpen(false);
+        setEditingQuestion(null);
+
+        try {
+          const encodedText = `[PASSAGE]\n${cleanPassage}\n[/PASSAGE]\n${updatedQuestion.questionText}`;
+          await updateToeflQuestion({
+            id: updatedQuestion.id,
+            program_id: targetProgramId,
+            section: 'Reading',
+            part: updatedQuestion.part,
+            question_text: encodedText,
+            options: updatedQuestion.options,
+            correct_answer: updatedQuestion.correctAnswer,
+            explanation: updatedQuestion.explanation || '',
+          });
+
+          for (const eq of extraQuestions) {
+            const eqEncoded = `[PASSAGE]\n${cleanPassage}\n[/PASSAGE]\n${eq.questionText}`;
+            await createToeflQuestion({
+              id: eq.id,
+              program_id: targetProgramId,
+              section: 'Reading',
+              part: eq.part,
+              question_text: eqEncoded,
+              options: eq.options,
+              correct_answer: eq.correctAnswer,
+              explanation: eq.explanation || '',
+            });
+          }
+
+          setActionNotice(tr('Data soal Reading Comprehension berhasil diperbarui.', 'Reading questions saved successfully.'));
+          setTimeout(() => setActionNotice(null), 3000);
+        } catch (err) {
+          console.warn('Error saving reading questions to Supabase', err);
+        }
+      } else {
+        // Creating new questions
+        const newQuestions: ToeflQuestion[] = readingQuestions.map((sq, idx) => ({
+          id: `q${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
+          programId: targetProgramId,
+          section: 'Reading',
+          part: defaultPart,
+          passageText: cleanPassage,
+          questionText: sq.questionText.trim(),
+          options: { ...sq.options },
+          correctAnswer: sq.correctAnswer,
+          explanation: sq.explanation || '',
+        }));
+
+        const newQuestionList = [...questions, ...newQuestions];
+        setQuestions(newQuestionList);
+        try {
+          localStorage.setItem('ej_toefl_questions_bank', JSON.stringify(newQuestionList));
+          window.dispatchEvent(new Event('storage'));
+        } catch (e) {
+          console.warn(e);
+        }
+        setIsAddModalOpen(false);
+        setEditingQuestion(null);
+
+        try {
+          for (const nq of newQuestions) {
+            const encodedText = `[PASSAGE]\n${cleanPassage}\n[/PASSAGE]\n${nq.questionText}`;
+            await createToeflQuestion({
+              id: nq.id,
+              program_id: targetProgramId,
+              section: 'Reading',
+              part: nq.part,
+              question_text: encodedText,
+              options: nq.options,
+              correct_answer: nq.correctAnswer,
+              explanation: nq.explanation || '',
+            });
+          }
+          setActionNotice(tr(`${newQuestions.length} butir soal Reading Comprehension beserta wacana berhasil disimpan!`, `${newQuestions.length} Reading questions saved successfully!`));
+          setTimeout(() => setActionNotice(null), 3000);
+        } catch (err) {
+          console.warn('Error creating reading questions in Supabase', err);
+        }
+      }
+      return;
+    }
+
     // For listening comprehension:
     let finalQuestionText = (editingQuestion.questionText || '').trim();
     if (editingQuestion.section === 'Listening') {
@@ -794,11 +1037,16 @@ export const ToeflQuestionsTab: React.FC = () => {
   const handleOpenAddQuestionWithProgram = (targetProg?: ToeflTestProgram) => {
     const prog = targetProg || selectedProgram || testBasedPrograms[0];
     const isListeningProg = (prog?.category || '').toLowerCase().includes('listening') || selectedSection === 'listening';
+    const isReadingProg = (prog?.category || '').toLowerCase().includes('reading') || selectedSection === 'reading';
+
+    const initialSection = isListeningProg ? 'Listening' : isReadingProg ? 'Reading' : 'Structure';
+    const initialPart = isListeningProg ? 'Part A (Short Conversations)' : isReadingProg ? 'Passage 1 (Reading Comprehension)' : 'Part A (Sentence Completion)';
+
     setEditingQuestion({
       id: '',
       programId: prog ? prog.id : (testBasedPrograms[0]?.id || 'toefl-pred-1'),
-      section: isListeningProg ? 'Listening' : 'Structure',
-      part: isListeningProg ? 'Part A (Short Conversations)' : 'Part A (Sentence Completion)',
+      section: initialSection,
+      part: initialPart,
       questionText: '',
       audioUrl: undefined,
       audioFileName: undefined,
@@ -806,6 +1054,15 @@ export const ToeflQuestionsTab: React.FC = () => {
       correctAnswer: 'A',
       explanation: ''
     });
+    setReadingPassage('');
+    setReadingQuestions([
+      {
+        questionText: '',
+        options: { A: '', B: '', C: '', D: '' },
+        correctAnswer: 'A',
+        explanation: ''
+      }
+    ]);
     setIsAddModalOpen(true);
   };
 
@@ -827,6 +1084,7 @@ export const ToeflQuestionsTab: React.FC = () => {
         { id: 'sec-structure', name: 'Section 2: Structure & Written Expression', questionCount: 40, durationMinutes: 25 },
       ],
       isActive: true,
+      isFullscreen: true,
     });
     setIsProgramModalOpen(true);
   };
@@ -873,6 +1131,7 @@ export const ToeflQuestionsTab: React.FC = () => {
       scoreTarget: target.scoreTarget || 'Skala 310 - 677',
       sections: initialSections,
       isActive: target.isActive !== false,
+      isFullscreen: target.isFullscreen !== false,
     });
     setIsProgramModalOpen(true);
   };
@@ -951,6 +1210,7 @@ export const ToeflQuestionsTab: React.FC = () => {
         scoreTarget: programFormData.scoreTarget.trim() || 'Skala 310 - 677',
         benefits: finalBenefits,
         isActive: programFormData.isActive,
+        isFullscreen: programFormData.isFullscreen !== false,
       };
 
       // Seed starter questions for this program
@@ -1038,6 +1298,7 @@ export const ToeflQuestionsTab: React.FC = () => {
         scoreTarget: programFormData.scoreTarget.trim() || 'Skala 310 - 677',
         benefits: finalBenefits,
         isActive: programFormData.isActive,
+        isFullscreen: programFormData.isFullscreen !== false,
       };
 
       setProgramsList(prev => prev.map(p => p.id === updatedProgram.id ? updatedProgram : p));
@@ -1091,10 +1352,6 @@ export const ToeflQuestionsTab: React.FC = () => {
                 <h1 className={`text-base font-bold font-['Poppins',sans-serif] tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {tr('Bank Soal TOEFL per Program Tersedia', 'TOEFL Question Bank by Available Program')}
                 </h1>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full text-[9px] font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Supabase Database
-                </span>
               </div>
               <p className={`text-[11px] font-['Poppins',sans-serif] mt-0.2 leading-tight max-w-2xl ${subText}`}>
                 {tr(
@@ -1260,9 +1517,9 @@ export const ToeflQuestionsTab: React.FC = () => {
                   <th className="py-1.5 px-3 font-bold text-center">{tr('Program Tersedia', 'Available Program')}</th>
                   <th className="py-1.5 px-2.5 font-bold text-center">{tr('Kategori & Format', 'Category & Format')}</th>
                   <th className="py-1.5 px-2.5 font-bold text-center">{tr('Durasi & Target', 'Duration & Target')}</th>
-                  <th className="py-1.5 px-2.5 font-bold text-center">{tr('Struktur Bagian', 'Section Structure')}</th>
                   <th className="py-1.5 px-2.5 font-bold text-center">{tr('Bank Soal', 'Registered Qs')}</th>
                   <th className="py-1.5 px-2.5 font-bold text-center">{tr('Status', 'Status')}</th>
+                  <th className="py-1.5 px-2.5 font-bold text-center">{tr('Mode Fullscreen', 'Fullscreen Mode')}</th>
                   <th className="py-1.5 px-3 font-bold text-center">{tr('Aksi', 'Action')}</th>
                 </tr>
               </thead>
@@ -1285,19 +1542,14 @@ export const ToeflQuestionsTab: React.FC = () => {
                         }`}
                       >
                         {/* Program Name & Code */}
-                        <td className="py-1.5 px-3">
+                        <td className="h-[52px] py-1.5 px-3">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-md bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
                               <BookOpen className="w-3 h-3" />
                             </div>
                             <div>
-                              <div className="flex items-center gap-1">
-                                <span className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                  {prog.title}
-                                </span>
-                              </div>
-                              <span className="font-mono text-[8.5px] text-slate-400 block">
-                                ID: #{prog.id}
+                              <span className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                {prog.title}
                               </span>
                             </div>
                           </div>
@@ -1323,13 +1575,6 @@ export const ToeflQuestionsTab: React.FC = () => {
                               {prog.scoreTarget}
                             </span>
                           </div>
-                        </td>
-
-                        {/* Structure */}
-                        <td className="py-1.5 px-2.5 text-center">
-                          <span className={`text-[11px] font-medium block truncate max-w-[130px] mx-auto ${subText}`}>
-                            {prog.benefits[0] || 'Listening, Structure, Reading'}
-                          </span>
                         </td>
 
                         {/* Questions Count Badge */}
@@ -1363,24 +1608,46 @@ export const ToeflQuestionsTab: React.FC = () => {
                           </button>
                         </td>
 
+                        {/* Mode Fullscreen (Toggle Button ON / OFF) */}
+                        <td className="py-1.5 px-2.5 text-center whitespace-nowrap">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleProgramFullscreen(prog.id)}
+                            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold transition-all cursor-pointer select-none border ${
+                              prog.isFullscreen !== false
+                                ? 'bg-blue-500/15 text-blue-400 border-blue-500/30 hover:bg-blue-500/25'
+                                : 'bg-amber-500/15 text-amber-500 border-amber-500/30 hover:bg-amber-500/25'
+                            }`}
+                            title={
+                              prog.isFullscreen !== false
+                                ? tr('Layar Penuh AKTIF (Peserta wajib fullscreen). Klik untuk nonaktifkan agar leluasa mengedit UI test.', 'Fullscreen ON. Click to disable for flexible test UI editing.')
+                                : tr('Layar Penuh NONAKTIF (Mode Windowed / Edit UI). Klik untuk aktifkan kembali.', 'Fullscreen OFF (Windowed / UI Edit Mode). Click to enable.')
+                            }
+                          >
+                            <div className={`w-4.5 h-2.5 rounded-full transition-colors flex items-center px-0.5 ${
+                              prog.isFullscreen !== false ? 'bg-blue-500 justify-end' : 'bg-slate-400 dark:bg-slate-600 justify-start'
+                            }`}>
+                              <div className="w-1.5 h-1.5 rounded-full bg-white shadow-xs" />
+                            </div>
+                            <span className="font-extrabold tracking-wide font-['Poppins',sans-serif] text-[10.5px] flex items-center gap-1">
+                              {prog.isFullscreen !== false ? (
+                                <>
+                                  <Maximize className="w-2.5 h-2.5" />
+                                  <span>ON</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Minimize className="w-2.5 h-2.5" />
+                                  <span>OFF</span>
+                                </>
+                              )}
+                            </span>
+                          </button>
+                        </td>
+
                         {/* Action: Open Question Editor & Delete */}
                         <td className="py-1.5 px-3 text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <button
-                              id={`btn-edit-program-${prog.id}`}
-                              type="button"
-                              onClick={() => handleOpenEditProgram(prog)}
-                              className={`px-1.5 py-0.5 rounded-md font-bold text-[11px] inline-flex items-center gap-0.5 transition-all border cursor-pointer active:scale-95 shadow-xs ${
-                                isDark 
-                                  ? 'bg-blue-500/15 border-blue-500/30 text-blue-400 hover:bg-blue-500/25 hover:text-white' 
-                                  : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
-                              }`}
-                              title={tr(`Edit Data ${prog.title}`, `Edit Data for ${prog.title}`)}
-                            >
-                              <Edit3 className="w-2.5 h-2.5" />
-                              <span className="text-[11px]">{tr('Edit', 'Edit')}</span>
-                            </button>
-
                             <button
                               type="button"
                               onClick={() => {
@@ -1388,7 +1655,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                                 setSelectedSection('all');
                                 setQuestionSearchTerm('');
                               }}
-                              className="px-2 py-0.5 rounded-md bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[11px] inline-flex items-center gap-0.5 transition-all shadow-xs cursor-pointer active:scale-95"
+                              className="px-3 py-1.5 rounded-lg bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[11px] inline-flex items-center gap-0.5 transition-all shadow-xs cursor-pointer active:scale-95"
                               title={tr('Buka & Kelola Soal', 'Manage Questions')}
                             >
                               <span className="text-[11px] font-bold">{tr('Buka & Kelola Soal', 'Manage Questions')}</span>
@@ -1481,6 +1748,26 @@ export const ToeflQuestionsTab: React.FC = () => {
               >
                 <Edit3 className="w-2.5 h-2.5 text-[#F7B425]" />
                 <span>{tr('Edit Program', 'Edit Program')}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleToggleProgramFullscreen(selectedProgram.id)}
+                className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md border text-[9.5px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
+                  selectedProgram.isFullscreen !== false
+                    ? 'bg-blue-500/15 border-blue-500/30 text-blue-400 hover:bg-blue-500/25'
+                    : 'bg-amber-500/15 border-amber-500/30 text-amber-500 hover:bg-amber-500/25'
+                }`}
+                title={tr(
+                  selectedProgram.isFullscreen !== false
+                    ? 'Mode Fullscreen AKTIF (Peserta wajib layar penuh). Klik untuk NONAKTIFKAN (mode windowed untuk edit UI test).'
+                    : 'Mode Fullscreen NONAKTIF (Mode Windowed / Edit UI). Klik untuk AKTIFKAN.',
+                  selectedProgram.isFullscreen !== false
+                    ? 'Fullscreen ON. Click to disable for flexible test UI editing.'
+                    : 'Fullscreen OFF (Windowed / UI Edit Mode). Click to enable.'
+                )}
+              >
+                {selectedProgram.isFullscreen !== false ? <Maximize className="w-2.5 h-2.5" /> : <Minimize className="w-2.5 h-2.5" />}
+                <span>Fullscreen: {selectedProgram.isFullscreen !== false ? 'ON' : 'OFF'}</span>
               </button>
             </div>
             <p className={`text-[10px] leading-tight mt-0.5 ${subText}`}>
@@ -1633,10 +1920,7 @@ export const ToeflQuestionsTab: React.FC = () => {
 
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={() => {
-                      setEditingQuestion(item);
-                      setIsAddModalOpen(true);
-                    }}
+                    onClick={() => handleOpenEditQuestion(item)}
                     className={`p-1 rounded-md transition-colors cursor-pointer ${
                       isDark 
                         ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' 
@@ -1665,6 +1949,19 @@ export const ToeflQuestionsTab: React.FC = () => {
                   ? 'bg-white/5 border-white/5 text-slate-200' 
                   : 'bg-slate-50 border-slate-200 text-slate-800'
               }`}>
+                {item.passageText && (
+                  <div className={`mb-2 p-2 rounded-lg border text-[11px] font-serif leading-relaxed ${
+                    isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-100' : 'bg-amber-50 border-amber-200 text-amber-950'
+                  }`}>
+                    <div className="font-sans font-bold text-[9.5px] uppercase tracking-wider text-[#F7B425] flex items-center gap-1 mb-1">
+                      <BookOpen className="w-3 h-3" />
+                      <span>{tr('Paragraf Cerita (Reading Passage):', 'Reading Passage:')}</span>
+                    </div>
+                    <div className="whitespace-pre-line line-clamp-3 hover:line-clamp-none transition-all">
+                      {item.passageText}
+                    </div>
+                  </div>
+                )}
                 {item.audioUrl && (
                   <div className="mb-2 p-2 rounded-lg bg-[#F7B425]/10 border border-[#F7B425]/30">
                     <div className="flex items-center justify-between gap-1.5 mb-1.5">
@@ -1766,6 +2063,12 @@ export const ToeflQuestionsTab: React.FC = () => {
                       <span className={`block text-[9px] mt-0.2 ${subText}`}>{q.part}</span>
                     </td>
                     <td className="py-1 px-2.5 max-w-xs truncate font-medium text-[11px]">
+                      {q.passageText && (
+                        <span className="inline-flex items-center gap-1 mr-1.5 px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[9px] font-bold">
+                          <BookOpen className="w-2.5 h-2.5" />
+                          Passage
+                        </span>
+                      )}
                       {q.audioUrl && (
                         <span className="inline-flex items-center gap-1 mr-1.5 px-1.5 py-0.2 rounded bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[9px] font-bold">
                           <Volume2 className="w-2.5 h-2.5" />
@@ -1785,10 +2088,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                     <td className="py-1 px-2.5 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
-                          onClick={() => {
-                            setEditingQuestion(q);
-                            setIsAddModalOpen(true);
-                          }}
+                          onClick={() => handleOpenEditQuestion(q)}
                           className={`p-1 rounded-md transition-colors cursor-pointer ${
                             isDark 
                               ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' 
@@ -1889,6 +2189,21 @@ export const ToeflQuestionsTab: React.FC = () => {
                       } else if (newSection === 'Reading' && (!defaultPart || defaultPart.includes('Sentence') || defaultPart.includes('Conversations'))) {
                         defaultPart = 'Passage 1 (Reading Comprehension)';
                       }
+                      if (newSection === 'Reading') {
+                        if (readingQuestions.length === 0 || (!readingQuestions[0].questionText && editingQuestion.questionText)) {
+                          setReadingQuestions([
+                            {
+                              questionText: editingQuestion.questionText || '',
+                              options: { ...editingQuestion.options },
+                              correctAnswer: editingQuestion.correctAnswer || 'A',
+                              explanation: editingQuestion.explanation || '',
+                            }
+                          ]);
+                        }
+                        if (!readingPassage && editingQuestion.passageText) {
+                          setReadingPassage(editingQuestion.passageText);
+                        }
+                      }
                       setEditingQuestion({
                         ...editingQuestion,
                         section: newSection,
@@ -1897,9 +2212,27 @@ export const ToeflQuestionsTab: React.FC = () => {
                     }}
                     buttonClassName={isDark ? '!border-[#3a3a3a] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
                     options={[
-                      { value: 'Structure', label: 'Structure & Written Expression', badge: 'Section 2' },
-                      { value: 'Listening', label: 'Listening Comprehension', badge: 'Section 1' },
-                      { value: 'Reading', label: 'Reading Comprehension', badge: 'Section 3' },
+                      {
+                        value: 'Structure',
+                        label: 'Structure & Written Expression',
+                        badge: 'Section 2',
+                        style: { height: '34px' },
+                        labelStyle: { fontSize: '12px' },
+                      },
+                      {
+                        value: 'Listening',
+                        label: 'Listening Comprehension',
+                        badge: 'Section 1',
+                        style: { height: '34px' },
+                        labelStyle: { fontSize: '12px' },
+                      },
+                      {
+                        value: 'Reading',
+                        label: 'Reading Comprehension',
+                        badge: 'Section 3',
+                        style: { height: '34px' },
+                        labelStyle: { fontSize: '12px' },
+                      },
                     ]}
                   />
                 </div>
@@ -1922,142 +2255,423 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </div>
               </div>
 
-              {/* Teks Pertanyaan / Soal OR Upload File Audio Soal Listening */}
-              {editingQuestion.section === 'Listening' ? (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className={`block font-bold text-[11px] flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                      <Headphones className="w-3.5 h-3.5 text-[#F7B425]" />
-                      <span>{tr('Upload File Audio Soal Listening', 'Upload Listening Audio Question File')}</span>
-                      <span className="text-rose-500 font-bold">*</span>
-                    </label>
-                    <span className="text-[9.5px] font-mono text-[#F7B425] bg-[#F7B425]/10 px-1.5 py-0.2 rounded border border-[#F7B425]/20 font-bold">
-                      Format: MP3, WAV, M4A, OGG
-                    </span>
+              {/* READING COMPREHENSION FORM: Paragraf Cerita + Beberapa Soal & Opsi Jawaban */}
+              {editingQuestion.section === 'Reading' ? (
+                <div className="space-y-3">
+                  {/* 1. Teks Paragraf Cerita / Wacana (Reading Passage) */}
+                  <div className={`p-3 rounded-xl border ${
+                    isDark ? 'bg-amber-500/5 border-amber-500/30' : 'bg-amber-50/70 border-amber-300'
+                  }`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
+                      <label className={`font-bold text-xs flex items-center gap-1.5 ${isDark ? 'text-amber-400' : 'text-amber-800'}`}>
+                        <BookOpen className="w-4 h-4 text-[#F7B425]" />
+                        <span>{tr('Teks Paragraf Cerita / Wacana (Reading Passage) *', 'Story Paragraph / Reading Passage Text *')}</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleLoadSampleReadingPassage}
+                        className="px-2 py-0.5 rounded-lg border text-[10px] font-bold bg-[#F7B425]/15 text-[#F7B425] hover:bg-[#F7B425]/25 border-[#F7B425]/40 transition-all cursor-pointer flex items-center gap-1 self-start sm:self-auto"
+                        title={tr('Muat contoh paragraf John Quincy Adams beserta 2 butir soal', 'Load John Quincy Adams passage and questions')}
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        <span>⚡ {tr('Gunakan Contoh Soal Paragraf (Adams)', 'Use Sample Passage (Adams)')}</span>
+                      </button>
+                    </div>
+
+                    <textarea
+                      rows={4}
+                      required
+                      value={readingPassage}
+                      onChange={(e) => setReadingPassage(e.target.value)}
+                      placeholder={tr(
+                        'Masukkan teks cerita/wacana paragraf TOEFL di sini...\nContoh: John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829, is today recognized for his masterful statesmanship and diplomacy...',
+                        'Enter TOEFL reading passage text here...\nExample: John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829...'
+                      )}
+                      className={`w-full px-3 py-2 rounded-lg border text-xs leading-relaxed focus:outline-none focus:border-[#F7B425] font-serif ${
+                        isDark 
+                          ? 'bg-[#181818] border-white/10 text-slate-100 placeholder:text-slate-500' 
+                          : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
+                      }`}
+                    />
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+                      <span>{tr('Wacana ini menjadi bahan rujukan untuk butir-butir pertanyaan di bawah.', 'This passage is the reference for the questions below.')}</span>
+                      <span className="font-mono text-[#F7B425]">
+                        {readingPassage.split(/\s+/).filter(Boolean).length} {tr('kata', 'words')}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Hidden file input */}
-                  <input
-                    type="file"
-                    ref={audioFileInputRef}
-                    accept="audio/mp3,audio/wav,audio/m4a,audio/ogg,audio/mpeg,audio/*"
-                    onChange={handleAudioFileUpload}
-                    className="hidden"
-                  />
+                  {/* 2. Daftar Pertanyaan & Opsi Jawaban untuk Wacana Ini */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <HelpCircle className="w-3.5 h-3.5 text-[#F7B425]" />
+                        <h4 className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {tr('Daftar Teks Pertanyaan & Opsi Jawaban', 'Questions & Answer Options')}
+                        </h4>
+                        <span className="px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-[#F7B425] text-black">
+                          {readingQuestions.length} {tr('Soal', 'Questions')}
+                        </span>
+                      </div>
 
-                  {/* Audio Upload Box / Dropzone */}
-                  {!editingQuestion.audioUrl ? (
-                    <div 
-                      onClick={() => audioFileInputRef.current?.click()}
-                      className={`p-3.5 sm:p-4 rounded-xl border-2 border-dashed transition-all cursor-pointer text-center group flex flex-col items-center justify-center gap-1.5 ${
-                        isDark 
-                          ? 'border-[#F7B425]/40 bg-[#F7B425]/5 hover:bg-[#F7B425]/10 hover:border-[#F7B425]' 
-                          : 'border-[#F7B425]/50 bg-amber-50/50 hover:bg-amber-50 hover:border-[#F7B425]'
-                      }`}
-                    >
-                      <div className="w-9 h-9 rounded-full bg-[#F7B425]/20 text-[#F7B425] flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Upload className="w-4 h-4 stroke-[2.5]" />
-                      </div>
-                      <div className="space-y-0.5">
-                        <p className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {tr('Klik untuk Upload File Audio Soal Listening', 'Click to Upload Listening Audio File')}
-                        </p>
-                        <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                          {tr('Pilih rekaman suara audio soal (.mp3, .wav, .m4a, .ogg maks. 25MB)', 'Choose audio recording file (.mp3, .wav, .m4a, .ogg max 25MB)')}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <button
-                          type="button"
-                          className="px-2.5 py-1 rounded-lg bg-[#F7B425] text-black font-extrabold text-[10.5px] shadow-xs hover:bg-amber-400 transition-colors pointer-events-none"
-                        >
-                          {tr('Pilih File Audio', 'Select Audio File')}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUseSampleAudio();
-                          }}
-                          className={`px-2.5 py-1 rounded-lg border text-[10.5px] font-bold transition-all cursor-pointer pointer-events-auto ${
-                            isDark 
-                              ? 'bg-white/10 hover:bg-white/20 border-white/15 text-slate-200' 
-                              : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700'
+                      <button
+                        type="button"
+                        onClick={handleAddReadingQuestion}
+                        className="px-2 py-1 rounded-lg bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[10.5px] transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-xs"
+                      >
+                        <Plus className="w-3 h-3 stroke-[3]" />
+                        <span>{tr('Tambah Soal untuk Wacana Ini', 'Add Question for this Passage')}</span>
+                      </button>
+                    </div>
+
+                    <div className="space-y-3 max-h-[46vh] overflow-y-auto pr-1">
+                      {readingQuestions.map((qItem, qIdx) => (
+                        <div
+                          key={qIdx}
+                          className={`p-3 rounded-xl border relative transition-all ${
+                            isDark ? 'bg-white/[0.03] border-white/10' : 'bg-slate-50 border-slate-200'
                           }`}
                         >
-                          ⚡ {tr('Gunakan Sampel Percakapan', 'Use Sample Dialogue')}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={`p-3 rounded-xl border space-y-2 ${
-                      isDark ? 'bg-white/5 border-[#F7B425]/30' : 'bg-amber-50/70 border-amber-200'
-                    }`}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-7 h-7 rounded-lg bg-[#F7B425] text-black flex items-center justify-center shrink-0 font-bold">
-                            <Volume2 className="w-3.5 h-3.5" />
+                          {/* Question Header & Remove */}
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                              {tr(`Pertanyaan #${qIdx + 1}`, `Question #${qIdx + 1}`)}
+                            </span>
+
+                            {readingQuestions.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveReadingQuestion(qIdx)}
+                                className="p-1 rounded-md text-rose-500 hover:bg-rose-500/15 border border-rose-500/20 transition-colors cursor-pointer"
+                                title={tr('Hapus Pertanyaan Ini', 'Remove This Question')}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            )}
                           </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                                {tr('Audio Siap Diujikan', 'Audio Ready')}
-                              </span>
+
+                          {/* Question Prompt Textarea */}
+                          <div className="mb-2.5">
+                            <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                              {tr('Teks Pertanyaan / Soal *', 'Question Prompt *')}
+                            </label>
+                            <textarea
+                              rows={2}
+                              required
+                              value={qItem.questionText}
+                              onChange={(e) => handleUpdateReadingQuestion(qIdx, 'questionText', e.target.value)}
+                              placeholder={qIdx === 0 
+                                ? tr('Contoh: To what did John Quincy Adams devote his life?', 'Example: To what did John Quincy Adams devote his life?')
+                                : tr('Contoh: In line 5, the word “unswerving” is closest in meaning to ….', 'Example: In line 5, the word “unswerving” is closest in meaning to ….')}
+                              className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                                isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-300 text-slate-900'
+                              }`}
+                            />
+                          </div>
+
+                          {/* Answer Options A - D */}
+                          <div className="space-y-1.5 mb-2.5">
+                            <label className={`block font-bold text-[10.5px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                              {tr('Pilihan Jawaban (Options A - D) *', 'Answer Options (A - D) *')}
+                            </label>
+                            {(['A', 'B', 'C', 'D'] as const).map((optKey) => (
+                              <div key={optKey} className="flex items-center gap-1.5">
+                                <span className={`w-5 text-center font-extrabold text-xs ${
+                                  qItem.correctAnswer === optKey ? 'text-emerald-400 font-black' : 'text-[#F7B425]'
+                                }`}>
+                                  {optKey}:
+                                </span>
+                                <input
+                                  type="text"
+                                  required
+                                  value={qItem.options[optKey]}
+                                  onChange={(e) => handleUpdateReadingOption(qIdx, optKey, e.target.value)}
+                                  placeholder={
+                                    optKey === 'A' ? 'Pilihan A...' :
+                                    optKey === 'B' ? 'Pilihan B...' :
+                                    optKey === 'C' ? 'Pilihan C...' : 'Pilihan D...'
+                                  }
+                                  className={`flex-1 px-2.5 py-1 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                                    isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-300 text-slate-900'
+                                  }`}
+                                />
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Correct Key & Explanation */}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div>
+                              <label className={`block font-bold mb-1 text-[10.5px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                {tr('Kunci Jawaban Benar *', 'Correct Answer Key *')}
+                              </label>
+                              <div className="flex gap-1">
+                                {(['A', 'B', 'C', 'D'] as const).map((key) => {
+                                  const isSelected = qItem.correctAnswer === key;
+                                  return (
+                                    <button
+                                      key={key}
+                                      type="button"
+                                      onClick={() => handleUpdateReadingQuestion(qIdx, 'correctAnswer', key)}
+                                      className={`flex-1 py-1 rounded-lg text-xs font-black transition-all cursor-pointer border ${
+                                        isSelected
+                                          ? 'bg-emerald-500 border-emerald-500 text-black shadow-xs'
+                                          : isDark
+                                            ? 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                            : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                                      }`}
+                                    >
+                                      {key}
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
-                            <p className={`text-[11px] font-semibold truncate ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                              {editingQuestion.audioFileName || tr('File Audio Soal Listening', 'Listening Question Audio File')}
+
+                            <div className="sm:col-span-2">
+                              <label className={`block font-bold mb-1 text-[10.5px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                {tr('Penjelasan / Analisis Kunci Jawaban', 'Explanation / Key Analysis')}
+                              </label>
+                              <input
+                                type="text"
+                                value={qItem.explanation}
+                                onChange={(e) => handleUpdateReadingQuestion(qIdx, 'explanation', e.target.value)}
+                                placeholder={tr('Jelaskan alasan bukti di teks wacana...', 'Explain the textual evidence...')}
+                                className={`w-full px-2.5 py-1 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                                  isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-300 text-slate-900'
+                                }`}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleAddReadingQuestion}
+                      className="w-full py-2 rounded-xl border border-dashed border-[#F7B425]/50 bg-[#F7B425]/5 hover:bg-[#F7B425]/15 text-[#F7B425] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                      <span>{tr('+ Tambah Butir Pertanyaan untuk Wacana Ini', '+ Add Another Question for this Passage')}</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Listening Audio Upload or Structure Question Prompt */}
+                  {editingQuestion.section === 'Listening' ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className={`block font-bold text-[11px] flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                          <Headphones className="w-3.5 h-3.5 text-[#F7B425]" />
+                          <span>{tr('Upload File Audio Soal Listening', 'Upload Listening Audio Question File')}</span>
+                          <span className="text-rose-500 font-bold">*</span>
+                        </label>
+                        <span className="text-[9.5px] font-mono text-[#F7B425] bg-[#F7B425]/10 px-1.5 py-0.2 rounded border border-[#F7B425]/20 font-bold">
+                          Format: MP3, WAV, M4A, OGG
+                        </span>
+                      </div>
+
+                      {/* Hidden file input */}
+                      <input
+                        type="file"
+                        ref={audioFileInputRef}
+                        accept="audio/mp3,audio/wav,audio/m4a,audio/ogg,audio/mpeg,audio/*"
+                        onChange={handleAudioFileUpload}
+                        className="hidden"
+                      />
+
+                      {/* Audio Upload Box / Dropzone */}
+                      {!editingQuestion.audioUrl ? (
+                        <div 
+                          onClick={() => audioFileInputRef.current?.click()}
+                          className={`p-3.5 sm:p-4 rounded-xl border-2 border-dashed transition-all cursor-pointer text-center group flex flex-col items-center justify-center gap-1.5 ${
+                            isDark 
+                              ? 'border-[#F7B425]/40 bg-[#F7B425]/5 hover:bg-[#F7B425]/10 hover:border-[#F7B425]' 
+                              : 'border-[#F7B425]/50 bg-amber-50/50 hover:bg-amber-50 hover:border-[#F7B425]'
+                          }`}
+                        >
+                          <div className="w-9 h-9 rounded-full bg-[#F7B425]/20 text-[#F7B425] flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Upload className="w-4 h-4 stroke-[2.5]" />
+                          </div>
+                          <div className="space-y-0.5">
+                            <p className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                              {tr('Klik untuk Upload File Audio Soal Listening', 'Click to Upload Listening Audio File')}
+                            </p>
+                            <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                              {tr('Pilih rekaman suara audio soal (.mp3, .wav, .m4a, .ogg maks. 25MB)', 'Choose audio recording file (.mp3, .wav, .m4a, .ogg max 25MB)')}
                             </p>
                           </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <button
+                              type="button"
+                              className="px-2.5 py-1 rounded-lg bg-[#F7B425] text-black font-extrabold text-[10.5px] shadow-xs hover:bg-amber-400 transition-colors pointer-events-none"
+                            >
+                              {tr('Pilih File Audio', 'Select Audio File')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUseSampleAudio();
+                              }}
+                              className={`px-2.5 py-1 rounded-lg border text-[10.5px] font-bold transition-all cursor-pointer pointer-events-auto ${
+                                isDark 
+                                  ? 'bg-white/10 hover:bg-white/20 border-white/15 text-slate-200' 
+                                  : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700'
+                              }`}
+                            >
+                              ⚡ {tr('Gunakan Sampel Percakapan', 'Use Sample Dialogue')}
+                            </button>
+                          </div>
                         </div>
+                      ) : (
+                        <div className={`p-3 rounded-xl border space-y-2 ${
+                          isDark ? 'bg-white/5 border-[#F7B425]/30' : 'bg-amber-50/70 border-amber-200'
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-[#F7B425] text-black flex items-center justify-center shrink-0 font-bold">
+                                <Volume2 className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                    {tr('Audio Siap Diujikan', 'Audio Ready')}
+                                  </span>
+                                </div>
+                                <p className={`text-[11px] font-semibold truncate ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                                  {editingQuestion.audioFileName || tr('File Audio Soal Listening', 'Listening Question Audio File')}
+                                </p>
+                              </div>
+                            </div>
 
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => audioFileInputRef.current?.click()}
-                            className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#F7B425]/15 text-[#F7B425] hover:bg-[#F7B425]/25 border border-[#F7B425]/30 transition-colors cursor-pointer"
-                          >
-                            {tr('Ganti File Audio', 'Change Audio')}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingQuestion(prev => prev ? { ...prev, audioUrl: undefined, audioFileName: undefined } : null);
-                              if (audioFileInputRef.current) audioFileInputRef.current.value = '';
-                            }}
-                            className="p-1 rounded-lg text-rose-500 hover:bg-rose-500/15 border border-rose-500/20 transition-colors cursor-pointer"
-                            title={tr('Hapus Audio', 'Remove Audio')}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => audioFileInputRef.current?.click()}
+                                className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#F7B425]/15 text-[#F7B425] hover:bg-[#F7B425]/25 border border-[#F7B425]/30 transition-colors cursor-pointer"
+                              >
+                                {tr('Ganti File Audio', 'Change Audio')}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingQuestion(prev => prev ? { ...prev, audioUrl: undefined, audioFileName: undefined } : null);
+                                  if (audioFileInputRef.current) audioFileInputRef.current.value = '';
+                                }}
+                                className="p-1 rounded-lg text-rose-500 hover:bg-rose-500/15 border border-rose-500/20 transition-colors cursor-pointer"
+                                title={tr('Hapus Audio', 'Remove Audio')}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Native HTML5 Audio Player */}
+                          <div className="pt-0.5">
+                            <audio 
+                              controls 
+                              src={editingQuestion.audioUrl} 
+                              className="w-full h-8 rounded-lg outline-none" 
+                            />
+                          </div>
                         </div>
-                      </div>
+                      )}
 
-                      {/* Native HTML5 Audio Player */}
-                      <div className="pt-0.5">
-                        <audio 
-                          controls 
-                          src={editingQuestion.audioUrl} 
-                          className="w-full h-8 rounded-lg outline-none" 
+                      {/* Optional transcript or question instruction note */}
+                      <div>
+                        <div className="flex items-center justify-between mb-0.5">
+                          <label className={`block font-semibold text-[10px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                            {tr('Transkrip Percakapan / Pertanyaan Narator (Opsional)', 'Conversation Transcript / Narrator Prompt (Optional)')}
+                          </label>
+                          <span className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            {tr('Opsional • Teks pendukung bagi penguji/peserta', 'Optional • Supporting prompt')}
+                          </span>
+                        </div>
+                        <textarea
+                          rows={2}
+                          value={editingQuestion.questionText}
+                          onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
+                          placeholder={tr('Contoh: (Narrator): What does the man imply? (Atau ketik transkrip percakapan)', 'Example: (Narrator): What does the man imply? (Or enter conversation transcript)')}
+                          className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                            isDark 
+                              ? 'bg-[#1e1e1e] border-white/10 text-white' 
+                              : 'bg-slate-50 border-slate-300 text-slate-900'
+                          }`}
                         />
                       </div>
                     </div>
+                  ) : (
+                    <div>
+                      <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        {tr('Teks Pertanyaan / Soal *', 'Question Prompt / Text *')}
+                      </label>
+                      <textarea
+                        rows={2}
+                        required
+                        value={editingQuestion.questionText}
+                        onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
+                        placeholder={tr('Ketik kalimat soal TOEFL di sini...', 'Type the TOEFL question here...')}
+                        className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                          isDark 
+                            ? 'bg-[#1e1e1e] border-white/10 text-white' 
+                            : 'bg-slate-50 border-slate-300 text-slate-900'
+                        }`}
+                      />
+                    </div>
                   )}
 
-                  {/* Optional transcript or question instruction note */}
+                  <div className="space-y-1.5">
+                    <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      {tr('Pilihan Jawaban (Options A - D) *', 'Answer Options (A - D) *')}
+                    </label>
+                    {(['A', 'B', 'C', 'D'] as const).map((key) => (
+                      <div key={key} className="flex items-center gap-1.5">
+                        <span className="w-5 font-bold text-[#F7B425] text-center text-xs">{key}:</span>
+                        <input
+                          type="text"
+                          required
+                          value={editingQuestion.options[key]}
+                          onChange={(e) => setEditingQuestion({
+                            ...editingQuestion,
+                            options: { ...editingQuestion.options, [key]: e.target.value }
+                          })}
+                          className={`flex-1 px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                            isDark 
+                              ? 'bg-[#1e1e1e] border-white/10 text-white' 
+                              : 'bg-slate-50 border-slate-300 text-slate-900'
+                          }`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
                   <div>
-                    <div className="flex items-center justify-between mb-0.5">
-                      <label className={`block font-semibold text-[10px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                        {tr('Transkrip Percakapan / Pertanyaan Narator (Opsional)', 'Conversation Transcript / Narrator Prompt (Optional)')}
-                      </label>
-                      <span className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        {tr('Opsional • Teks pendukung bagi penguji/peserta', 'Optional • Supporting prompt')}
-                      </span>
-                    </div>
+                    <CustomDropdown
+                      label={tr('Kunci Jawaban Benar *', 'Correct Answer Key *')}
+                      value={editingQuestion.correctAnswer}
+                      onChange={(val) => setEditingQuestion({ ...editingQuestion, correctAnswer: val as any })}
+                      buttonClassName={isDark ? '!border-[#2d2d2d] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
+                      options={[
+                        { value: 'A', label: 'Opsi A' },
+                        { value: 'B', label: 'Opsi B' },
+                        { value: 'C', label: 'Opsi C' },
+                        { value: 'D', label: 'Opsi D' },
+                      ]}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      {tr('Penjelasan / Pembahasan Grammar & Jawaban', 'Grammar Analysis & Explanation')}
+                    </label>
                     <textarea
                       rows={2}
-                      value={editingQuestion.questionText}
-                      onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
-                      placeholder={tr('Contoh: (Narrator): What does the man imply? (Atau ketik transkrip percakapan)', 'Example: (Narrator): What does the man imply? (Or enter conversation transcript)')}
+                      value={editingQuestion.explanation}
+                      onChange={(e) => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
+                      placeholder={tr('Jelaskan alasan mengapa opsi tersebut benar...', 'Explain why the selected option is correct...')}
                       className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                         isDark 
                           ? 'bg-[#1e1e1e] border-white/10 text-white' 
@@ -2065,83 +2679,8 @@ export const ToeflQuestionsTab: React.FC = () => {
                       }`}
                     />
                   </div>
-                </div>
-              ) : (
-                <div>
-                  <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {tr('Teks Pertanyaan / Soal *', 'Question Prompt / Text *')}
-                  </label>
-                  <textarea
-                    rows={2}
-                    required
-                    value={editingQuestion.questionText}
-                    onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
-                    placeholder={tr('Ketik kalimat soal TOEFL di sini...', 'Type the TOEFL question here...')}
-                    className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
-                      isDark 
-                        ? 'bg-[#1e1e1e] border-white/10 text-white' 
-                        : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                  />
-                </div>
+                </>
               )}
-
-              <div className="space-y-1.5">
-                <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                  {tr('Pilihan Jawaban (Options A - D) *', 'Answer Options (A - D) *')}
-                </label>
-                {(['A', 'B', 'C', 'D'] as const).map((key) => (
-                  <div key={key} className="flex items-center gap-1.5">
-                    <span className="w-5 font-bold text-[#F7B425] text-center text-xs">{key}:</span>
-                    <input
-                      type="text"
-                      required
-                      value={editingQuestion.options[key]}
-                      onChange={(e) => setEditingQuestion({
-                        ...editingQuestion,
-                        options: { ...editingQuestion.options, [key]: e.target.value }
-                      })}
-                      className={`flex-1 px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
-                        isDark 
-                          ? 'bg-[#1e1e1e] border-white/10 text-white' 
-                          : 'bg-slate-50 border-slate-300 text-slate-900'
-                      }`}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <CustomDropdown
-                  label={tr('Kunci Jawaban Benar *', 'Correct Answer Key *')}
-                  value={editingQuestion.correctAnswer}
-                  onChange={(val) => setEditingQuestion({ ...editingQuestion, correctAnswer: val as any })}
-                  buttonClassName={isDark ? '!border-[#2d2d2d] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
-                  options={[
-                    { value: 'A', label: 'Opsi A' },
-                    { value: 'B', label: 'Opsi B' },
-                    { value: 'C', label: 'Opsi C' },
-                    { value: 'D', label: 'Opsi D' },
-                  ]}
-                />
-              </div>
-
-              <div>
-                <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                  {tr('Penjelasan / Pembahasan Grammar & Jawaban', 'Grammar Analysis & Explanation')}
-                </label>
-                <textarea
-                  rows={2}
-                  value={editingQuestion.explanation}
-                  onChange={(e) => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
-                  placeholder={tr('Jelaskan alasan mengapa opsi tersebut benar...', 'Explain why the selected option is correct...')}
-                  className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
-                    isDark 
-                      ? 'bg-[#1e1e1e] border-white/10 text-white' 
-                      : 'bg-slate-50 border-slate-300 text-slate-900'
-                  }`}
-                />
-              </div>
 
               <div className="pt-2 flex gap-2">
                 <button
@@ -2157,9 +2696,14 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-1.5 rounded-lg bg-[#F7B425] font-extrabold text-black hover:bg-amber-400 cursor-pointer shadow-md shadow-[#F7B425]/20 transition-all active:scale-98 text-xs"
+                  style={{ fontWeight: 'bold' }}
+                  className="flex-1 py-1.5 rounded-lg bg-[#F7B425] font-bold text-black hover:bg-amber-400 cursor-pointer shadow-md shadow-[#F7B425]/20 transition-all active:scale-98 text-xs"
                 >
-                  {tr('Simpan Butir Soal', 'Save Question')}
+                  {editingQuestion.section === 'Reading'
+                    ? editingQuestion.id 
+                      ? tr('Perbarui Soal Reading', 'Update Reading Question')
+                      : tr(`Simpan ${readingQuestions.length} Butir Soal Reading`, `Save ${readingQuestions.length} Reading Questions`)
+                    : tr('Simpan Butir Soal', 'Save Question')}
                 </button>
               </div>
             </form>
@@ -2687,6 +3231,64 @@ export const ToeflQuestionsTab: React.FC = () => {
                   >
                     <div className="w-5 h-5 rounded-full bg-white shadow-xs flex items-center justify-center font-black text-[8.5px] text-slate-800">
                       {programFormData.isActive ? 'ON' : 'OFF'}
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* 6. MODE FULLSCREEN CBT (Layar Penuh / Windowed) */}
+              <div className="space-y-1.5">
+                <label className={`block font-bold text-xs ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                  6. {tr('Mode Layar Penuh (Fullscreen CBT)', 'Fullscreen CBT Mode')} <span className="text-rose-500">*</span>
+                </label>
+
+                <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-3 transition-all ${
+                  programFormData.isFullscreen !== false 
+                    ? isDark ? 'bg-blue-500/10 border-blue-500/30' : 'bg-blue-50/80 border-blue-200'
+                    : isDark ? 'bg-amber-500/10 border-amber-500/30' : 'bg-amber-50/80 border-amber-200'
+                }`}>
+                  <div className="flex items-start gap-2.5">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                      programFormData.isFullscreen !== false 
+                        ? 'bg-blue-500 text-white shadow-xs' 
+                        : 'bg-amber-500 text-black font-bold shadow-xs'
+                    }`}>
+                      {programFormData.isFullscreen !== false ? <Maximize className="w-4 h-4" /> : <Minimize className="w-4 h-4" />}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`font-extrabold text-[11px] tracking-wide ${
+                          programFormData.isFullscreen !== false ? 'text-blue-400' : 'text-amber-500'
+                        }`}>
+                          {programFormData.isFullscreen !== false ? tr('FULLSCREEN ON (Wajib Layar Penuh)', 'FULLSCREEN ON (Required)') : tr('FULLSCREEN OFF (Mode Windowed / Edit UI)', 'FULLSCREEN OFF (Windowed Mode)')}
+                        </span>
+                        <span className={`px-1.5 py-0.2 rounded-full text-[8.5px] font-bold uppercase ${
+                          programFormData.isFullscreen !== false 
+                            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                            : 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
+                        }`}>
+                          {programFormData.isFullscreen !== false ? 'CBT Lockdown' : 'Preview Edit'}
+                        </span>
+                      </div>
+                      <p className={`text-[10px] mt-0.2 leading-tight ${subText}`}>
+                        {programFormData.isFullscreen !== false 
+                          ? tr('Peserta wajib masuk ke mode layar penuh saat tes dimulai (standar ujian CBT).', 'Students are required to enter fullscreen when exam starts.') 
+                          : tr('Layar penuh dinonaktifkan (mode windowed). Anda bebas memeriksa dan mengedit tampilan UI tes tanpa terkunci.', 'Fullscreen disabled (windowed mode). Freely inspect and edit test UI without being locked down.')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Toggle Button */}
+                  <button
+                    type="button"
+                    onClick={() => setProgramFormData(prev => ({ ...prev, isFullscreen: prev.isFullscreen === false ? true : false }))}
+                    className={`w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer flex items-center shadow-inner shrink-0 ${
+                      programFormData.isFullscreen !== false ? 'bg-blue-500 justify-end' : 'bg-slate-400 dark:bg-slate-600 justify-start'
+                    }`}
+                    aria-label={tr('Ubah mode layar penuh bank soal', 'Toggle question bank fullscreen mode')}
+                  >
+                    <div className="w-5 h-5 rounded-full bg-white shadow-xs flex items-center justify-center font-black text-[8.5px] text-slate-800">
+                      {programFormData.isFullscreen !== false ? 'ON' : 'OFF'}
                     </div>
                   </button>
                 </div>

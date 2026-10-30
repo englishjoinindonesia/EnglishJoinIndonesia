@@ -221,7 +221,7 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
               className="px-2.5 py-1.5 sm:py-1 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-98"
             >
               <Award className="w-3.5 h-3.5" />
-              <span>{tr('Lihat Sertifikat Terakhir', 'View Latest Certificate')}</span>
+              <span className="font-bold" style={{ fontWeight: 'bold' }}>{tr('Lihat Sertifikat Terakhir', 'View Latest Certificate')}</span>
             </button>
           </div>
         </div>
@@ -355,7 +355,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
                 <th className="py-1.5 sm:py-2 px-2 font-bold text-center">Structure</th>
                 <th className="py-1.5 sm:py-2 px-2 font-bold text-center">Reading</th>
                 <th className="py-1.5 sm:py-2 px-2 font-bold text-center">{tr('Total Skor', 'Total Score')}</th>
-                <th className="py-1.5 sm:py-2 px-2 font-bold text-center">{tr('Status', 'Status')}</th>
                 <th className="py-1.5 sm:py-2 px-2.5 sm:px-3 font-bold text-right">{tr('E-Sertifikat', 'E-Certificate')}</th>
               </tr>
             </thead>
@@ -370,7 +369,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
                     <div className="flex items-center gap-1.5 mt-0.5 text-[9.5px] sm:text-[10px] text-slate-400">
                       <Calendar className="w-3 h-3 text-[#F7B425]" />
                       <span>{rec.date}</span>
-                      <span>• No. {rec.certNumber}</span>
                     </div>
                   </td>
 
@@ -406,13 +404,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
                         {tr('dari', 'of')} {rec.maxScore}
                       </span>
                     </div>
-                  </td>
-
-                  {/* Status */}
-                  <td className="py-1.5 sm:py-2 px-2 text-center">
-                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">
-                      {rec.status === 'LULUS' ? tr('LULUS', 'PASSED') : rec.status === 'MEMENUHI TARGET' ? tr('MEMENUHI TARGET', 'MET TARGET') : tr('PERLU PERBAIKAN', 'NEEDS IMPROVEMENT')}
-                    </span>
                   </td>
 
                   {/* Actions */}

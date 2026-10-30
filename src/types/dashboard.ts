@@ -55,4 +55,5 @@ export interface ToeflTestProgram {
   certificate?: string;
   benefits: string[];
   isActive?: boolean;
+  isFullscreen?: boolean;
 }

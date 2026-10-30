@@ -328,20 +328,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             
             {/* Header Title inside card */}
             <div className="mb-6">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-[#F7B425]" />
-                <span>
-                  {mode === 'sign-up' 
-                    ? tr('Registrasi Akun Baru', 'New Account Registration')
-                    : mode === 'forgot-password'
-                      ? tr('Pemulihan Kata Sandi', 'Password Recovery')
-                      : mode === 'update-password'
-                        ? tr('Setel Kata Sandi Baru', 'Set New Password')
-                        : tr('Autentikasi Terenkripsi', 'Encrypted Authentication')
-                  }
-                </span>
-              </span>
-
               <h1 className="text-2xl sm:text-3xl font-black font-heading tracking-tight text-white">
                 {mode === 'sign-up'
                   ? tr('Buat Akun Anda', 'Create Your Account')

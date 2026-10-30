@@ -6,6 +6,10 @@ export interface DropdownOption {
   value: string;
   label: string;
   badge?: string;
+  style?: React.CSSProperties;
+  className?: string;
+  labelStyle?: React.CSSProperties;
+  labelClassName?: string;
 }
 
 interface CustomDropdownProps {
@@ -16,6 +20,7 @@ interface CustomDropdownProps {
   placeholder?: string;
   className?: string;
   buttonClassName?: string;
+  buttonStyle?: React.CSSProperties;
   id?: string;
 }
 
@@ -27,6 +32,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   placeholder = 'Pilih opsi...',
   className = '',
   buttonClassName = '',
+  buttonStyle,
   id,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -67,6 +73,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
+        style={buttonStyle}
         className={`w-full px-4 py-3 rounded-2xl flex items-center justify-between text-left font-medium text-xs sm:text-sm transition-all duration-200 cursor-pointer select-none outline-none border ${
           isOpen
             ? 'border-[#F7B425] shadow-lg shadow-[#F7B425]/15'
@@ -115,7 +122,8 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
                 key={option.value}
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-left text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer ${
+                style={option.style}
+                className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-left text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer ${option.className || ''} ${
                   isSelected
                     ? 'bg-[#F7B425] text-white font-black shadow-md'
                     : isDark
@@ -125,7 +133,9 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
                 role="option"
                 aria-selected={isSelected}
               >
-                <span className="truncate pr-2">{option.label}</span>
+                <span className={`truncate pr-2 ${option.labelClassName || ''}`} style={option.labelStyle}>
+                  {option.label}
+                </span>
                 {isSelected && (
                   <Check className="w-4 h-4 text-white stroke-[3] flex-shrink-0" />
                 )}

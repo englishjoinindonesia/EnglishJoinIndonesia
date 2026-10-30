@@ -24,96 +24,74 @@ interface StudentRecord {
   certificateNumber?: string;
 }
 
-const defaultStudents: StudentRecord[] = [
-  {
-    id: 'STD-2026-001',
-    name: 'Muhammad Farhan',
-    whatsapp: '081298765432',
-    email: 'farhan.m@gmail.com',
-    programName: 'TOEFL ITP Prediction Test (Online)',
-    registrationDate: '01 Mar 2026',
-    testScore: 573,
-    listeningScore: 56,
-    structureScore: 58,
-    readingScore: 58,
-    paymentStatus: 'Paid',
-    status: 'Lulus (500+)',
-    certificateNumber: 'CERT/EJ/2026/03/089'
-  },
-  {
-    id: 'STD-2026-002',
-    name: 'Anisa Rahmawati',
-    whatsapp: '085712348899',
-    email: 'anisa.rahma@student.ac.id',
-    programName: 'TOEFL Preparation & Test (Garansi 500+)',
-    registrationDate: '28 Feb 2026',
-    testScore: 540,
-    listeningScore: 52,
-    structureScore: 55,
-    readingScore: 55,
-    paymentStatus: 'Paid',
-    status: 'Lulus (500+)',
-    certificateNumber: 'CERT/EJ/2026/02/084'
-  },
-  {
-    id: 'STD-2026-003',
-    name: 'Bagus Tri Prasetyo',
-    whatsapp: '082199887766',
-    email: 'bagus.tri@corp.id',
-    programName: 'TOEFL Fast-Track Weekend Bootcamp',
-    registrationDate: '27 Feb 2026',
-    testScore: 490,
-    listeningScore: 48,
-    structureScore: 50,
-    readingScore: 49,
-    paymentStatus: 'Paid',
-    status: 'Selesai (<500)',
-    certificateNumber: 'CERT/EJ/2026/02/079'
-  },
-  {
-    id: 'STD-2026-004',
-    name: 'Clarissa Putri',
-    whatsapp: '081344556677',
-    email: 'clarissa.p@yahoo.com',
-    programName: 'TOEFL ITP Prediction Test (Online)',
-    registrationDate: '01 Mar 2026',
-    testScore: null,
-    listeningScore: null,
-    structureScore: null,
-    readingScore: null,
-    paymentStatus: 'Paid',
-    status: 'Sedang Ujian'
-  },
-  {
-    id: 'STD-2026-005',
-    name: 'Dedi Kurniawan',
-    whatsapp: '087811223344',
-    email: 'dedi.kurnia@gmail.com',
-    programName: 'Speaking Intensive & Conversation Camp',
-    registrationDate: '26 Feb 2026',
-    testScore: null,
-    listeningScore: null,
-    structureScore: null,
-    readingScore: null,
-    paymentStatus: 'Pending',
-    status: 'Belum Mulai'
-  },
-  {
-    id: 'STD-2026-006',
-    name: 'Eka Novitasari',
-    whatsapp: '089677889900',
-    email: 'eka.novita@gmail.com',
-    programName: 'TOEFL Preparation & Test (Garansi 500+)',
-    registrationDate: '25 Feb 2026',
-    testScore: 610,
-    listeningScore: 62,
-    structureScore: 60,
-    readingScore: 61,
-    paymentStatus: 'Paid',
-    status: 'Lulus (500+)',
-    certificateNumber: 'CERT/EJ/2026/02/062'
-  }
+// Known dummy seed identifiers that should be cleaned out and never reappear
+const DUMMY_SEED_STUDENTS = [
+  'STD-2026-001',
+  'STD-2026-002',
+  'STD-2026-003',
+  'STD-2026-004',
+  'STD-2026-005',
+  'STD-2026-006'
 ];
+
+const DUMMY_SEED_EMAILS = [
+  'farhan.m@gmail.com',
+  'anisa.rahma@student.ac.id',
+  'bagus.tri@corp.id',
+  'clarissa.p@yahoo.com',
+  'dedi.kurnia@gmail.com',
+  'eka.novita@gmail.com'
+];
+
+const DELETED_STUDENT_STORAGE_KEY = 'ej_deleted_student_ids';
+const MASTER_STUDENT_STORAGE_KEY = 'ej_all_students_records';
+const REGISTERED_STUDENT_STORAGE_KEY = 'ej_registered_students';
+
+// Retrieve permanently deleted student identifiers from localStorage
+export const getDeletedStudentKeys = (): Set<string> => {
+  if (typeof window === 'undefined') return new Set<string>();
+  try {
+    const raw = localStorage.getItem(DELETED_STUDENT_STORAGE_KEY);
+    if (!raw) return new Set<string>();
+    const parsed = JSON.parse(raw);
+    return new Set<string>(Array.isArray(parsed) ? parsed : []);
+  } catch {
+    return new Set<string>();
+  }
+};
+
+// Check if a student record is in the deleted tombstone set or is an unwanted seed item
+export const isStudentDeleted = (
+  s: { id?: string; email?: string | null; name?: string | null },
+  deletedSet?: Set<string>
+): boolean => {
+  const set = deletedSet || getDeletedStudentKeys();
+  const id = s.id ? s.id.trim() : '';
+  const email = s.email ? s.email.toLowerCase().trim() : '';
+  const name = s.name ? s.name.toLowerCase().trim() : '';
+
+  if (id && (set.has(id) || DUMMY_SEED_STUDENTS.includes(id))) return true;
+  if (email && (set.has(email) || DUMMY_SEED_EMAILS.includes(email))) return true;
+  if (name && set.has(`name:${name}`)) return true;
+  return false;
+};
+
+// Permanently record a student record into the deleted tombstone set
+export const markStudentDeleted = (student: { id?: string; email?: string | null; name?: string | null }): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    const set = getDeletedStudentKeys();
+    if (student.id) set.add(student.id.trim());
+    if (student.email) set.add(student.email.toLowerCase().trim());
+    if (student.name) set.add(`name:${student.name.toLowerCase().trim()}`);
+    localStorage.setItem(DELETED_STUDENT_STORAGE_KEY, JSON.stringify(Array.from(set)));
+  } catch (err) {
+    console.warn('Error saving deleted student key:', err);
+  }
+};
+
+// Initial default empty list (no unwanted dummy seed records)
+const defaultStudents: StudentRecord[] = [];
 
 export const StudentRegistrationsTab: React.FC = () => {
   const { isDark } = useTheme();
@@ -125,31 +103,40 @@ export const StudentRegistrationsTab: React.FC = () => {
   const [deleteToast, setDeleteToast] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Initial student dataset merged with registered students & localStorage persistence
+  // Initial student dataset loaded cleanly with deleted and dummy filtering
   const [students, setStudents] = useState<StudentRecord[]>(() => {
     try {
-      const savedMaster = localStorage.getItem('ej_all_students_records');
+      const deletedKeys = getDeletedStudentKeys();
+
+      // Check master storage
+      const savedMaster = localStorage.getItem(MASTER_STUDENT_STORAGE_KEY);
       if (savedMaster) {
         const parsedMaster = JSON.parse(savedMaster);
-        if (Array.isArray(parsedMaster) && parsedMaster.length > 0) {
-          return parsedMaster;
+        if (Array.isArray(parsedMaster)) {
+          const cleaned = parsedMaster.filter(s => !isStudentDeleted(s, deletedKeys));
+          if (cleaned.length !== parsedMaster.length) {
+            localStorage.setItem(MASTER_STUDENT_STORAGE_KEY, JSON.stringify(cleaned));
+          }
+          return cleaned;
         }
       }
 
-      const saved = localStorage.getItem('ej_registered_students');
+      // Check registered storage
+      const saved = localStorage.getItem(REGISTERED_STUDENT_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const combined = [...parsed, ...defaultStudents];
-          localStorage.setItem('ej_all_students_records', JSON.stringify(combined));
-          return combined;
+          const cleaned = parsed.filter(s => !isStudentDeleted(s, deletedKeys));
+          localStorage.setItem(MASTER_STUDENT_STORAGE_KEY, JSON.stringify(cleaned));
+          return cleaned;
         }
       }
-      localStorage.setItem('ej_all_students_records', JSON.stringify(defaultStudents));
+
+      localStorage.setItem(MASTER_STUDENT_STORAGE_KEY, JSON.stringify([]));
     } catch (e) {
-      console.warn('Error reading ej_all_students_records', e);
+      console.warn('Error reading student records', e);
     }
-    return defaultStudents;
+    return [];
   });
 
   // 1. LOAD DATA: Fetch from Supabase student_registrations and test_history_records
@@ -234,62 +221,58 @@ export const StudentRegistrationsTab: React.FC = () => {
           });
         }
 
-        // 3. Ensure the currently logged-in student account is prominently added with their completed TOEFL test score!
-        if (user) {
+        // 3. Only if the logged in user is an actual student participant (NOT primary admin)
+        // and they are not deleted, attach their completed test record
+        const isAdmin = user && user.email && user.email.toLowerCase().includes('englishjoinindonesia@gmail.com');
+        if (user && !isAdmin) {
           const userEmail = user.email?.toLowerCase() || '';
           const userDisplayName = user.user_metadata?.full_name || (user.email ? user.email.split('@')[0] : 'Student Login');
           const userWhatsapp = user.user_metadata?.whatsapp || '081298765432';
           const userTestRecord = testHistoryData?.find((t: any) => t.user_id === user.id || t.student_name?.toLowerCase() === userDisplayName.toLowerCase());
 
-          const score = userTestRecord?.total_score || 583;
-          const lScore = userTestRecord?.listening_score || 58;
-          const sScore = userTestRecord?.structure_score || 60;
-          const rScore = userTestRecord?.reading_score || 57;
-          const certNo = userTestRecord?.cert_number || 'EJI/TOEFL-ITP/2026/0892';
-          const testTitle = userTestRecord?.test_title || 'TOEFL ITP — Official Prediction Test 1';
-          const testDate = userTestRecord?.date || '02 Sep 2026, 14:30 WIB';
+          if (userTestRecord) {
+            const score = userTestRecord.total_score;
+            const lScore = userTestRecord.listening_score;
+            const sScore = userTestRecord.structure_score;
+            const rScore = userTestRecord.reading_score;
+            const certNo = userTestRecord.cert_number || 'EJI/TOEFL-ITP/2026/0892';
+            const testTitle = userTestRecord.test_title || 'TOEFL ITP Prediction Test (Online)';
+            const testDate = userTestRecord.date || 'Hari ini';
 
-          const loggedInStudentRecord: StudentRecord = {
-            id: `STD-${user.id ? user.id.slice(0, 8).toUpperCase() : '2026-ME'}`,
-            name: userDisplayName,
-            whatsapp: userWhatsapp,
-            email: user.email || 'student@englishjoin.com',
-            programName: testTitle,
-            registrationDate: testDate,
-            testScore: score,
-            listeningScore: lScore,
-            structureScore: sScore,
-            readingScore: rScore,
-            paymentStatus: 'Paid',
-            status: score >= 500 ? 'Lulus (500+)' : 'Selesai (<500)',
-            certificateNumber: certNo,
-          };
+            const loggedInStudentRecord: StudentRecord = {
+              id: `STD-${user.id ? user.id.slice(0, 8).toUpperCase() : '2026-ME'}`,
+              name: userDisplayName,
+              whatsapp: userWhatsapp,
+              email: user.email || 'student@englishjoin.com',
+              programName: testTitle,
+              registrationDate: testDate,
+              testScore: score,
+              listeningScore: lScore,
+              structureScore: sScore,
+              readingScore: rScore,
+              paymentStatus: 'Paid',
+              status: score >= 500 ? 'Lulus (500+)' : 'Selesai (<500)',
+              certificateNumber: certNo,
+            };
 
-          const existingIdx = combinedList.findIndex(
-            (s) => (userEmail && s.email?.toLowerCase() === userEmail) || s.id.includes(user.id.slice(0, 8).toUpperCase())
-          );
+            const existingIdx = combinedList.findIndex(
+              (s) => (userEmail && s.email?.toLowerCase() === userEmail) || s.id.includes(user.id.slice(0, 8).toUpperCase())
+            );
 
-          if (existingIdx >= 0) {
-            combinedList.splice(existingIdx, 1);
-            combinedList.unshift(loggedInStudentRecord);
-          } else {
-            combinedList.unshift(loggedInStudentRecord);
+            if (existingIdx >= 0) {
+              combinedList[existingIdx] = loggedInStudentRecord;
+            } else {
+              combinedList.unshift(loggedInStudentRecord);
+            }
           }
         }
 
-        // Fallback or fill with default students
-        if (combinedList.length === 0) {
-          combinedList = defaultStudents;
-        } else {
-          defaultStudents.forEach((ds) => {
-            if (!combinedList.some((s) => s.id === ds.id || (ds.email && s.email?.toLowerCase() === ds.email.toLowerCase()))) {
-              combinedList.push(ds);
-            }
-          });
-        }
+        // 4. CRITICAL: Filter out any student that has been deleted or is dummy seed
+        const deletedKeys = getDeletedStudentKeys();
+        const cleanedList = combinedList.filter((s) => !isStudentDeleted(s, deletedKeys));
 
-        setStudents(combinedList);
-        localStorage.setItem('ej_all_students_records', JSON.stringify(combinedList));
+        setStudents(cleanedList);
+        localStorage.setItem(MASTER_STUDENT_STORAGE_KEY, JSON.stringify(cleanedList));
       } catch (err) {
         console.warn('Supabase fetch error:', err);
       }
@@ -304,19 +287,22 @@ export const StudentRegistrationsTab: React.FC = () => {
   useEffect(() => {
     const handleStorageChange = () => {
       try {
-        const savedMaster = localStorage.getItem('ej_all_students_records');
+        const deletedKeys = getDeletedStudentKeys();
+        const savedMaster = localStorage.getItem(MASTER_STUDENT_STORAGE_KEY);
         if (savedMaster) {
           const parsed = JSON.parse(savedMaster);
           if (Array.isArray(parsed)) {
-            setStudents(parsed);
+            const cleaned = parsed.filter(s => !isStudentDeleted(s, deletedKeys));
+            setStudents(cleaned);
             return;
           }
         }
-        const saved = localStorage.getItem('ej_registered_students');
+        const saved = localStorage.getItem(REGISTERED_STUDENT_STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) {
-            setStudents([...parsed, ...defaultStudents]);
+            const cleaned = parsed.filter(s => !isStudentDeleted(s, deletedKeys));
+            setStudents(cleaned);
           }
         }
       } catch (e) {
@@ -339,11 +325,12 @@ export const StudentRegistrationsTab: React.FC = () => {
   // 2. CREATE ITEM: Insert into Supabase
   const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
+    const uniqueNum = Date.now().toString().slice(-4);
     const created: StudentRecord = {
-      id: `STD-2026-00${students.length + 1}`,
-      name: newStudent.name,
-      whatsapp: newStudent.whatsapp,
-      email: newStudent.email || `${newStudent.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+      id: `STD-${new Date().getFullYear()}-${uniqueNum}`,
+      name: newStudent.name.trim(),
+      whatsapp: newStudent.whatsapp.trim(),
+      email: newStudent.email.trim() || `${newStudent.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
       programName: newStudent.programName,
       registrationDate: 'Hari ini',
       testScore: null,
@@ -356,7 +343,8 @@ export const StudentRegistrationsTab: React.FC = () => {
     const updated = [created, ...students];
     setStudents(updated);
     try {
-      localStorage.setItem('ej_all_students_records', JSON.stringify(updated));
+      localStorage.setItem(MASTER_STUDENT_STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new Event('storage'));
     } catch (err) {
       console.warn('Error saving new student to localStorage', err);
     }
@@ -404,26 +392,43 @@ export const StudentRegistrationsTab: React.FC = () => {
     }
   };
 
-  // 3. DELETE ITEM: Delete from Supabase
+  // Clear all students permanently
+  const handleClearAllStudents = () => {
+    if (window.confirm('Hapus semua data pendaftar siswa yang ada di tabel ini? Data yang terhapus tidak akan dimunculkan lagi.')) {
+      students.forEach(s => markStudentDeleted(s));
+      setStudents([]);
+      localStorage.setItem(MASTER_STUDENT_STORAGE_KEY, JSON.stringify([]));
+      localStorage.setItem(REGISTERED_STUDENT_STORAGE_KEY, JSON.stringify([]));
+      window.dispatchEvent(new Event('storage'));
+      setDeleteToast('Semua data pendaftar siswa telah dibersihkan secara permanen.');
+      setTimeout(() => setDeleteToast(null), 4000);
+    }
+  };
+
+  // 3. DELETE ITEM: Delete from Supabase & tombstone forever
   const confirmDeleteStudent = async () => {
     if (!studentToDelete) return;
     const targetId = studentToDelete.id;
     const targetName = studentToDelete.name;
 
+    // Permanently record deletion tombstone
+    markStudentDeleted(studentToDelete);
+
     const updated = students.filter((s) => s.id !== targetId);
     setStudents(updated);
 
     try {
-      localStorage.setItem('ej_all_students_records', JSON.stringify(updated));
+      localStorage.setItem(MASTER_STUDENT_STORAGE_KEY, JSON.stringify(updated));
 
-      const rawRegistered = localStorage.getItem('ej_registered_students');
+      const rawRegistered = localStorage.getItem(REGISTERED_STUDENT_STORAGE_KEY);
       if (rawRegistered) {
         const regList = JSON.parse(rawRegistered);
         if (Array.isArray(regList)) {
-          const filteredReg = regList.filter((s: any) => s.id !== targetId);
-          localStorage.setItem('ej_registered_students', JSON.stringify(filteredReg));
+          const filteredReg = regList.filter((s: any) => s.id !== targetId && s.email !== studentToDelete.email);
+          localStorage.setItem(REGISTERED_STUDENT_STORAGE_KEY, JSON.stringify(filteredReg));
         }
       }
+      window.dispatchEvent(new Event('storage'));
     } catch (err) {
       console.warn('Error updating storage upon deletion', err);
     }
@@ -435,12 +440,20 @@ export const StudentRegistrationsTab: React.FC = () => {
       console.warn('Supabase student delete notice:', err);
     }
 
+    try {
+      if (studentToDelete.name) {
+        await supabase.from('test_history_records').delete().eq('student_name', studentToDelete.name);
+      }
+    } catch (err) {
+      console.warn('Supabase test history delete notice:', err);
+    }
+
     if (selectedStudent?.id === targetId) {
       setSelectedStudent(null);
     }
 
     setStudentToDelete(null);
-    setDeleteToast(`Data siswa "${targetName}" (${targetId}) berhasil dihapus.`);
+    setDeleteToast(`Data siswa "${targetName}" (${targetId}) berhasil dihapus dan tidak akan dimunculkan lagi.`);
     setTimeout(() => setDeleteToast(null), 4000);
   };
 
@@ -477,52 +490,18 @@ export const StudentRegistrationsTab: React.FC = () => {
             <h2 className={`text-sm sm:text-base font-extrabold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
               Tabel Data Pendaftar TOEFL Student
             </h2>
-            <p className={`text-[11px] ${subText}`}>
-              Kelola peserta ujian TOEFL, status pembayaran, skor tes, dan verifikasi sertifikat.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Filter and Search Bar - Compact */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
-          <Filter className="w-3.5 h-3.5 text-slate-400" />
-          <div className={`flex items-center gap-1 p-0.5 rounded-xl border text-xs ${isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200 shadow-xs'}`}>
-            {[
-              { id: 'all', label: 'Semua' },
-              { id: 'passed', label: 'Lolos 500+' },
-              { id: 'active', label: 'Sedang Ujian' },
-              { id: 'pending', label: 'Belum Mulai' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setFilterStatus(tab.id)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                  filterStatus === tab.id
-                    ? 'bg-[#F7B425] text-black font-bold shadow-xs'
-                    : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
           </div>
         </div>
 
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Cari nama, WhatsApp, program..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full md:w-72 pl-8 pr-3 py-1.5 rounded-xl border text-xs focus:outline-none focus:border-[#F7B425] ${
-              isDark 
-                ? 'bg-[#141414] border-white/10 text-white placeholder:text-slate-500' 
-                : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 shadow-xs'
-            }`}
-          />
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-3 py-1.5 rounded-[10px] text-xs font-bold bg-[#F7B425] text-black hover:bg-amber-400 flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Tambah Siswa</span>
+          </button>
         </div>
       </div>
 
@@ -556,14 +535,34 @@ export const StudentRegistrationsTab: React.FC = () => {
                 <th className="py-2.5 px-2.5 text-center">Skor TOEFL</th>
                 <th className="py-2.5 px-2.5 text-center">Bayar</th>
                 <th className="py-2.5 px-2.5 text-center">Status Kelulusan</th>
-                <th className="py-2.5 px-3.5 sm:px-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-6 text-center text-slate-400 text-xs">
-                    Tidak ditemukan data pendaftar sesuai filter.
+                  <td colSpan={6} className="py-12 text-center px-4">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#F7B425] flex items-center justify-center mx-auto mb-3 border border-amber-500/20">
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>
+                      {searchTerm || filterStatus !== 'all'
+                        ? 'Tidak ditemukan data pendaftar sesuai filter.'
+                        : 'Belum Ada Data Pendaftar Siswa'}
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                      {searchTerm || filterStatus !== 'all'
+                        ? 'Coba ubah kata kunci pencarian atau sesuaikan filter status.'
+                        : 'Data yang telah dihapus tidak akan dimunculkan lagi. Pendaftar baru akan tercatat di tabel ini secara otomatis.'}
+                    </p>
+                    {(!searchTerm && filterStatus === 'all') && (
+                      <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="mt-3.5 px-3.5 py-1.5 rounded-[10px] text-xs font-bold bg-[#F7B425] text-black hover:bg-amber-400 inline-flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Tambah Data Siswa</span>
+                      </button>
+                    )}
                   </td>
                 </tr>
               ) : (
@@ -602,9 +601,6 @@ export const StudentRegistrationsTab: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <span className={`font-extrabold text-xs block leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{student.name}</span>
-                          {isCurrentUser && (
-                            <span className="text-[10px] text-emerald-500 font-bold" title="Akun Terverifikasi">&#10003;</span>
-                          )}
                         </div>
                         <span className={`text-[9.5px] block truncate max-w-[160px] ${subText}`}>{student.email}</span>
                       </td>
@@ -678,26 +674,6 @@ export const StudentRegistrationsTab: React.FC = () => {
                         }`}>
                           {student.status}
                         </span>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-2.5 px-3.5 sm:px-4 text-right space-x-1 whitespace-nowrap">
-                        <button
-                          onClick={() => setSelectedStudent(student)}
-                          className={`px-2.5 py-1 rounded-md font-bold text-[10.5px] transition-colors cursor-pointer ${
-                            isDark ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' : 'bg-slate-100 hover:bg-[#F7B425] text-slate-800 hover:text-black'
-                          }`}
-                          title="Lihat Detail & Sertifikat"
-                        >
-                          Detail
-                        </button>
-                        <button
-                          onClick={() => handleDelete(student.id)}
-                          className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer inline-flex items-center justify-center align-middle"
-                          title="Hapus Data"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
                       </td>
 
                     </tr>
@@ -830,12 +806,26 @@ export const StudentRegistrationsTab: React.FC = () => {
                   label="Pilihan Program *"
                   value={newStudent.programName}
                   onChange={(val) => setNewStudent({ ...newStudent, programName: val })}
+                  buttonStyle={{ height: '38px', borderRadius: '12px' }}
                   options={[
-                    { value: 'TOEFL ITP Prediction Test (Online)', label: 'TOEFL ITP Prediction Test (Online)', badge: 'Populer' },
-                    { value: 'TOEFL Preparation & Test (Garansi 500+)', label: 'TOEFL Preparation & Test (Garansi 500+)' },
+                    {
+                      value: 'TOEFL ITP Prediction Test (Online)',
+                      label: 'TOEFL ITP Prediction Test (Online)',
+                      badge: 'Populer',
+                      style: { height: '38px' },
+                    },
+                    {
+                      value: 'TOEFL Preparation & Test (Garansi 500+)',
+                      label: 'TOEFL Preparation & Test (Garansi 500+)',
+                      style: { height: '44px' },
+                    },
                     { value: 'TOEFL Fast-Track Weekend Bootcamp', label: 'TOEFL Fast-Track Weekend Bootcamp' },
                     { value: 'English for Beginners (From Zero to Hero)', label: 'English for Beginners (From Zero to Hero)' },
-                    { value: 'Speaking Intensive & Conversation Camp', label: 'Speaking Intensive & Conversation Camp' },
+                    {
+                      value: 'Speaking Intensive & Conversation Camp',
+                      label: 'Speaking Intensive & Conversation Camp',
+                      style: { height: '45px' },
+                    },
                   ]}
                 />
               </div>

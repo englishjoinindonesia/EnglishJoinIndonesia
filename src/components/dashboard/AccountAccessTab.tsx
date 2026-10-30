@@ -216,29 +216,13 @@ export const AccountAccessTab: React.FC = () => {
                 <h2 className="text-xs sm:text-sm font-black font-heading tracking-tight truncate">
                   {tr('Persetujuan Akses Akun: Admin & Student', 'Account Access Approval: Admin & Student')}
                 </h2>
-                <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-md bg-[#F7B425] text-black">
-                  {tr('Otoritas EJI', 'EJI Authority')}
-                </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                 {tr(
-                  'Setiap pendaftaran akun baru wajib disetujui Admin Utama:',
-                  'New registrations must be approved by Primary Admin:'
-                )}{' '}
-                <strong className="text-[#D97706] dark:text-[#F7B425] font-semibold">{PRIMARY_ADMIN_EMAIL}</strong>
+                  'Setiap pendaftaran akun baru wajib disetujui Admin Utama.',
+                  'New registrations must be approved by Primary Admin.'
+                )}
               </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-auto">
-            <div className={`px-2.5 py-1 rounded-xl flex items-center gap-1.5 border text-[11px] font-semibold ${
-              isDark 
-                ? 'bg-black/40 border-white/10 text-slate-300' 
-                : 'bg-white border-slate-200 text-slate-700 shadow-2xs'
-            }`}>
-              <Shield className="w-3.5 h-3.5 text-[#F7B425]" />
-              <span className="text-slate-400">{tr('Penyetuju:', 'Approver:')}</span>
-              <strong className="text-[#F7B425] font-bold truncate max-w-[170px]">{PRIMARY_ADMIN_EMAIL}</strong>
             </div>
           </div>
         </div>
@@ -471,10 +455,6 @@ export const AccountAccessTab: React.FC = () => {
               {filteredRequests.length}
             </span>
           </div>
-
-          <span className="text-[10px] text-slate-400 font-medium">
-            {tr('Persetujuan:', 'Approval:')} <strong className="text-[#F7B425]">{PRIMARY_ADMIN_EMAIL}</strong>
-          </span>
         </div>
 
         {filteredRequests.length === 0 ? (
