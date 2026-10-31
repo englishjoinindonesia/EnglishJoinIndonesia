@@ -115,6 +115,7 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
         const { data, error } = await supabase
           .from('test_history_records')
           .select('*')
+          .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
         if (!isSubscribed) return;
@@ -206,12 +207,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
               <h1 className="text-sm sm:text-base font-bold font-heading leading-tight">
                 {tr('Riwayat & Sertifikat TOEFL Online', 'TOEFL Online History & Certificates')}
               </h1>
-              <p className={`text-[10px] sm:text-[11px] leading-tight ${subText}`}>
-                {tr(
-                  'Rekapitulasi lengkap nilai ujian, breakdown skor per section, dan unduhan e-sertifikat resmi.',
-                  'Complete summary of exam scores, section breakdown, and official verified e-certificates.'
-                )}
-              </p>
             </div>
           </div>
 
@@ -316,9 +311,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
             <h2 className="text-xs sm:text-sm font-bold font-heading">
               {tr('Daftar Riwayat Ujian & Skor Per Section', 'Exam History & Section Scores')}
             </h2>
-            <p className={`text-[10px] sm:text-[10.5px] ${subText}`}>
-              {tr('Klik tombol "Sertifikat" untuk menampilkan sertifikat resmi berformat PDF.', 'Click the "Certificate" button to view and download your official certificate.')}
-            </p>
           </div>
 
           {/* Filter Pills */}

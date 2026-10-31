@@ -209,12 +209,6 @@ export const CampusLogosManagementTab: React.FC = () => {
               }`}>
                 {tr('Kelola Logo Kampus Alumni', 'Manage Alumni Campus Logos')}
               </h1>
-              <p className={`text-[11px] leading-4 font-['Poppins',sans-serif] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                {tr(
-                  'Atur logo kampus alumni yang tampil pada carousel di bawah Hero Section.',
-                  'Manage campus logos displayed in the carousel below the Hero Section.'
-                )}
-              </p>
             </div>
           </div>
 

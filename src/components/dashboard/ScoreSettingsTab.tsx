@@ -52,12 +52,6 @@ export const ScoreSettingsTab: React.FC = () => {
             <h2 className={`text-[16px] font-bold font-['Poppins',sans-serif] tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {tr('Pengaturan Score Test TOEFL ITP', 'TOEFL ITP Test Score Settings')}
             </h2>
-            <p className={`text-[11px] font-['Poppins',sans-serif] mt-0.2 leading-tight ${subText}`}>
-              {tr(
-                'Konfigurasi skala scoring resmi (310 - 677), passing grade sertifikat, dan rumus konversi.',
-                'Official score scale configuration (310 - 677), passing grade, and conversion formulas.'
-              )}
-            </p>
           </div>
         </div>
 

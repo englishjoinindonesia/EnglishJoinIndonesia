@@ -226,12 +226,12 @@ export const MentorsManagementTab: React.FC = () => {
             <GraduationCap className="w-4 h-4 text-[#F7B425]" />
           </div>
           <div>
-            <h2 className={`text-sm sm:text-base font-extrabold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h2 
+              style={{ fontWeight: 'bold' }}
+              className={`text-sm sm:text-base font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}
+            >
               Kelola Mentor &amp; Coach English Join Indonesia
             </h2>
-            <p className={`text-[11px] ${subText}`}>
-              Profil mentor aktif ditampilkan langsung di Landing Page English Join Indonesia.
-            </p>
           </div>
         </div>
 

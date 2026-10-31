@@ -220,9 +220,6 @@ export const ProgramsManagementTab: React.FC = () => {
             <h2 className="text-sm sm:text-base font-extrabold text-white font-heading">
               Pilihan Program English Join Indonesia
             </h2>
-            <p className="text-[11px] text-slate-400">
-              Perubahan langsung tersinkronisasi ke <strong className="text-[#F7B425]">Landing Page ("Chosen Program")</strong> &amp; <strong className="text-[#F7B425]">Portal Ujian</strong>.
-            </p>
           </div>
         </div>
 

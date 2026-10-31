@@ -288,12 +288,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
                 {questionBanksList.length} {tr('Tersedia', 'Available')}
               </span>
             </h3>
-            <p className={`text-[11px] ${subText} mt-0.5`}>
-              {tr(
-                'Daftar paket bank soal aktif yang tersinkronisasi otomatis dengan simulasi tes student.',
-                'Active question bank packages directly synced with student test simulations.'
-              )}
-            </p>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <button

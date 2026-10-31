@@ -47,169 +47,9 @@ const IBT_TOEFL_SECTIONS: SectionStructureItem[] = [
 ];
 
 // List of Available Test Programs (strictly matching records in Supabase toefl_question_banks)
-const AVAILABLE_PROGRAMS: ToeflTestProgram[] = [
-  {
-    id: 'toefl-pred-1',
-    title: 'TOEFL ITP — Test',
-    tag: 'Simulasi Resmi',
-    category: 'TOEFL ITP',
-    duration: '115 Menit',
-    questionCount: '140 Soal (Section 1, Section 2, Section 3)',
-    scoreTarget: 'Skala 310 - 677',
-    benefits: [
-      'Section 1: Listening Comprehension (50 Soal • 35 Menit)',
-      'Section 2: Structure & Written Expression (40 Soal • 25 Menit)',
-      'Section 3: Reading Comprehension (50 Soal • 55 Menit)'
-    ],
-    isActive: true,
-    isFullscreen: true
-  }
-];
-
-// Initial questions tagged with programId
-const INITIAL_QUESTIONS: ToeflQuestion[] = [
-  // --- Program: TOEFL ITP — Prediction Test 02 [toefl-pred-1] ---
-  {
-    id: 'q1',
-    programId: 'toefl-pred-1',
-    section: 'Structure',
-    part: 'Part A (Sentence Completion)',
-    questionText: 'The North Platte River ______ from Wyoming into Nebraska.',
-    options: {
-      A: 'it flowed',
-      B: 'flows',
-      C: 'flowing',
-      D: 'with flowing water'
-    },
-    correctAnswer: 'B',
-    explanation: 'Kalimat membutuhkan kata kerja utama (main verb) bentuk simple present "flows" untuk melengkapi subjek "The North Platte River".'
-  },
-  {
-    id: 'q2',
-    programId: 'toefl-pred-1',
-    section: 'Structure',
-    part: 'Part A (Sentence Completion)',
-    questionText: '______ Biloxi received its name from a Sioux word meaning "first people".',
-    options: {
-      A: 'The city of',
-      B: 'Located in',
-      C: 'It is in',
-      D: 'The tour of'
-    },
-    correctAnswer: 'A',
-    explanation: 'Kalimat membutuhkan subjek berupa noun phrase "The city of Biloxi" sebelum main verb "received".'
-  },
-  {
-    id: 'q3',
-    programId: 'toefl-pred-1',
-    section: 'Structure',
-    part: 'Part B (Written Expression)',
-    questionText: 'Guppies are sometimes call (A) rainbow fish because of (B) the males’ (C) bright colors (D).',
-    options: {
-      A: 'call -> called (Passive voice)',
-      B: 'because of',
-      C: 'the males’',
-      D: 'bright colors'
-    },
-    correctAnswer: 'A',
-    explanation: 'Passive voice membutuhkan past participle (Verb-3). Kata "call" harus diubah menjadi "called" setelah to be "are".'
-  },
-  {
-    id: 'q4',
-    programId: 'toefl-pred-1',
-    section: 'Listening',
-    part: 'Part A (Short Dialogue)',
-    questionText: '(Man): Did you get to the post office today?\n(Woman): I was planning on it, but my afternoon was completely booked.\n(Narrator): What does the woman mean?',
-    options: {
-      A: 'She went to the post office early.',
-      B: 'She was too busy to go to the post office.',
-      C: 'She booked a ticket at the post office.',
-      D: 'She bought some books in the afternoon.'
-    },
-    correctAnswer: 'B',
-    explanation: 'Idiom "completely booked" bermakna sangat sibuk dan jadwal penuh, sehingga pembicara wanita tidak sempat ke kantor pos.'
-  },
-  {
-    id: 'q5',
-    programId: 'toefl-pred-1',
-    section: 'Reading',
-    part: 'Academic Reading Comprehension',
-    passageText: 'Sand dunes are dynamic geological formations created along coastlines and arid deserts. They are primarily shaped by steady onshore winds transporting dry sand particles inland, where vegetation or topography impedes further movement, leading to gradual accumulation.',
-    questionText: 'Based on the passage, what is the primary factor that causes the formation of coastal sand dunes?',
-    options: {
-      A: 'Rapid ocean currents eroding coral reefs',
-      B: 'Steady onshore winds transporting dry sand particles',
-      C: 'Tectonic plate activity along coastal faults',
-      D: 'Excessive seasonal rainfall in tropical regions'
-    },
-    correctAnswer: 'B',
-    explanation: 'Teks menyatakan pembentukan bukit pasir pantai diakibatkan oleh angin pantai konstan yang membawa butiran pasir kering.'
-  },
-  {
-    id: 'q-adams-1',
-    programId: 'toefl-pred-1',
-    section: 'Reading',
-    part: 'Passage 1 (Reading Comprehension)',
-    passageText: 'John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829, is today recognized for his masterful statesmanship and diplomacy. He dedicated his life to public service, both in the presidency and in the various other political offers that he held. Throughout his political career he demonstrated his unswerving belief in freedom of speech, the antislavery cause, and the right of Americans to be free from European and Asian domination.',
-    questionText: 'To what did John Quincy Adams devote his life?',
-    options: {
-      A: 'improving his personal life',
-      B: 'Serving the public',
-      C: 'increasing his fortune',
-      D: 'Working on his private business'
-    },
-    correctAnswer: 'B',
-    explanation: 'Paragraf menyatakan secara eksplisit: "He dedicated his life to public service, both in the presidency and in the various other political offers that he held."'
-  },
-  {
-    id: 'q-adams-2',
-    programId: 'toefl-pred-1',
-    section: 'Reading',
-    part: 'Passage 1 (Reading Comprehension)',
-    passageText: 'John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829, is today recognized for his masterful statesmanship and diplomacy. He dedicated his life to public service, both in the presidency and in the various other political offers that he held. Throughout his political career he demonstrated his unswerving belief in freedom of speech, the antislavery cause, and the right of Americans to be free from European and Asian domination.',
-    questionText: 'In line 5, the word “unswerving” is closest in meaning to ….',
-    options: {
-      A: 'moveable',
-      B: 'insignificant',
-      C: 'unchanging',
-      D: 'diplomatic'
-    },
-    correctAnswer: 'C',
-    explanation: 'Kata "unswerving" bermakna teguh, tidak menyimpang, atau tidak berubah (unchanging).'
-  },
-
-  // --- Additional Practice Items [toefl-pred-1] ---
-  {
-    id: 'q13',
-    programId: 'toefl-pred-1',
-    section: 'Reading',
-    part: 'Part C (Academic Reading Comprehension)',
-    questionText: 'According to paragraph 2, which of the following is TRUE about hydrothermal vents?',
-    options: {
-      A: 'They are solely supported by sunlight penetration',
-      B: 'They host chemosynthetic ecosystems independent of photosynthesis',
-      C: 'They were discovered prior to the eighteenth century',
-      D: 'They cool down the surrounding abyssal water temperature'
-    },
-    correctAnswer: 'B',
-    explanation: 'Paragraf menjelaskan ekosistem ventilasi hidrotermal bergantung pada bakteri kemosintetik tanpa memerlukan fotosintesis sinar matahari.'
-  },
-  {
-    id: 'q14',
-    programId: 'toefl-pred-1',
-    section: 'Listening',
-    part: 'Part A (Short Dialogue)',
-    questionText: '(Student): Could I possibly hand in the term paper by Monday noon instead?\n(Professor): Monday noon? Let’s just say my grading deadline is Monday 9 AM.\n(Narrator): What does the professor imply?',
-    options: {
-      A: 'The student can submit the paper on Tuesday.',
-      B: 'The professor will not accept submissions after Monday 9 AM.',
-      C: 'The professor is not available to grade on Monday.',
-      D: 'The deadline has been moved forward to Friday.'
-    },
-    correctAnswer: 'B',
-    explanation: 'Profesor mengindikasikan batas akhir pengumpulan nilai adalah Senin pukul 09.00 pagi, sehingga permintaan perpanjangan ke siang hari ditolak secara implisit.'
-  }
-];
+const AVAILABLE_PROGRAMS: ToeflTestProgram[] = [];
+const INITIAL_QUESTIONS: ToeflQuestion[] = [];
+export const SEED_PROGRAM_IDS = ['toefl-pred-1', 'toefl-guarantee', 'toefl-fasttrack'];
 
 export const ToeflQuestionsTab: React.FC = () => {
   const { isDark } = useTheme();
@@ -223,11 +63,16 @@ export const ToeflQuestionsTab: React.FC = () => {
   const [questions, setQuestions] = useState<ToeflQuestion[]>(() => {
     try {
       const saved = localStorage.getItem('ej_toefl_questions_bank');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(q => !SEED_PROGRAM_IDS.includes(q.programId || '') && !q.id.startsWith('q1') && !q.id.startsWith('q2') && !q.id.startsWith('q3') && !q.id.startsWith('q4') && !q.id.startsWith('q5') && !q.id.startsWith('q-adams'));
+        }
+      }
     } catch (e) {
       console.warn('Error reading questions from localStorage', e);
     }
-    return INITIAL_QUESTIONS;
+    return [];
   });
 
   useEffect(() => {
@@ -256,14 +101,14 @@ export const ToeflQuestionsTab: React.FC = () => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          const sanitized = parsed.filter(isStudentTestProgram);
-          if (sanitized.length > 0) return sanitized;
+          const sanitized = parsed.filter(p => !SEED_PROGRAM_IDS.includes(p.id) && isStudentTestProgram(p));
+          return sanitized;
         }
       }
     } catch (e) {
       console.warn('Error reading programs from localStorage', e);
     }
-    return AVAILABLE_PROGRAMS;
+    return [];
   });
 
   useEffect(() => {
@@ -280,10 +125,19 @@ export const ToeflQuestionsTab: React.FC = () => {
 
     const syncWithSupabase = async () => {
       try {
+        // Permanently delete any seeded programs and their questions from Supabase
+        try {
+          await supabase.from('toefl_questions').delete().in('program_id', SEED_PROGRAM_IDS);
+          await supabase.from('toefl_question_banks').delete().in('id', SEED_PROGRAM_IDS);
+        } catch (cleanupErr) {
+          console.warn('Cleaned seed data notice:', cleanupErr);
+        }
+
         // 1. Load Question Banks from Supabase
         const { data: dbBanks, error: banksErr } = await loadQuestionBanks();
-        if (!banksErr && dbBanks && dbBanks.length > 0 && isSubscribed) {
-          const mappedPrograms: ToeflTestProgram[] = dbBanks.map((b) => ({
+        if (!banksErr && dbBanks && isSubscribed) {
+          const filteredBanks = dbBanks.filter(b => !SEED_PROGRAM_IDS.includes(b.id));
+          const mappedPrograms: ToeflTestProgram[] = filteredBanks.map((b) => ({
             id: b.id,
             title: b.title,
             tag: b.tag || 'Resmi',
@@ -296,31 +150,15 @@ export const ToeflQuestionsTab: React.FC = () => {
             isFullscreen: (b as any).is_fullscreen !== false && (b as any).isFullscreen !== false,
           }));
           const sanitized = mappedPrograms.filter(isStudentTestProgram);
-          if (sanitized.length > 0) {
-            setProgramsList(sanitized);
-            localStorage.setItem('ej_toefl_test_programs', JSON.stringify(sanitized));
-          }
-        } else if (!banksErr && dbBanks && dbBanks.length === 0) {
-          // Seed default programs to Supabase
-          for (const prog of AVAILABLE_PROGRAMS) {
-            await createQuestionBank({
-              id: prog.id,
-              title: prog.title,
-              category: prog.category,
-              tag: prog.tag || 'Resmi',
-              duration: prog.duration,
-              question_count: prog.questionCount,
-              score_target: prog.scoreTarget,
-              benefits: prog.benefits || [],
-              is_active: prog.isActive !== false,
-            });
-          }
+          setProgramsList(sanitized);
+          localStorage.setItem('ej_toefl_test_programs', JSON.stringify(sanitized));
         }
 
         // 2. Load Questions from Supabase
         const { data: dbQuestions, error: qErr } = await loadToeflQuestions();
-        if (!qErr && dbQuestions && dbQuestions.length > 0 && isSubscribed) {
-          const mappedQuestions: ToeflQuestion[] = dbQuestions.map((q) => {
+        if (!qErr && dbQuestions && isSubscribed) {
+          const filteredQuestions = dbQuestions.filter(q => !SEED_PROGRAM_IDS.includes(q.program_id));
+          const mappedQuestions: ToeflQuestion[] = filteredQuestions.map((q) => {
             let passageText: string | undefined = (q as any).passage_text || (q as any).passageText;
             let cleanQuestionText = q.question_text || '';
             const passageMatch = cleanQuestionText.match(/\[PASSAGE\]([\s\S]*?)\[\/PASSAGE\]\s*([\s\S]*)/);
@@ -344,21 +182,6 @@ export const ToeflQuestionsTab: React.FC = () => {
           });
           setQuestions(mappedQuestions);
           localStorage.setItem('ej_toefl_questions_bank', JSON.stringify(mappedQuestions));
-        } else if (!qErr && dbQuestions && dbQuestions.length === 0) {
-          // Seed initial questions to Supabase
-          for (const q of INITIAL_QUESTIONS) {
-            await createToeflQuestion({
-              id: q.id,
-              program_id: q.programId,
-              section: q.section,
-              part: q.part,
-              question_text: q.passageText ? `[PASSAGE]\n${q.passageText}\n[/PASSAGE]\n${q.questionText}` : q.questionText,
-              audio_url: q.audioUrl || null,
-              options: q.options,
-              correct_answer: q.correctAnswer,
-              explanation: q.explanation || '',
-            });
-          }
         }
       } catch (err) {
         console.warn('Supabase sync notice:', err);
@@ -665,6 +488,29 @@ export const ToeflQuestionsTab: React.FC = () => {
       setTimeout(() => setActionNotice(null), 3500);
     } catch (err) {
       console.warn('Error deleting question bank from Supabase', err);
+    }
+  };
+
+  const handleClearAllPrograms = async () => {
+    if (window.confirm(tr('Hapus semua program bank soal yang ada di tabel ini? Seluruh butir soal di dalamnya juga akan dibersihkan.', 'Delete all question banks in this table? All questions inside will also be cleared.'))) {
+      const ids = programsList.map(p => p.id);
+      setProgramsList([]);
+      setQuestions([]);
+      setSelectedProgram(null);
+      localStorage.setItem('ej_toefl_test_programs', JSON.stringify([]));
+      localStorage.setItem('ej_toefl_questions_bank', JSON.stringify([]));
+      window.dispatchEvent(new Event('storage'));
+
+      try {
+        if (ids.length > 0) {
+          await supabase.from('toefl_questions').delete().in('program_id', ids);
+          await supabase.from('toefl_question_banks').delete().in('id', ids);
+        }
+        setActionNotice(tr('Semua program bank soal berhasil dibersihkan.', 'All question banks have been cleared.'));
+        setTimeout(() => setActionNotice(null), 3500);
+      } catch (err) {
+        console.warn('Error clearing question banks:', err);
+      }
     }
   };
 
@@ -998,6 +844,8 @@ export const ToeflQuestionsTab: React.FC = () => {
           part: updatedQuestion.part,
           question_text: updatedQuestion.questionText,
           audio_url: updatedQuestion.audioUrl || null,
+          audio_file_name: updatedQuestion.audioFileName || null,
+          passage_text: updatedQuestion.passageText || null,
           options: updatedQuestion.options,
           correct_answer: updatedQuestion.correctAnswer,
           explanation: updatedQuestion.explanation || '',
@@ -1022,6 +870,8 @@ export const ToeflQuestionsTab: React.FC = () => {
           part: newQuestion.part,
           question_text: newQuestion.questionText,
           audio_url: newQuestion.audioUrl || null,
+          audio_file_name: newQuestion.audioFileName || null,
+          passage_text: newQuestion.passageText || null,
           options: newQuestion.options,
           correct_answer: newQuestion.correctAnswer,
           explanation: newQuestion.explanation || '',
@@ -1353,12 +1203,6 @@ export const ToeflQuestionsTab: React.FC = () => {
                   {tr('Bank Soal TOEFL per Program Tersedia', 'TOEFL Question Bank by Available Program')}
                 </h1>
               </div>
-              <p className={`text-[11px] font-['Poppins',sans-serif] mt-0.2 leading-tight max-w-2xl ${subText}`}>
-                {tr(
-                  'Struktur bank soal TOEFL dikelompokkan berdasarkan program kursus & simulasi ujian.',
-                  'TOEFL question bank organized by courses and exam simulations. Click "Manage Questions" to manage question items.'
-                )}
-              </p>
             </div>
           </div>
 
@@ -1456,6 +1300,21 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {programsList.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearAllPrograms}
+                className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                  isDark 
+                    ? 'border-white/10 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10' 
+                    : 'border-slate-200 text-slate-500 hover:text-rose-600 hover:bg-rose-50'
+                }`}
+                title={tr('Bersihkan Semua Program Bank Soal', 'Clear All Question Banks')}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 

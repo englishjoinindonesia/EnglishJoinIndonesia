@@ -201,28 +201,29 @@ export const AccountAccessTab: React.FC = () => {
       )}
 
       {/* COMPACT PRIMARY ADMIN AUTHORITY BAR */}
-      <div className={`px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl border border-[#F7B425] transition-all duration-200 ${
+      <div 
+        style={{ borderRadius: '12px' }}
+        className={`p-2.5 sm:px-3.5 sm:py-2 rounded-xl border transition-colors ${
         isDark 
-          ? 'bg-gradient-to-r from-amber-950/30 via-[#161616] to-[#121212]' 
-          : 'bg-gradient-to-r from-amber-50/80 via-white to-amber-50/40 shadow-2xs'
+          ? 'bg-[#141414] border-white/10 shadow-sm' 
+          : 'bg-white border-slate-200/80 shadow-xs'
       }`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-[#F7B425] text-black flex items-center justify-center flex-shrink-0 font-black shadow-xs">
-              <ShieldCheck className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center flex-shrink-0 font-bold shadow-xs">
+              <ShieldCheck className="w-4 h-4 text-[#F7B425]" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <h2 className="text-xs sm:text-sm font-black font-heading tracking-tight truncate">
+                <h2 
+                  style={{ fontSize: '16px' }}
+                  className={`text-base font-bold font-heading tracking-tight truncate ${
+                    isDark ? 'text-white' : 'text-slate-900'
+                  }`}
+                >
                   {tr('Persetujuan Akses Akun: Admin & Student', 'Account Access Approval: Admin & Student')}
                 </h2>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                {tr(
-                  'Setiap pendaftaran akun baru wajib disetujui Admin Utama.',
-                  'New registrations must be approved by Primary Admin.'
-                )}
-              </p>
             </div>
           </div>
         </div>
@@ -233,11 +234,7 @@ export const AccountAccessTab: React.FC = () => {
         {/* TOTAL */}
         <div 
           onClick={() => setStatusFilter('all')}
-          className={`p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all duration-150 ${
-            statusFilter === 'all'
-              ? 'ring-2 ring-[#F7B425] shadow-xs'
-              : 'hover:bg-slate-50/50 dark:hover:bg-white/2'
-          } ${
+          className={`p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all duration-150 hover:bg-slate-50/50 dark:hover:bg-white/5 ${
             isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200 shadow-2xs'
           }`}
         >
@@ -264,11 +261,7 @@ export const AccountAccessTab: React.FC = () => {
         {/* PENDING APPROVALS */}
         <div 
           onClick={() => setStatusFilter('pending')}
-          className={`p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all duration-150 ${
-            statusFilter === 'pending'
-              ? 'ring-2 ring-amber-500 shadow-xs'
-              : 'hover:bg-amber-50/30 dark:hover:bg-amber-950/10'
-          } ${
+          className={`p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all duration-150 hover:bg-amber-50/30 dark:hover:bg-amber-950/10 ${
             isDark 
               ? 'bg-amber-950/20 border-amber-500/30 text-amber-300' 
               : 'bg-amber-50/60 border-amber-200 text-amber-900 shadow-2xs'
@@ -294,11 +287,7 @@ export const AccountAccessTab: React.FC = () => {
         {/* APPROVED */}
         <div 
           onClick={() => setStatusFilter('approved')}
-          className={`p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all duration-150 ${
-            statusFilter === 'approved'
-              ? 'ring-2 ring-emerald-500 shadow-xs'
-              : 'hover:bg-slate-50/50 dark:hover:bg-white/2'
-          } ${
+          className={`p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all duration-150 hover:bg-slate-50/50 dark:hover:bg-white/5 ${
             isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200 shadow-2xs'
           }`}
         >
@@ -321,11 +310,7 @@ export const AccountAccessTab: React.FC = () => {
         {/* REJECTED */}
         <div 
           onClick={() => setStatusFilter('rejected')}
-          className={`p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all duration-150 ${
-            statusFilter === 'rejected'
-              ? 'ring-2 ring-rose-500 shadow-xs'
-              : 'hover:bg-slate-50/50 dark:hover:bg-white/2'
-          } ${
+          className={`p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all duration-150 hover:bg-slate-50/50 dark:hover:bg-white/5 ${
             isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200 shadow-2xs'
           }`}
         >
@@ -372,7 +357,8 @@ export const AccountAccessTab: React.FC = () => {
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               onClick={() => setActionModal({ type: 'add' })}
-              className="px-3 py-1.5 rounded-xl text-xs font-black bg-[#F7B425] text-black hover:bg-[#ffc247] shadow-xs transition-all flex items-center gap-1 cursor-pointer"
+              style={{ borderRadius: '8px' }}
+              className="px-3 py-1.5 rounded-lg text-xs font-black bg-[#F7B425] text-black hover:bg-[#ffc247] shadow-xs transition-all flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3 h-3" />
               <span className="font-bold">{tr('Tambah Manual', 'Add Manual')}</span>
@@ -462,7 +448,10 @@ export const AccountAccessTab: React.FC = () => {
             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#F7B425] flex items-center justify-center mx-auto mb-3 border border-amber-500/20">
               <UserCheck className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+            <h4 
+              style={{ color: '#ffffff' }}
+              className="text-sm font-bold text-white"
+            >
               {searchTerm || statusFilter !== 'all'
                 ? tr('Tidak ada data permohonan yang sesuai kriteria.', 'No requests match the selected criteria.')
                 : tr('Belum Ada Permohonan Akses Akun', 'No Account Access Requests Yet')}

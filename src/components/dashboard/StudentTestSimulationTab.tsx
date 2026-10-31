@@ -54,7 +54,7 @@ export const StudentTestSimulationTab: React.FC = () => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.filter(p => p.isActive !== false).map(p => ({
+          return parsed.filter(p => !['toefl-pred-1', 'toefl-guarantee', 'toefl-fasttrack'].includes(p.id) && p.isActive !== false).map(p => ({
             id: p.id,
             title: p.title,
             type: (p.category === 'TOEFL iBT' ? 'TOEFL iBT' : 'TOEFL ITP') as 'TOEFL ITP' | 'TOEFL iBT',
@@ -86,7 +86,7 @@ export const StudentTestSimulationTab: React.FC = () => {
         const { data: dbBanks, error } = await loadQuestionBanks();
         if (!error && dbBanks && isMounted) {
           // Filter ONLY programs that are actually stored in the database and active
-          const validDbPrograms = dbBanks.filter(p => p.is_active !== false);
+          const validDbPrograms = dbBanks.filter(p => !['toefl-pred-1', 'toefl-guarantee', 'toefl-fasttrack'].includes(p.id) && p.is_active !== false);
           const mapped: TestItem[] = validDbPrograms.map(p => ({
             id: p.id,
             title: p.title,
@@ -518,12 +518,6 @@ export const StudentTestSimulationTab: React.FC = () => {
                 <h1 className="text-sm sm:text-base font-bold font-heading leading-tight">
                   {tr('Simulasi Tes TOEFL Online CBT', 'TOEFL Online CBT Test Simulation')}
                 </h1>
-                <p className={`text-[10px] sm:text-[11px] leading-tight ${subText}`}>
-                  {tr(
-                    'Pilih paket ujian simulasi TOEFL ITP berstandar resmi dengan sistem CBT lockdown terisolasi.',
-                    'Select official TOEFL ITP simulation packages equipped with isolated CBT lockdown.'
-                  )}
-                </p>
               </div>
             </div>
 

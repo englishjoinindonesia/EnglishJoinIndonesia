@@ -275,6 +275,48 @@ export async function createTestHistoryRecord(
   }
 }
 
+/**
+ * Update a test history record
+ */
+export async function updateTestHistoryRecord(
+  id: string,
+  updates: Partial<TestHistoryItem>
+): Promise<{ data: TestHistoryItem | null; error: Error | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('test_history_records')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Delete a test history record
+ */
+export async function deleteTestHistoryRecord(id: string): Promise<{ error: Error | null }> {
+  try {
+    const { error } = await supabase
+      .from('test_history_records')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { error: null };
+  } catch (err: any) {
+    return { error: err };
+  }
+}
+
 // ============================================================================
 // 4. STORAGE OPERATIONS ('app-files' bucket with auth.uid() folder isolation)
 // ============================================================================
@@ -364,13 +406,16 @@ export interface ToeflQuestionDbItem {
   id: string;
   program_id: string;
   user_id?: string;
-  section: string;
+  section: 'Listening' | 'Structure' | 'Reading' | string;
   part: string;
   question_text: string;
   audio_url?: string | null;
+  audio_file_name?: string | null;
+  passage_text?: string | null;
   options: { A: string; B: string; C: string; D: string };
-  correct_answer: string;
+  correct_answer: 'A' | 'B' | 'C' | 'D' | string;
   explanation?: string;
+  order_num?: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -502,21 +547,25 @@ export async function createToeflQuestion(
   item: Omit<ToeflQuestionDbItem, 'created_at' | 'updated_at'>
 ): Promise<{ data: ToeflQuestionDbItem | null; error: Error | null }> {
   try {
+    const payload: any = {
+      id: item.id,
+      program_id: item.program_id,
+      section: item.section,
+      part: item.part,
+      question_text: item.question_text,
+      audio_url: item.audio_url || null,
+      options: item.options,
+      correct_answer: item.correct_answer,
+      explanation: item.explanation || '',
+    };
+    if (item.user_id) payload.user_id = item.user_id;
+    if (item.passage_text !== undefined) payload.passage_text = item.passage_text;
+    if (item.audio_file_name !== undefined) payload.audio_file_name = item.audio_file_name;
+    if (item.order_num !== undefined) payload.order_num = item.order_num;
+
     const { data, error } = await supabase
       .from('toefl_questions')
-      .insert([
-        {
-          id: item.id,
-          program_id: item.program_id,
-          section: item.section,
-          part: item.part,
-          question_text: item.question_text,
-          audio_url: item.audio_url || null,
-          options: item.options,
-          correct_answer: item.correct_answer,
-          explanation: item.explanation || '',
-        },
-      ])
+      .insert([payload])
       .select()
       .single();
 
@@ -534,15 +583,20 @@ export async function updateToeflQuestion(
   item: Partial<ToeflQuestionDbItem> & { id: string }
 ): Promise<{ data: ToeflQuestionDbItem | null; error: Error | null }> {
   try {
-    const payload: any = {};
+    const payload: any = {
+      updated_at: new Date().toISOString()
+    };
     if (item.program_id !== undefined) payload.program_id = item.program_id;
     if (item.section !== undefined) payload.section = item.section;
     if (item.part !== undefined) payload.part = item.part;
     if (item.question_text !== undefined) payload.question_text = item.question_text;
     if (item.audio_url !== undefined) payload.audio_url = item.audio_url;
+    if (item.audio_file_name !== undefined) payload.audio_file_name = item.audio_file_name;
+    if (item.passage_text !== undefined) payload.passage_text = item.passage_text;
     if (item.options !== undefined) payload.options = item.options;
     if (item.correct_answer !== undefined) payload.correct_answer = item.correct_answer;
     if (item.explanation !== undefined) payload.explanation = item.explanation;
+    if (item.order_num !== undefined) payload.order_num = item.order_num;
 
     const { data, error } = await supabase
       .from('toefl_questions')
