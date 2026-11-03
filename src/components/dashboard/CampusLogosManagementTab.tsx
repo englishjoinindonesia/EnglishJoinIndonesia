@@ -193,14 +193,19 @@ export const CampusLogosManagementTab: React.FC = () => {
       )}
 
       {/* Header & Action Bar - Compact & Minimal Padding */}
-      <div className={`p-2.5 sm:px-3.5 sm:py-2 rounded-2xl border transition-colors ${
+      <div 
+        style={{ borderRadius: '12px', paddingLeft: '12px', paddingRight: '12px', marginBottom: '10px' }}
+        className={`py-2 px-3 rounded-xl border transition-colors mb-2.5 ${
         isDark 
           ? 'bg-[#141414] border-white/10 shadow-sm' 
           : 'bg-white border-slate-200/80 shadow-xs'
       }`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-black flex-shrink-0">
+            <div 
+              style={{ borderRadius: '8px' }}
+              className="w-8 h-8 rounded-lg bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-black flex-shrink-0"
+            >
               <Building2 className="w-4 h-4" />
             </div>
             <div>
@@ -215,7 +220,8 @@ export const CampusLogosManagementTab: React.FC = () => {
           <div className="flex items-center gap-1.5 flex-wrap">
             <button
               onClick={openCreateModal}
-              className="px-2.5 py-1.5 rounded-lg bg-[#F7B425] hover:bg-[#ffbe33] text-black font-bold text-xs flex items-center gap-1.5 shadow-xs hover:shadow transition-all cursor-pointer active:scale-95 font-['Poppins',sans-serif]"
+              style={{ paddingTop: '4px', paddingBottom: '4px' }}
+              className="px-2.5 py-1 rounded-lg bg-[#F7B425] hover:bg-[#ffbe33] text-black font-bold text-xs flex items-center gap-1.5 shadow-xs hover:shadow transition-all cursor-pointer active:scale-95 font-['Poppins',sans-serif]"
             >
               <Plus className="w-3.5 h-3.5" />
               <span className="text-[12px] leading-[18px] font-bold font-['Poppins',sans-serif]">{tr('Tambah Logo Kampus', 'Add Campus Logo')}</span>

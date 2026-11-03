@@ -64,7 +64,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </button>
 
         {/* Profile Tag */}
-        <div className={`flex items-center gap-2.5 pl-2 py-1.5 px-3 rounded-2xl transition-colors ${
+        <div 
+          style={{ borderRadius: '12px' }}
+          className={`flex items-center gap-2.5 pl-2 py-1.5 px-3 rounded-xl transition-colors ${
           isDark 
             ? 'bg-[#181818] border border-white/10 shadow-sm' 
             : 'bg-slate-100 border border-slate-200 shadow-xs'

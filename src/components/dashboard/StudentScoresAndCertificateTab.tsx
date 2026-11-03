@@ -8,7 +8,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { Logo } from '../common/Logo';
+import certificateLogoImg from '../../assets/images/certificate_logo.png';
 
 interface TestHistoryRecord {
   id: string;
@@ -198,7 +198,10 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
       {/* 1. TOP HEADER & SUMMARY CARDS */}
       <div className="space-y-2.5 sm:space-y-3">
         {/* Top Action Header Banner */}
-        <div className={`p-2 sm:px-3 sm:py-2 rounded-2xl border ${cardBg} flex flex-col md:flex-row md:items-center justify-between gap-2`}>
+        <div 
+          style={{ borderRadius: '12px', marginBottom: '10px' }}
+          className={`p-2 sm:px-3 sm:py-2 rounded-xl border ${cardBg} flex flex-col md:flex-row md:items-center justify-between gap-2`}
+        >
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center shrink-0">
               <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -236,9 +239,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
               <span className="text-xl sm:text-2xl font-black font-mono text-[#F7B425]">{highestScore}</span>
               <span className="text-[10px] text-slate-400">/ 677 ITP</span>
             </div>
-            <span className="inline-block mt-1 px-1.5 py-0.5 rounded-full text-[8.5px] sm:text-[9px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              C1 Advanced Proficiency
-            </span>
           </div>
 
           <div className={`p-2.5 sm:p-3 rounded-xl border ${cardBg}`}>
@@ -254,9 +254,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
               <span className="text-xl sm:text-2xl font-black font-mono">{totalCompleted}</span>
               <span className="text-[10px] text-slate-400">{tr('Paket Tes', 'Test Packages')}</span>
             </div>
-            <span className={`text-[9.5px] sm:text-[10px] block mt-1 ${subText}`}>
-              {tr('4 Paket Tes ITP Selesai', '4 ITP Test Packages Completed')}
-            </span>
           </div>
 
           <div className={`p-2.5 sm:p-3 rounded-xl border ${cardBg}`}>
@@ -272,9 +269,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
               <span className="text-xl sm:text-2xl font-black font-mono text-emerald-400">{totalCompleted}</span>
               <span className="text-[10px] text-slate-400">{tr('Dokumen Resmi', 'Official Documents')}</span>
             </div>
-            <span className={`text-[9.5px] sm:text-[10px] block mt-1 ${subText}`}>
-              {tr('Status: Terverifikasi Sistem', 'Status: System Verified')}
-            </span>
           </div>
 
           <div className={`p-2.5 sm:p-3 rounded-xl border ${cardBg}`}>
@@ -451,9 +445,6 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
                   <h3 className="font-bold text-xs sm:text-sm font-heading">
                     E-Certificate of Achievement TOEFL Prediction
                   </h3>
-                  <p className="text-[10px] text-slate-400">
-                    {tr('Sertifikat Resmi Terverifikasi', 'Official Verified Certificate')} • {selectedCert.certNumber}
-                  </p>
                 </div>
               </div>
 
@@ -464,7 +455,7 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
                   className="px-2.5 py-1 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-xs flex items-center gap-1 cursor-pointer"
                 >
                   <Download className="w-3 h-3" />
-                  <span>{tr('Unduh PDF', 'Download PDF')}</span>
+                  <span style={{ fontWeight: 'bold' }} className="font-bold">{tr('Unduh PDF', 'Download PDF')}</span>
                 </button>
 
                 <button
@@ -496,7 +487,10 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
               <div className="w-full max-w-3xl bg-[#FCFAF2] text-slate-900 rounded-xl p-4 sm:p-7 border-2 sm:border-3 border-[#C89B3C] shadow-2xl relative select-none">
                 
                 {/* Decorative Certificate Inner Border */}
-                <div className="border border-[#C89B3C]/40 p-4 sm:p-6 rounded-lg relative">
+                <div 
+                  style={{ paddingTop: '16px', paddingBottom: '12px' }}
+                  className="border border-[#C89B3C]/40 px-4 sm:px-6 pt-4 pb-3 rounded-lg relative"
+                >
                   
                   {/* Watermark Logo Background */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
@@ -506,12 +500,25 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
                   {/* Header Logo & Institution */}
                   <div className="text-center space-y-1">
                     <div className="flex items-center justify-center gap-1.5">
-                      <Logo size="sm" className="h-8 w-auto" />
+                      <div className="inline-flex items-center select-none">
+                        <img
+                          src={certificateLogoImg}
+                          alt="Certificate Official Logo"
+                          className="h-8 sm:h-9 w-auto object-contain drop-shadow-xs"
+                          loading="eager"
+                        />
+                      </div>
                     </div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-[#9A7220]">
+                    <div 
+                      style={{ fontWeight: 'bold' }}
+                      className="text-[10px] font-bold uppercase tracking-widest text-[#9A7220]"
+                    >
                       English Join Indonesia • Language Training Center
                     </div>
-                    <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-wide mt-1">
+                    <h2 
+                      style={{ fontWeight: 'bold' }}
+                      className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-wide mt-1"
+                    >
                       CERTIFICATE OF ACHIEVEMENT
                     </h2>
                     <p className="text-[11px] text-slate-600 font-sans">
@@ -521,7 +528,10 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
 
                   {/* Recipient Student Name */}
                   <div className="text-center my-4 py-1.5 border-b-2 border-[#C89B3C] max-w-md mx-auto">
-                    <h3 className="text-xl sm:text-2xl font-serif font-black text-slate-950 italic">
+                    <h3 
+                      style={{ fontStyle: 'normal', fontWeight: 'bold' }}
+                      className="text-xl sm:text-2xl font-serif font-bold not-italic text-slate-950"
+                    >
                       {selectedCert.studentName}
                     </h3>
                   </div>
@@ -536,18 +546,36 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
                   {/* Scores Box */}
                   <div className="my-4 grid grid-cols-4 gap-2 sm:gap-3 max-w-md mx-auto text-center">
                     <div className="bg-[#FAF6EC] p-2 rounded-lg border border-[#E5D7B5]">
-                      <span className="block text-[8.5px] uppercase font-bold text-slate-500">Listening</span>
+                      <span 
+                        style={{ color: '#000000' }}
+                        className="block text-[8.5px] uppercase font-bold text-black"
+                      >
+                        Listening
+                      </span>
                       <strong className="text-base sm:text-lg font-mono font-black text-slate-900">{selectedCert.listeningScore}</strong>
                     </div>
                     <div className="bg-[#FAF6EC] p-2 rounded-lg border border-[#E5D7B5]">
-                      <span className="block text-[8.5px] uppercase font-bold text-slate-500">Structure</span>
+                      <span 
+                        style={{ color: '#000000' }}
+                        className="block text-[8.5px] uppercase font-bold text-black"
+                      >
+                        Structure
+                      </span>
                       <strong className="text-base sm:text-lg font-mono font-black text-slate-900">{selectedCert.structureScore}</strong>
                     </div>
                     <div className="bg-[#FAF6EC] p-2 rounded-lg border border-[#E5D7B5]">
-                      <span className="block text-[8.5px] uppercase font-bold text-slate-500">Reading</span>
+                      <span 
+                        style={{ fontWeight: 'bold', color: '#000000' }}
+                        className="block text-[8.5px] uppercase font-bold text-black"
+                      >
+                        Reading
+                      </span>
                       <strong className="text-base sm:text-lg font-mono font-black text-slate-900">{selectedCert.readingScore}</strong>
                     </div>
-                    <div className="bg-[#F7B425] p-2 rounded-lg border border-[#C89B3C] shadow-2xs">
+                    <div 
+                      style={{ backgroundColor: '#f7b425' }}
+                      className="bg-[#F7B425] p-2 rounded-lg border border-[#C89B3C] shadow-2xs"
+                    >
                       <span className="block text-[8.5px] uppercase font-black text-black">TOTAL SCORE</span>
                       <strong className="text-lg sm:text-xl font-mono font-black text-black">{selectedCert.totalScore}</strong>
                     </div>
@@ -555,34 +583,47 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
 
                   {/* Level Assessment */}
                   <div className="text-center mb-4">
-                    <span className="inline-block px-2.5 py-0.5 bg-[#FAF6EC] border border-[#E5D7B5] rounded-full text-[11px] font-extrabold text-[#9A7220]">
+                    <span 
+                      style={{ fontWeight: 'bold' }}
+                      className="inline-block px-2.5 py-0.5 bg-[#FAF6EC] border border-[#E5D7B5] rounded-full text-[11px] font-bold text-[#9A7220]"
+                    >
                       Level: {selectedCert.levelCategory}
                     </span>
                   </div>
 
-                  {/* Signatures & Seal */}
-                  <div className="pt-3 border-t border-[#E5D7B5] grid grid-cols-2 sm:grid-cols-3 items-end text-center gap-3 text-xs">
-                    <div>
-                      <span className="text-[9px] text-slate-500 block">Certificate No.</span>
-                      <strong className="font-mono text-[10px] text-slate-800">{selectedCert.certNumber}</strong>
-                    </div>
-
-                    <div className="hidden sm:flex flex-col items-center justify-center">
-                      <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#C89B3C] flex items-center justify-center p-1">
-                        <div className="w-full h-full rounded-full bg-[#FAF6EC] border border-[#C89B3C] flex flex-col items-center justify-center text-[6.5px] font-black text-[#9A7220]">
-                          <span>OFFICIAL</span>
-                          <span>SEAL</span>
-                        </div>
+                  {/* Signatures */}
+                  <div 
+                    style={{ paddingTop: '24px' }}
+                    className="pt-6 border-t border-[#E5D7B5] flex justify-center text-center text-xs"
+                  >
+                    <div 
+                      style={{ lineHeight: '6px' }}
+                      className="flex flex-col items-center text-center leading-[6px]"
+                    >
+                      <div 
+                        style={{ lineHeight: '0px' }}
+                        className="h-7 flex items-center justify-center leading-[0px]"
+                      >
+                        <span 
+                          style={{ fontStyle: 'normal', fontWeight: 'bold' }}
+                          className="font-serif not-italic text-sm font-bold text-slate-800"
+                        >
+                          Alwi Al Aidit
+                        </span>
                       </div>
-                    </div>
-
-                    <div>
-                      <div className="h-7 flex items-center justify-center">
-                        <span className="font-serif italic text-sm font-bold text-slate-800">Alwi Bahri, M.Pd</span>
-                      </div>
-                      <div className="border-t border-slate-400 pt-0.5">
-                        <span className="text-[9px] font-bold text-slate-700 block">Academic Director</span>
-                        <span className="text-[7.5px] text-slate-500">English Join Indonesia</span>
+                      <div className="border-t border-slate-400 pt-0.5 text-center min-w-[160px] mx-auto">
+                        <span 
+                          style={{ fontSize: '10px', paddingTop: '2px', paddingBottom: '2px' }}
+                          className="text-[10px] py-0.5 font-bold text-slate-700 block text-center"
+                        >
+                          Academic Director
+                        </span>
+                        <span 
+                          style={{ fontSize: '8px', paddingTop: '2px', paddingBottom: '2px' }}
+                          className="text-[8px] py-0.5 text-slate-500 block text-center"
+                        >
+                          English Join Indonesia
+                        </span>
                       </div>
                     </div>
                   </div>

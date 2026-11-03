@@ -147,7 +147,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Dedicated Active Role Badge Card */}
         <div 
-          className={`mb-6 p-2.5 rounded-2xl flex items-center transition-all duration-200 ${
+          style={{ borderRadius: '12px' }}
+          className={`mb-6 p-2.5 rounded-xl flex items-center transition-all duration-200 ${
             isCollapsed ? 'justify-center' : 'gap-2.5'
           } ${
             isDark 
@@ -190,9 +191,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 title={item.label}
+                style={{ borderRadius: '12px' }}
                 className={`w-full flex items-center relative ${
                   isCollapsed ? 'justify-center px-0 py-3' : 'gap-3 px-3.5 py-3'
-                } rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 text-left cursor-pointer ${
+                } rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 text-left cursor-pointer ${
                   isActive
                     ? 'bg-[#F7B425] text-black font-black shadow-lg shadow-[#F7B425]/25 scale-[1.02]'
                     : isDark
@@ -241,7 +243,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }`}
         >
           <LogOut className="w-4 h-4 flex-shrink-0" />
-          {!isCollapsed && <span>{t.dashboard.sidebar.exitToHome}</span>}
+          {!isCollapsed && (
+            <span 
+              className="text-[12px] font-bold" 
+              style={{ fontSize: '12px', fontWeight: 'bold' }}
+            >
+              {t.dashboard.sidebar.exitToHome}
+            </span>
+          )}
         </button>
       </div>
     </aside>

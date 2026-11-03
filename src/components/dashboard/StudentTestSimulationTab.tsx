@@ -509,7 +509,10 @@ export const StudentTestSimulationTab: React.FC = () => {
       {testState === 'list' && (
         <div className="space-y-2.5 sm:space-y-3 animate-fadeIn">
           {/* Top Banner Header & Filter */}
-          <div className={`p-2 sm:px-3 sm:py-2 rounded-2xl border ${cardBg} flex flex-col md:flex-row md:items-center justify-between gap-2`}>
+          <div 
+            style={{ borderRadius: '12px', marginBottom: '10px' }}
+            className={`p-2 sm:px-3 sm:py-2 rounded-xl border ${cardBg} flex flex-col md:flex-row md:items-center justify-between gap-2`}
+          >
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#2563EB]/15 text-[#2563EB] flex items-center justify-center shrink-0">
                 <PlayCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

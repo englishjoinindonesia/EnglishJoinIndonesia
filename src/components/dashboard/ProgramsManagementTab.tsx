@@ -238,7 +238,6 @@ export const ProgramsManagementTab: React.FC = () => {
       {/* Category Tabs & Filter - Compact */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
-          <Tag className="w-3.5 h-3.5 text-slate-400" />
           <div className="flex flex-wrap items-center gap-1 bg-[#141414] p-0.5 rounded-xl border border-white/10 text-xs shadow-2xs">
             {[
               { id: 'all', label: 'Semua Program' },

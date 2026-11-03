@@ -108,7 +108,10 @@ export const LearningProcess: React.FC<LearningProcessProps> = ({ onOpenRegister
                       {getStepIcon(step.iconName)}
                     </div>
 
-                    <span className="text-4xl font-black font-heading text-white/20 group-hover:text-[#F7B425]/60 transition-colors">
+                    <span 
+                      style={{ color: '#f7b425' }}
+                      className="text-4xl font-black font-heading text-[#F7B425] transition-colors"
+                    >
                       {step.step}
                     </span>
                   </div>

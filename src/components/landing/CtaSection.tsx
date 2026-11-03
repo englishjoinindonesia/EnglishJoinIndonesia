@@ -26,14 +26,20 @@ export const CtaSection: React.FC<CtaSectionProps> = ({ onOpenRegister }) => {
           {language === 'id' ? (
             <>
               GABUNG SEKARANG &amp; MULAI <br className="hidden sm:inline" />
-              <span className="bg-black text-[#F7B425] px-4 py-1 rounded-2xl inline-block mt-2 sm:mt-1 shadow-2xl">
+              <span 
+                style={{ borderRadius: '36px', width: '580px', maxWidth: '100%' }}
+                className="bg-black text-[#F7B425] px-4 py-1 rounded-[36px] inline-block mt-2 sm:mt-1 shadow-2xl"
+              >
                 PERJALANANMU!
               </span>
             </>
           ) : (
             <>
               JOIN NOW &amp; START <br className="hidden sm:inline" />
-              <span className="bg-black text-[#F7B425] px-4 py-1 rounded-2xl inline-block mt-2 sm:mt-1 shadow-2xl">
+              <span 
+                style={{ borderRadius: '36px', width: '580px', maxWidth: '100%' }}
+                className="bg-black text-[#F7B425] px-4 py-1 rounded-[36px] inline-block mt-2 sm:mt-1 shadow-2xl"
+              >
                 YOUR JOURNEY!
               </span>
             </>
@@ -87,7 +93,10 @@ export const CtaSection: React.FC<CtaSectionProps> = ({ onOpenRegister }) => {
         </div>
 
         {/* Direct Contact Card Strip */}
-        <div className="inline-flex flex-col sm:flex-row items-center gap-4 sm:gap-8 bg-black/90 text-white backdrop-blur-md border border-black/30 rounded-3xl px-8 py-5 shadow-2xl">
+        <div 
+          style={{ borderRadius: '36px' }}
+          className="inline-flex flex-col sm:flex-row items-center gap-4 sm:gap-8 bg-black/90 text-white backdrop-blur-md border border-black/30 rounded-[36px] px-8 py-5 shadow-2xl"
+        >
           <div className="text-xs font-black uppercase tracking-wider text-[#F7B425]">
             {tr('UNTUK PENDAFTARAN HUBUNGI :', 'FOR REGISTRATION CONTACT :')}
           </div>

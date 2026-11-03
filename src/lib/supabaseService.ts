@@ -398,6 +398,7 @@ export interface QuestionBankItem {
   benefits?: string[];
   sections_data?: any;
   is_active: boolean;
+  is_fullscreen?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -444,11 +445,15 @@ export async function createQuestionBank(
   item: Omit<QuestionBankItem, 'created_at' | 'updated_at'>
 ): Promise<{ data: QuestionBankItem | null; error: Error | null }> {
   try {
+    const { data: authData } = await supabase.auth.getUser();
+    const currentUserId = item.user_id || authData?.user?.id || null;
+
     const { data, error } = await supabase
       .from('toefl_question_banks')
       .insert([
         {
           id: item.id,
+          user_id: currentUserId,
           title: item.title,
           category: item.category,
           tag: item.tag || 'Resmi',
@@ -458,6 +463,7 @@ export async function createQuestionBank(
           benefits: item.benefits || [],
           sections_data: item.sections_data || [],
           is_active: item.is_active !== false,
+          is_fullscreen: item.is_fullscreen !== false,
         },
       ])
       .select()
@@ -477,7 +483,9 @@ export async function updateQuestionBank(
   item: Partial<QuestionBankItem> & { id: string }
 ): Promise<{ data: QuestionBankItem | null; error: Error | null }> {
   try {
-    const payload: any = {};
+    const payload: any = {
+      updated_at: new Date().toISOString(),
+    };
     if (item.title !== undefined) payload.title = item.title;
     if (item.category !== undefined) payload.category = item.category;
     if (item.tag !== undefined) payload.tag = item.tag;
@@ -487,6 +495,7 @@ export async function updateQuestionBank(
     if (item.benefits !== undefined) payload.benefits = item.benefits;
     if (item.sections_data !== undefined) payload.sections_data = item.sections_data;
     if (item.is_active !== undefined) payload.is_active = item.is_active;
+    if (item.is_fullscreen !== undefined) payload.is_fullscreen = item.is_fullscreen;
 
     const { data, error } = await supabase
       .from('toefl_question_banks')
@@ -547,20 +556,23 @@ export async function createToeflQuestion(
   item: Omit<ToeflQuestionDbItem, 'created_at' | 'updated_at'>
 ): Promise<{ data: ToeflQuestionDbItem | null; error: Error | null }> {
   try {
+    const { data: authData } = await supabase.auth.getUser();
+    const currentUserId = item.user_id || authData?.user?.id || null;
+
     const payload: any = {
       id: item.id,
       program_id: item.program_id,
+      user_id: currentUserId,
       section: item.section,
       part: item.part,
       question_text: item.question_text,
       audio_url: item.audio_url || null,
+      audio_file_name: item.audio_file_name || null,
+      passage_text: item.passage_text || null,
       options: item.options,
       correct_answer: item.correct_answer,
       explanation: item.explanation || '',
     };
-    if (item.user_id) payload.user_id = item.user_id;
-    if (item.passage_text !== undefined) payload.passage_text = item.passage_text;
-    if (item.audio_file_name !== undefined) payload.audio_file_name = item.audio_file_name;
     if (item.order_num !== undefined) payload.order_num = item.order_num;
 
     const { data, error } = await supabase

@@ -214,7 +214,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
       {/* 4 STAT CARDS - Compact & Minimal Padding */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
         {/* Total Pendaftar */}
-        <div className={`rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}>
+        <div 
+          style={{ borderRadius: '12px', marginBottom: '10px', paddingTop: '12px', paddingBottom: '14px' }}
+          className={`rounded-xl px-3.5 sm:px-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}
+        >
           <div className="flex items-center justify-between text-slate-300">
             <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{tr('Total Siswa Terdaftar', 'Total Registered Students')}</span>
             <div className="w-7 h-7 rounded-lg bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
@@ -231,7 +234,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
         </div>
 
         {/* Rata-Rata Skor TOEFL */}
-        <div className="bg-[#F7B425] rounded-2xl p-3.5 sm:p-4 shadow-lg flex flex-col justify-between h-28 text-black relative overflow-hidden group hover:scale-[1.01] transition-transform">
+        <div 
+          style={{ borderRadius: '12px', paddingTop: '12px', paddingBottom: '14px' }}
+          className="bg-[#F7B425] rounded-xl px-3.5 sm:px-4 shadow-lg flex flex-col justify-between h-28 text-black relative overflow-hidden group hover:scale-[1.01] transition-transform"
+        >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider">{tr('Rata-Rata Skor TOEFL', 'Average TOEFL Score')}</span>
             <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center">
@@ -245,7 +251,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
         </div>
 
         {/* Sertifikat Diterbitkan */}
-        <div className={`rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}>
+        <div 
+          style={{ borderRadius: '12px', paddingTop: '12px', paddingBottom: '14px' }}
+          className={`rounded-xl px-3.5 sm:px-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}
+        >
           <div className="flex items-center justify-between text-slate-300">
             <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{tr('Sertifikat Resmi Terbit', 'Certificates Issued')}</span>
             <div className="w-7 h-7 rounded-lg bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
@@ -259,7 +268,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
         </div>
 
         {/* Program Aktif */}
-        <div className={`rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}>
+        <div 
+          style={{ borderRadius: '12px', paddingTop: '12px', paddingBottom: '14px' }}
+          className={`rounded-xl px-3.5 sm:px-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}
+        >
           <div className="flex items-center justify-between text-slate-300">
             <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{tr('Total Bank Soal', 'Total Question Bank')}</span>
             <div className="w-7 h-7 rounded-lg bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
@@ -281,7 +293,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
       <div className={`rounded-2xl p-3.5 sm:p-4 border space-y-3 ${cardBg}`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
-            <h3 className={`text-sm sm:text-base font-bold font-heading flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h3 
+              style={{ fontSize: '14px', lineHeight: '20px' }}
+              className={`font-bold font-heading flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}
+            >
               <span className="w-2 h-2 rounded-full bg-[#F7B425] shadow-xs shadow-[#F7B425]/50" />
               {tr('Daftar Bank Soal TOEFL (Question Bank)', 'TOEFL Question Bank List')}
               <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 font-bold ml-1 font-mono">

@@ -220,7 +220,10 @@ export const MentorsManagementTab: React.FC = () => {
       )}
 
       {/* Top Header Card - Compact & Minimal Padding */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:px-4 sm:py-2.5 rounded-2xl border ${cardBg}`}>
+      <div 
+        style={{ borderRadius: '12px', paddingLeft: '12px', paddingRight: '12px', paddingTop: '8px', paddingBottom: '8px' }}
+        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border ${cardBg}`}
+      >
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
             <GraduationCap className="w-4 h-4 text-[#F7B425]" />
@@ -312,7 +315,8 @@ export const MentorsManagementTab: React.FC = () => {
                   onDragOver={(e) => handleDragOver(e, mentor.id)}
                   onDrop={(e) => handleDrop(e, mentor.id)}
                   onDragEnd={handleDragEnd}
-                  className={`rounded-2xl border p-3 flex flex-col justify-between transition-all duration-200 relative overflow-hidden group select-none ${cardBg} ${
+                  style={{ borderRadius: '12px' }}
+                  className={`rounded-xl border p-3 flex flex-col justify-between transition-all duration-200 relative overflow-hidden group select-none ${cardBg} ${
                     isBeingDragged
                       ? 'opacity-30 scale-95 border-dashed border-[#F7B425] shadow-none ring-2 ring-[#F7B425]/50'
                       : isDragOver
