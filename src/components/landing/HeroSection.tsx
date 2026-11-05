@@ -28,15 +28,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister, onOpen
           
           {/* Left Column: Hero Content */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
-            
-            {/* Top Brand Pill */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-[#F7B425]/30 text-xs sm:text-sm font-semibold text-slate-200 mb-[10px] backdrop-blur-sm shadow-inner">
-              <span className="w-2 h-2 rounded-full bg-[#F7B425] animate-ping" />
-              <span className="text-[#F7B425] font-bold">English Join Indonesia</span>
-              <span className="text-slate-500 hidden sm:inline">•</span>
-              <span className="text-slate-300 hidden sm:inline">{t.hero.pillSub}</span>
-            </div>
-
             {/* Main Headline */}
             <div className="mb-5 space-y-1">
               <span className="block text-3xl sm:text-4xl lg:text-5xl font-black font-heading text-white tracking-tight leading-tight">

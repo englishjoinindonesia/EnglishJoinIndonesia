@@ -6,7 +6,7 @@ import {
   Award, Eye, FolderOpen, ArrowUpRight, Sparkles,
   Settings, Check, FolderPlus, Sliders, ToggleLeft, ToggleRight,
   Headphones, FileEdit, PenTool, LayoutGrid, Table2, Upload, Play, Pause, Music, FileAudio,
-  Maximize, Minimize
+  Maximize, Minimize, FileText, ChevronUp, Underline
 } from 'lucide-react';
 import { ToeflQuestion, ToeflTestProgram } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
@@ -46,6 +46,285 @@ const IBT_TOEFL_SECTIONS: SectionStructureItem[] = [
   { id: 'sec-4', name: 'Section 4: Writing Section', questionCount: 2, durationMinutes: 29 },
 ];
 
+export interface SectionDirectionsInfo {
+  id: 'Structure' | 'Listening' | 'Reading';
+  title: string;
+  badge: string;
+  number: number;
+  durationText: string;
+  questionCount: number;
+  subtitle: string;
+  timeHeading: string;
+  introText: string;
+  subpartTitle: string;
+  directionsText: string;
+  examples: Array<{
+    title: string;
+    prompt: string;
+    options: { A: string; B: string; C: string; D: string };
+    correctAnswer: string;
+    explanation: string;
+  }>;
+  additionalNotes?: string[];
+}
+
+export const SECTION_DIRECTIONS_DATA: Record<'Structure' | 'Listening' | 'Reading', SectionDirectionsInfo> = {
+  Structure: {
+    id: 'Structure',
+    title: 'STRUCTURE AND WRITTEN EXPRESION',
+    badge: 'Section 2',
+    number: 2,
+    durationText: '25 Menit',
+    questionCount: 40,
+    subtitle: 'Section 2: Structure & Written Expression',
+    timeHeading: 'Time – 25 minutes\n(including the reading of the directions)\nNow set your clock for 25 minutes.',
+    introText: 'This section is designed to measure your ability to recognize language that is appropriate for standard written English. There are two types of questions in this section, with special directions for each type.',
+    subpartTitle: 'Structure',
+    directionsText: 'Directions: These questions are incomplete sentences. Beneath each sentence you will see four words or phrases, marked (A), (B), (C), and (D). Choose the one word or phrase that best completes the sentence. Then, on your answer sheet, find the number of the question and fill in the space that corresponds to the letter of the answer you have chosen.\n\nLook at the following examples.',
+    examples: [
+      {
+        title: 'Example 1',
+        prompt: 'The president ______ the election by a landslide.',
+        options: {
+          A: 'won',
+          B: 'he won',
+          C: 'yesterday',
+          D: 'fortunately'
+        },
+        correctAnswer: 'A',
+        explanation: 'The sentence should read, “The president won the election by a landslide.” Therefore, you should choose answer (A).'
+      },
+      {
+        title: 'Example 2 (Written Expression)',
+        prompt: 'The (A) musical instrument called (B) banjo is made of (C) wood and skin (D).',
+        options: {
+          A: 'The',
+          B: 'called',
+          C: 'is made of',
+          D: 'skin'
+        },
+        correctAnswer: 'A',
+        explanation: 'The sentence should read, “The musical instrument called a banjo is made of wood and skin.” Therefore, you should choose answer (A).'
+      }
+    ],
+    additionalNotes: [
+      'Questions 1–15: Structure (Sentence completion)',
+      'Questions 16–40: Written Expression (Error identification)',
+      'Waktu pengerjaan 25 menit untuk total 40 butir soal.'
+    ]
+  },
+  Listening: {
+    id: 'Listening',
+    title: 'SECTION 1: LISTENING COMPREHENSION',
+    badge: 'Section 1',
+    number: 1,
+    durationText: '35 Menit',
+    questionCount: 50,
+    subtitle: 'Section 1: Listening Comprehension',
+    timeHeading: 'Time – approximately 35 minutes\n(including the reading of the directions)\n50 Questions',
+    introText: 'In this section of the test, you will have an opportunity to demonstrate your ability to understand conversations and talks in English. There are three parts to this section, with special directions for each part.',
+    subpartTitle: 'Part A: Short Conversations',
+    directionsText: 'Directions: In Part A, you will hear short conversations between two people. After each conversation, you will hear a question about the conversation. The conversations and questions will not be repeated. After you hear a question, read the four possible answers in your test book and choose the best answer.\n\nLook at the following example.',
+    examples: [
+      {
+        title: 'Example 1',
+        prompt: '(Man): Are you going to the seminar this afternoon?\n(Woman): I’d love to, but I have to finish my chemistry lab report.\n(Narrator): What does the woman imply?',
+        options: {
+          A: 'She will definitely attend the seminar.',
+          B: 'She cannot attend because she has other academic work.',
+          C: 'She prefers chemistry over the seminar.',
+          D: 'She has already finished her lab report.'
+        },
+        correctAnswer: 'B',
+        explanation: 'The woman implies that she would like to attend, but other academic duties prevent her. Therefore, you should choose answer (B).'
+      }
+    ],
+    additionalNotes: [
+      'Part A: 30 Short Conversations (Soal 1–30)',
+      'Part B: 2 Longer Conversations (Soal 31–38)',
+      'Part C: 3 Talks / Academic Lectures (Soal 39–50)',
+      'Audio hanya diputar 1 kali sesuai standar resmi TOEFL ITP.'
+    ]
+  },
+  Reading: {
+    id: 'Reading',
+    title: 'SECTION 3: READING COMPREHENSION',
+    badge: 'Section 3',
+    number: 3,
+    durationText: '55 Menit',
+    questionCount: 50,
+    subtitle: 'Section 3: Reading Comprehension',
+    timeHeading: 'Time – 55 minutes\n(including the reading of the directions)\nNow set your clock for 55 minutes.',
+    introText: 'This section is designed to measure your ability to read and understand short passages similar in topic and style to those that students are likely to encounter in North American universities and colleges.',
+    subpartTitle: 'Reading Passages & Comprehension',
+    directionsText: 'Directions: In this section you will read several passages. Each one is followed by a number of questions about it. For questions 1–50, you are to choose the one best answer, (A), (B), (C), or (D), to each question. Then, on your answer sheet, find the number of the question and fill in the space that corresponds to the letter of the answer you have chosen.\n\nAnswer all questions about the information in a passage on the basis of what is stated or implied in that passage.',
+    examples: [
+      {
+        title: 'Example Passage Snippet',
+        prompt: 'The railroad was not the first institution to impose regularity on society, or to draw attention to the importance of precise timekeeping. For as long as humans have been social beings, they have sought to coordinate their activities.\n\nQuestion: What is the main topic of the passage?',
+        options: {
+          A: 'The rise of transportation technology.',
+          B: 'The evolution of human social coordination and timekeeping regularity.',
+          C: 'The construction of the first transcontinental railroad.',
+          D: 'Ancient agricultural practices.'
+        },
+        correctAnswer: 'B',
+        explanation: 'The author states that humans sought to coordinate their activities and timekeeping. Therefore, you should choose answer (B).'
+      }
+    ],
+    additionalNotes: [
+      'Terdiri dari 5 wacana/teks paragraf akademik (10 soal per wacana).',
+      'Total 50 butir soal dengan durasi 55 menit.',
+      'Dapat berpindah antar soal dan membaca kembali teks wacana.'
+    ]
+  }
+};
+
+/**
+ * Ekstraksi kata-kata bergaris bawah (underline) dari teks soal Written Expression
+ * Mendukung format:
+ * 1. <u>kata</u> (otomatis urut A, B, C, D)
+ * 2. <u>(A) kata</u> atau <u>A: kata</u> atau <u data-letter="A">kata</u>
+ * 3. [A:kata] atau [A]kata[/A]
+ */
+export const extractUnderlinedOptions = (text: string): { A?: string; B?: string; C?: string; D?: string } => {
+  if (!text) return {};
+  const options: { A?: string; B?: string; C?: string; D?: string } = {};
+
+  // 1. Ekstraksi tag eksplisit [A:kata] atau [A]kata[/A]
+  const bracketRegex = /\[([A-D])\](.*?)\[\/\1\]|\[([A-D]):(.*?)\]/gi;
+  let bMatch;
+  while ((bMatch = bracketRegex.exec(text)) !== null) {
+    const letter = (bMatch[1] || bMatch[3])?.toUpperCase() as 'A' | 'B' | 'C' | 'D';
+    const word = (bMatch[2] || bMatch[4] || '').trim();
+    if (word && letter) {
+      options[letter] = word;
+    }
+  }
+
+  // 2. Ekstraksi tag <u>kata</u>
+  const uRegex = /<u(?:\s+data-(?:key|letter)=["']([A-D])["'])?>\s*(?:\(?([A-D])\)?[:\.\s]*)?(.*?)<\/u>/gi;
+  let uMatch;
+  const sequentialWords: string[] = [];
+  while ((uMatch = uRegex.exec(text)) !== null) {
+    const explicitLetter = (uMatch[1] || uMatch[2])?.toUpperCase() as 'A' | 'B' | 'C' | 'D' | undefined;
+    const word = (uMatch[3] || '').trim();
+    if (word) {
+      if (explicitLetter) {
+        options[explicitLetter] = word;
+      } else {
+        sequentialWords.push(word);
+      }
+    }
+  }
+
+  // Isi slot A, B, C, D yang masih kosong berdasarkan urutan kemunculan
+  const letters: ('A' | 'B' | 'C' | 'D')[] = ['A', 'B', 'C', 'D'];
+  sequentialWords.forEach((word) => {
+    const nextSlot = letters.find((l) => !options[l]);
+    if (nextSlot) {
+      options[nextSlot] = word;
+    }
+  });
+
+  return options;
+};
+
+/**
+ * Render teks soal Written Expression dengan format resmi TOEFL ITP
+ * Kata bergaris bawah dengan huruf penanda (A, B, C, D) berada tepat di bawah kata yang digarisbawahi
+ */
+export const renderWrittenExpressionText = (text: string, isDarkTheme: boolean = true) => {
+  if (!text) return null;
+
+  const hasUTags = /<u>.*?<\/u>/i.test(text);
+  const hasBracketTags = /\[([A-D]):.*?\]/i.test(text);
+  const hasParenthesisTags = /\([A-D]\)/.test(text);
+
+  if (hasUTags || hasBracketTags) {
+    const regex = /<u(?:\s+data-(?:key|letter)=["']([A-D])["'])?>\s*(?:\(?([A-D])\)?[:\.\s]*)?(.*?)<\/u>|\[([A-D]):(.*?)\]/gi;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+    let autoIdx = 0;
+    const defaultLetters: ('A' | 'B' | 'C' | 'D')[] = ['A', 'B', 'C', 'D'];
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+
+      const explicitLetter = (match[1] || match[2] || match[4])?.toUpperCase();
+      const letter = explicitLetter || defaultLetters[autoIdx % 4];
+      const word = (match[3] || match[5] || '').trim();
+
+      parts.push(
+        <span 
+          key={`ue-${match.index}`} 
+          className="inline-flex flex-col items-center mx-1 align-baseline relative group py-0.5"
+        >
+          <span className="font-semibold underline underline-offset-4 decoration-2 decoration-current">
+            {word}
+          </span>
+          <span className="text-[10px] sm:text-xs font-black text-[#F7B425] font-mono mt-0.5 tracking-tight leading-none select-none">
+            {letter}
+          </span>
+        </span>
+      );
+
+      autoIdx++;
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return <div className="leading-relaxed inline">{parts}</div>;
+  }
+
+  // Format soal lama dengan penanda "(A) word (B)..." atau "word (A)..."
+  if (hasParenthesisTags && /\([A-D]\)/.test(text)) {
+    const pRegex = /([A-Za-z0-9’'’\-]+(?:\s+[A-Za-z0-9’'’\-]+)*)\s*\(([A-D])\)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = pRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+      const word = match[1].trim();
+      const letter = match[2].toUpperCase();
+
+      parts.push(
+        <span 
+          key={`p-${match.index}`} 
+          className="inline-flex flex-col items-center mx-1 align-baseline relative group py-0.5"
+        >
+          <span className="font-semibold underline underline-offset-4 decoration-2 decoration-current">
+            {word}
+          </span>
+          <span className="text-[10px] sm:text-xs font-black text-[#F7B425] font-mono mt-0.5 tracking-tight leading-none select-none">
+            {letter}
+          </span>
+        </span>
+      );
+      lastIndex = pRegex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    if (parts.length > 0) {
+      return <div className="leading-relaxed inline">{parts}</div>;
+    }
+  }
+
+  return <div className="whitespace-pre-line inline">{text}</div>;
+};
+
 // List of Available Test Programs (strictly matching records in Supabase toefl_question_banks)
 const AVAILABLE_PROGRAMS: ToeflTestProgram[] = [];
 const INITIAL_QUESTIONS: ToeflQuestion[] = [];
@@ -58,6 +337,48 @@ export const ToeflQuestionsTab: React.FC = () => {
 
   // Navigation state: null means showing the Available Programs Table
   const [selectedProgram, setSelectedProgram] = useState<ToeflTestProgram | null>(null);
+
+  // Section directions preview modal & collapse state
+  const [previewSectionDirections, setPreviewSectionDirections] = useState<'Structure' | 'Listening' | 'Reading' | null>(null);
+  const [directionsThemeMode, setDirectionsThemeMode] = useState<'paper' | 'cbt'>('paper');
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+
+  const toggleSectionCollapse = (secId: string) => {
+    setCollapsedSections(prev => ({ ...prev, [secId]: !prev[secId] }));
+  };
+
+  const handleOpenAddQuestionForSection = (sec: 'Structure' | 'Listening' | 'Reading') => {
+    const prog = selectedProgram || testBasedPrograms[0];
+    const initialPart = 
+      sec === 'Listening' 
+        ? 'Part A (Short Conversations)' 
+        : sec === 'Reading' 
+          ? 'Passage 1 (Reading Comprehension)' 
+          : 'Part A (Sentence Completion)';
+
+    setEditingQuestion({
+      id: '',
+      programId: prog ? prog.id : (testBasedPrograms[0]?.id || 'toefl-pred-1'),
+      section: sec,
+      part: initialPart,
+      questionText: '',
+      audioUrl: undefined,
+      audioFileName: undefined,
+      options: { A: '', B: '', C: '', D: '' },
+      correctAnswer: 'A',
+      explanation: ''
+    });
+    setReadingPassage('');
+    setReadingQuestions([
+      {
+        questionText: '',
+        options: { A: '', B: '', C: '', D: '' },
+        correctAnswer: 'A',
+        explanation: ''
+      }
+    ]);
+    setIsAddModalOpen(true);
+  };
 
   // Question bank state with localStorage persistence
   const [questions, setQuestions] = useState<ToeflQuestion[]>(() => {
@@ -251,6 +572,97 @@ export const ToeflQuestionsTab: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<ToeflQuestion | null>(null);
   const audioFileInputRef = useRef<HTMLInputElement>(null);
+  const questionTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fungsi untuk memberi garis bawah (underline) pada kata yang disorot atau posisi kursor
+  const applyUnderlineTag = (targetLetter?: 'A' | 'B' | 'C' | 'D') => {
+    if (!editingQuestion) return;
+    const textarea = questionTextareaRef.current;
+    const currentText = editingQuestion.questionText || '';
+
+    let newText = currentText;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+
+      if (start !== end) {
+        const selectedWord = currentText.substring(start, end).trim();
+        const replacement = targetLetter 
+          ? `<u>(${targetLetter}) ${selectedWord}</u>`
+          : `<u>${selectedWord}</u>`;
+        newText = currentText.substring(0, start) + replacement + currentText.substring(end);
+      } else {
+        const placeholder = targetLetter ? `<u>(${targetLetter}) kata</u>` : `<u>kata</u>`;
+        newText = currentText.substring(0, start) + placeholder + currentText.substring(start);
+      }
+    } else {
+      newText = currentText + (targetLetter ? ` <u>(${targetLetter}) kata</u>` : ' <u>kata</u>');
+    }
+
+    // Ekstraksi otomatis kata yang di-underline ke opsi A, B, C, D
+    const extracted = extractUnderlinedOptions(newText);
+    const updatedOptions = { ...editingQuestion.options };
+    let hasUpdatedOptions = false;
+
+    (['A', 'B', 'C', 'D'] as const).forEach(key => {
+      if (extracted[key]) {
+        updatedOptions[key] = extracted[key]!;
+        hasUpdatedOptions = true;
+      }
+    });
+
+    setEditingQuestion({
+      ...editingQuestion,
+      questionText: newText,
+      options: hasUpdatedOptions ? updatedOptions : editingQuestion.options
+    });
+
+    setTimeout(() => {
+      if (textarea) {
+        textarea.focus();
+      }
+    }, 50);
+  };
+
+  const handleSyncUnderlineOptions = () => {
+    if (!editingQuestion) return;
+    const extracted = extractUnderlinedOptions(editingQuestion.questionText);
+    const updatedOptions = { ...editingQuestion.options };
+    let count = 0;
+    (['A', 'B', 'C', 'D'] as const).forEach(key => {
+      if (extracted[key]) {
+        updatedOptions[key] = extracted[key]!;
+        count++;
+      }
+    });
+    setEditingQuestion({
+      ...editingQuestion,
+      options: updatedOptions
+    });
+    setActionNotice(`${count} kata bergaris bawah berhasil disinkronkan ke opsi A-D`);
+    setTimeout(() => setActionNotice(null), 3000);
+  };
+
+  const handleLoadWrittenExpressionTemplate = () => {
+    if (!editingQuestion) return;
+    const sampleText = '<u>The</u> four <u>string</u> on a violin <u>are</u> <u>tuned</u> in fifth.';
+    const extracted = extractUnderlinedOptions(sampleText);
+    setEditingQuestion({
+      ...editingQuestion,
+      part: 'Part B (Written Expression)',
+      questionText: sampleText,
+      options: {
+        A: extracted.A || 'The',
+        B: extracted.B || 'string',
+        C: extracted.C || 'are',
+        D: extracted.D || 'tuned'
+      },
+      correctAnswer: 'B',
+      explanation: 'Pilihan (B) salah. Seharusnya berbentuk jamak "strings" karena didahului oleh numeral "four". Kalimat yang benar: "The four strings on a violin are tuned in fifth."'
+    });
+    setActionNotice('Contoh soal Written Expression standar TOEFL berhasil dimuat!');
+    setTimeout(() => setActionNotice(null), 3000);
+  };
 
   // Reading Comprehension form state (Story Paragraph / Passage + Multiple questions)
   const [readingPassage, setReadingPassage] = useState('');
@@ -951,7 +1363,7 @@ export const ToeflQuestionsTab: React.FC = () => {
         const durationMatch = b.match(/(\d+)\s*Menit|\b(\d+)m\b/i);
         const count = countMatch ? parseInt(countMatch[1], 10) : (idx === 1 ? 40 : 50);
         const duration = durationMatch ? parseInt(durationMatch[1] || durationMatch[2], 10) : (idx === 0 ? 35 : idx === 1 ? 25 : 55);
-        const cleanName = b.split('(')[0].trim() || b;
+        const cleanName = (typeof b === 'string' && b.split('(')[0]?.trim()) || (typeof b === 'string' ? b : `Section ${idx + 1}`);
         return {
           id: `sec-${idx + 1}`,
           name: cleanName,
@@ -1047,7 +1459,7 @@ export const ToeflQuestionsTab: React.FC = () => {
     );
 
     const durationString = programFormData.duration.trim() || `${totalMinutes} Menit`;
-    const questionCountString = `${totalQuestions} Soal (${programFormData.sections.map(s => s.name.split(':')[0]).join(', ')})`;
+    const questionCountString = `${totalQuestions} Soal (${programFormData.sections.map(s => (s?.name ? s.name.split(':')[0] : '')).filter(Boolean).join(', ')})`;
 
     if (programModalMode === 'create') {
       const newProgram: ToeflTestProgram = {
@@ -1545,9 +1957,6 @@ export const ToeflQuestionsTab: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
-                {selectedProgram.category}
-              </span>
               <h2 className={`text-xs sm:text-sm font-bold font-heading tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {selectedProgram.title}
               </h2>
@@ -1564,33 +1973,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                 <Edit3 className="w-2.5 h-2.5 text-[#F7B425]" />
                 <span>{tr('Edit Program', 'Edit Program')}</span>
               </button>
-              <button
-                type="button"
-                onClick={() => handleToggleProgramFullscreen(selectedProgram.id)}
-                className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md border text-[9.5px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
-                  selectedProgram.isFullscreen !== false
-                    ? 'bg-blue-500/15 border-blue-500/30 text-blue-400 hover:bg-blue-500/25'
-                    : 'bg-amber-500/15 border-amber-500/30 text-amber-500 hover:bg-amber-500/25'
-                }`}
-                title={tr(
-                  selectedProgram.isFullscreen !== false
-                    ? 'Mode Fullscreen AKTIF (Peserta wajib layar penuh). Klik untuk NONAKTIFKAN (mode windowed untuk edit UI test).'
-                    : 'Mode Fullscreen NONAKTIF (Mode Windowed / Edit UI). Klik untuk AKTIFKAN.',
-                  selectedProgram.isFullscreen !== false
-                    ? 'Fullscreen ON. Click to disable for flexible test UI editing.'
-                    : 'Fullscreen OFF (Windowed / UI Edit Mode). Click to enable.'
-                )}
-              >
-                {selectedProgram.isFullscreen !== false ? <Maximize className="w-2.5 h-2.5" /> : <Minimize className="w-2.5 h-2.5" />}
-                <span>Fullscreen: {selectedProgram.isFullscreen !== false ? 'ON' : 'OFF'}</span>
-              </button>
             </div>
-            <p className={`text-[10px] leading-tight mt-0.5 ${subText}`}>
-              {tr(
-                `Durasi: ${selectedProgram.duration} • Target: ${selectedProgram.scoreTarget} • Total ${activeProgramQuestions.length} butir soal terdaftar`,
-                `Duration: ${selectedProgram.duration} • Target: ${selectedProgram.scoreTarget} • Total ${activeProgramQuestions.length} registered questions`
-              )}
-            </p>
           </div>
         </div>
 
@@ -1685,253 +2068,365 @@ export const ToeflQuestionsTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Questions Content: Cards or Compact Table */}
-      {filteredQuestions.length === 0 ? (
-        <div className={`p-5 rounded-xl border text-center ${cardBg}`}>
-          <HelpCircle className="w-6 h-6 mx-auto mb-1.5 opacity-30 text-[#F7B425]" />
-          <h3 className={`text-xs sm:text-sm font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            {tr('Belum ada butir soal yang sesuai', 'No matching questions found')}
-          </h3>
-          <p className={`text-[10.5px] mt-0.5 max-w-md mx-auto ${subText}`}>
-            {tr(
-              'Belum ada butir soal dalam filter ini atau pencarian tidak menemukan hasil. Klik tombol di bawah untuk menambahkan butir soal pertama.',
-              'No questions in this section or search match. Click below to add the first question to this program.'
-            )}
-          </p>
-          <button
-            type="button"
-            onClick={handleOpenAddQuestion}
-            className="mt-2.5 px-2.5 py-1 bg-[#F7B425] text-black font-extrabold text-[11px] rounded-lg hover:bg-amber-400 transition-all cursor-pointer inline-flex items-center gap-1"
-          >
-            <Plus className="w-3 h-3" />
-            <span>{tr('Tambah Soal Sekarang', 'Add Question Now')}</span>
-          </button>
-        </div>
-      ) : viewMode === 'cards' ? (
-        /* Cards View - Rendered as responsive Grid */
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
-          {filteredQuestions.map((item, idx) => (
-            <div 
-              key={item.id}
-              className={`rounded-xl p-2.5 sm:p-3 border transition-colors duration-150 space-y-2 ${cardBg} ${
-                isDark ? 'hover:border-[#F7B425]/40' : 'hover:border-[#F7B425]'
-              }`}
-            >
-              {/* Header Tag */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-4.5 h-4.5 rounded-full bg-[#F7B425] text-black text-[9.5px] font-black flex items-center justify-center">
-                    {idx + 1}
-                  </span>
-                  <span className="px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[8.5px] font-black uppercase">
-                    {item.section}
-                  </span>
-                  <span className={`px-1.5 py-0.2 rounded-full text-[8.5px] font-semibold ${
-                    isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    {item.part}
-                  </span>
-                </div>
+      {/* Questions Content: Wrapped by the 3 TOEFL Sections */}
+      <div id="toefl-sections-wrapper" className="space-y-4">
+        {(['Structure', 'Listening', 'Reading'] as const)
+          .filter(secKey => selectedSection === 'all' || selectedSection === secKey)
+          .map((secKey) => {
+            const secInfo = SECTION_DIRECTIONS_DATA[secKey];
+            const secQuestions = activeProgramQuestions.filter(q => {
+              if (q.section !== secKey) return false;
+              if (questionSearchTerm) {
+                const term = questionSearchTerm.toLowerCase();
+                const inText = q.questionText.toLowerCase().includes(term);
+                const inExpl = (q.explanation || '').toLowerCase().includes(term);
+                const inPassage = (q.passageText || '').toLowerCase().includes(term);
+                return inText || inExpl || inPassage;
+              }
+              return true;
+            });
 
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => handleOpenEditQuestion(item)}
-                    className={`p-1 rounded-md transition-colors cursor-pointer ${
-                      isDark 
-                        ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' 
-                        : 'bg-slate-100 hover:bg-[#F7B425] text-slate-700 hover:text-black'
-                    }`}
-                    title={tr('Edit Soal', 'Edit Question')}
-                  >
-                    <Edit3 className="w-2.5 h-2.5" />
-                  </button>
-                  <button
-                    id={`btn-delete-card-question-${item.id}`}
-                    type="button"
-                    onClick={() => handleDelete(item)}
-                    className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
-                    title={tr('Hapus Soal', 'Delete Question')}
-                    aria-label={tr('Hapus Soal', 'Delete Question')}
-                  >
-                    <Trash2 className="w-2.5 h-2.5" />
-                  </button>
-                </div>
-              </div>
+            const isCollapsed = !!collapsedSections[secKey];
 
-              {/* Question Text & Audio Player */}
-              <div className={`p-2 rounded-lg border text-[11px] font-medium leading-relaxed ${
-                isDark 
-                  ? 'bg-white/5 border-white/5 text-slate-200' 
-                  : 'bg-slate-50 border-slate-200 text-slate-800'
-              }`}>
-                {item.passageText && (
-                  <div className={`mb-2 p-2 rounded-lg border text-[11px] font-serif leading-relaxed ${
-                    isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-100' : 'bg-amber-50 border-amber-200 text-amber-950'
-                  }`}>
-                    <div className="font-sans font-bold text-[9.5px] uppercase tracking-wider text-[#F7B425] flex items-center gap-1 mb-1">
-                      <BookOpen className="w-3 h-3" />
-                      <span>{tr('Paragraf Cerita (Reading Passage):', 'Reading Passage:')}</span>
+            return (
+              <div 
+                key={secKey}
+                id={`section-wrapper-${secKey.toLowerCase()}`}
+                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                  isDark ? 'bg-[#141416] border-white/10 shadow-lg' : 'bg-white border-slate-200 shadow-xs'
+                }`}
+              >
+                {/* Section Header Bar */}
+                <div className={`p-3 sm:px-4 sm:py-3.5 border-b flex flex-col md:flex-row md:items-center justify-between gap-3 ${
+                  isDark ? 'border-white/10 bg-white/[0.02]' : 'border-slate-100 bg-slate-50/70'
+                }`}>
+                  {/* Left info: Icon, Name, Badges */}
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
+                      secKey === 'Structure'
+                        ? 'bg-amber-500/15 border-amber-500/30 text-[#F7B425]'
+                        : secKey === 'Listening'
+                          ? 'bg-blue-500/15 border-blue-500/30 text-blue-400'
+                          : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                    }`}>
+                      {secKey === 'Structure' ? (
+                        <FileText className="w-4 h-4" />
+                      ) : secKey === 'Listening' ? (
+                        <Headphones className="w-4 h-4" />
+                      ) : (
+                        <BookOpen className="w-4 h-4" />
+                      )}
                     </div>
-                    <div className="whitespace-pre-line line-clamp-3 hover:line-clamp-none transition-all">
-                      {item.passageText}
-                    </div>
-                  </div>
-                )}
-                {item.audioUrl && (
-                  <div className="mb-2 p-2 rounded-lg bg-[#F7B425]/10 border border-[#F7B425]/30">
-                    <div className="flex items-center justify-between gap-1.5 mb-1.5">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <Volume2 className="w-3.5 h-3.5 text-[#F7B425] shrink-0" />
-                        <span className="text-[10px] font-bold text-[#F7B425]">
-                          {tr('Audio Soal Listening:', 'Listening Question Audio:')}
+
+                    <div>
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                        <h3 className={`text-xs sm:text-sm font-extrabold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {secInfo.subtitle}
+                        </h3>
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                          isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-200 text-slate-700'
+                        }`}>
+                          {secQuestions.length} {tr('Soal Terdaftar', 'Questions')}
                         </span>
-                        {item.audioFileName && (
-                          <span className="text-[9.5px] opacity-80 truncate">{item.audioFileName}</span>
-                        )}
+                        <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">
+                          • {secInfo.durationText}
+                        </span>
                       </div>
-                      <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-[#F7B425]/20 text-[#F7B425] font-bold">
-                        AUDIO
-                      </span>
                     </div>
-                    <audio controls src={item.audioUrl} className="w-full h-7 rounded" />
                   </div>
-                )}
-                {item.questionText ? (
-                  <div className="whitespace-pre-line">{item.questionText}</div>
-                ) : (
-                  <div className="text-slate-400 italic text-[10.5px]">
-                    {tr('Dengarkan rekaman audio di atas untuk menjawab soal.', 'Listen to the audio recording above to answer the question.')}
-                  </div>
-                )}
-              </div>
 
-              {/* Options Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
-                {(['A', 'B', 'C', 'D'] as const).map((optKey) => {
-                  const isCorrect = item.correctAnswer === optKey;
-                  return (
-                    <div
-                      key={optKey}
-                      className={`p-1.5 rounded-md border flex items-center gap-1.5 transition-colors ${
-                        isCorrect 
-                          ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold' 
-                          : isDark 
-                            ? 'bg-white/5 border-white/5 text-slate-300' 
-                            : 'bg-slate-50 border-slate-200 text-slate-700'
-                      }`}
+                  {/* Right actions: Preview Directions, Add Question, Toggle Collapse */}
+                  <div className="flex items-center gap-1.5 shrink-0 self-end md:self-center">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewSectionDirections(secKey)}
+                      className="px-2.5 py-1 rounded-lg border text-[11px] font-bold bg-[#F7B425]/15 text-[#F7B425] hover:bg-[#F7B425]/25 border-[#F7B425]/40 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                      title={tr('Buka Layar Preview Petunjuk Resmi Ujian (Directions Screen)', 'Open Official Section Directions Preview Screen')}
                     >
-                      <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8.5px] font-black shrink-0 ${
-                        isCorrect ? 'bg-emerald-500 text-black' : isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-200 text-slate-600'
-                      }`}>
-                        {optKey}
-                      </span>
-                      <span className="flex-1 text-[10.5px] leading-tight">{item.options[optKey]}</span>
-                      {isCorrect && <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />}
-                    </div>
-                  );
-                })}
-              </div>
+                      <Eye className="w-3.5 h-3.5 text-[#F7B425]" />
+                      <span>{tr('Preview Petunjuk (Directions)', 'Preview Directions')}</span>
+                    </button>
 
-              {/* Explanation Box */}
-              <div className="p-2 bg-[#F7B425]/10 rounded-lg border border-[#F7B425]/20 text-[10.5px] text-[#F7B425] flex items-start gap-1.5">
-                <BookOpen className="w-3 h-3 text-[#F7B425] shrink-0 mt-0.5" />
-                <div className="text-[10px] sm:text-[10.5px] leading-snug">
-                  <strong className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {tr('Kunci & Analisis Soal:', 'Key & Explanation:')}
-                  </strong>{' '}
-                  <span className={isDark ? 'text-slate-300' : 'text-slate-800'}>
-                    {item.explanation}
-                  </span>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenAddQuestionForSection(secKey)}
+                      className="px-2.5 py-1 rounded-lg bg-[#F7B425] hover:bg-amber-400 text-black text-[11px] font-extrabold transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-xs"
+                      title={tr(`Tambah butir soal ke ${secInfo.subtitle}`, `Add question to ${secInfo.subtitle}`)}
+                    >
+                      <Plus className="w-3 h-3 stroke-[2.5]" />
+                      <span className="hidden sm:inline">{tr('Tambah Soal', 'Add Question')}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => toggleSectionCollapse(secKey)}
+                      className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-colors cursor-pointer ${
+                        isDark ? 'border-white/10 text-slate-400 hover:text-white hover:bg-white/5' : 'border-slate-200 text-slate-600 hover:bg-slate-100'
+                      }`}
+                      title={isCollapsed ? 'Buka Section' : 'Ciutkan Section'}
+                      aria-label="Toggle section"
+                    >
+                      {isCollapsed ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-            </div>
-          ))}
-        </div>
-      ) : (
-        /* Compact Table View of Questions */
-        <div className={`rounded-xl border overflow-hidden ${cardBg}`}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className={`border-b text-[9.5px] uppercase tracking-wider ${
-                isDark ? 'border-white/10 text-slate-400 bg-white/5' : 'border-slate-200 text-slate-500 bg-slate-50/80'
-              }`}>
-                <tr>
-                  <th className="py-1.5 px-2.5 font-bold text-center w-10">No</th>
-                  <th className="py-1.5 px-2.5 font-bold w-32">{tr('Bagian (Section)', 'Section')}</th>
-                  <th className="py-1.5 px-2.5 font-bold">{tr('Cuplikan Teks Soal', 'Question Snippet')}</th>
-                  <th className="py-1.5 px-2.5 font-bold text-center w-14">{tr('Kunci', 'Key')}</th>
-                  <th className="py-1.5 px-2.5 font-bold">{tr('Analisis Pembahasan', 'Explanation')}</th>
-                  <th className="py-1.5 px-2.5 font-bold text-right w-16">{tr('Aksi', 'Action')}</th>
-                </tr>
-              </thead>
-              <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
-                {filteredQuestions.map((q, idx) => (
-                  <tr key={q.id} className={isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}>
-                    <td className="py-1 px-2.5 font-bold text-center font-mono text-[#F7B425] text-[11px]">
-                      {idx + 1}
-                    </td>
-                    <td className="py-1 px-2.5">
-                      <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
-                        {q.section}
-                      </span>
-                      <span className={`block text-[9px] mt-0.2 ${subText}`}>{q.part}</span>
-                    </td>
-                    <td className="py-1 px-2.5 max-w-xs truncate font-medium text-[11px]">
-                      {q.passageText && (
-                        <span className="inline-flex items-center gap-1 mr-1.5 px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[9px] font-bold">
-                          <BookOpen className="w-2.5 h-2.5" />
-                          Passage
-                        </span>
-                      )}
-                      {q.audioUrl && (
-                        <span className="inline-flex items-center gap-1 mr-1.5 px-1.5 py-0.2 rounded bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[9px] font-bold">
-                          <Volume2 className="w-2.5 h-2.5" />
-                          Audio
-                        </span>
-                      )}
-                      <span>{q.questionText}</span>
-                    </td>
-                    <td className="py-1 px-2.5 text-center">
-                      <span className="w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[9.5px] font-black bg-emerald-500 text-black">
-                        {q.correctAnswer}
-                      </span>
-                    </td>
-                    <td className="py-1 px-2.5 max-w-sm truncate text-slate-400 text-[10.5px]">
-                      {q.explanation}
-                    </td>
-                    <td className="py-1 px-2.5 text-right">
-                      <div className="flex items-center justify-end gap-1">
+                {/* Section Content (Expanded) */}
+                {!isCollapsed && (
+                  <div className="p-3 sm:p-4 space-y-3">
+                    {/* Section Questions */}
+                    {secQuestions.length === 0 ? (
+                      <div className={`p-4 rounded-xl border text-center ${cardBg}`}>
+                        <HelpCircle className="w-5 h-5 mx-auto mb-1 opacity-30 text-[#F7B425]" />
+                        <h4 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {tr(`Belum ada soal di ${secInfo.subtitle}`, `No questions in ${secInfo.subtitle}`)}
+                        </h4>
+                        <p className={`text-[10px] mt-0.5 ${subText}`}>
+                          {tr('Klik tombol di bawah untuk menambahkan butir soal pertama ke bagian ini.', 'Click below to add the first question to this section.')}
+                        </p>
                         <button
-                          onClick={() => handleOpenEditQuestion(q)}
-                          className={`p-1 rounded-md transition-colors cursor-pointer ${
-                            isDark 
-                              ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' 
-                              : 'bg-slate-100 hover:bg-[#F7B425] text-slate-700 hover:text-black'
-                          }`}
-                          title={tr('Edit Soal', 'Edit Question')}
-                        >
-                          <Edit3 className="w-2.5 h-2.5" />
-                        </button>
-                        <button
-                          id={`btn-delete-table-question-${q.id}`}
                           type="button"
-                          onClick={() => handleDelete(q)}
-                          className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
-                          title={tr('Hapus Soal', 'Delete Question')}
-                          aria-label={tr('Hapus Soal', 'Delete Question')}
+                          onClick={() => handleOpenAddQuestionForSection(secKey)}
+                          className="mt-2 px-2.5 py-1 bg-[#F7B425] text-black font-extrabold text-[10.5px] rounded-lg hover:bg-amber-400 transition-all cursor-pointer inline-flex items-center gap-1"
                         >
-                          <Trash2 className="w-2.5 h-2.5" />
+                          <Plus className="w-3 h-3" />
+                          <span>{tr('Tambah Soal ke Bagian Ini', 'Add Question to This Section')}</span>
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+                    ) : viewMode === 'cards' ? (
+                      /* Grid of Question Cards */
+                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+                        {secQuestions.map((item, idx) => (
+                          <div 
+                            key={item.id}
+                            className={`rounded-xl p-2.5 sm:p-3 border transition-colors duration-150 space-y-2 ${cardBg} ${
+                              isDark ? 'hover:border-[#F7B425]/40' : 'hover:border-[#F7B425]'
+                            }`}
+                          >
+                            {/* Header Tag */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <span 
+                                  style={{ fontSize: '10px', fontWeight: 'bold', width: '20px', height: '20px' }}
+                                  className="w-5 h-5 rounded-full bg-[#F7B425] text-black text-[10px] font-bold flex items-center justify-center shrink-0"
+                                >
+                                  {idx + 1}
+                                </span>
+                                <span className="px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[8.5px] font-black uppercase">
+                                  {item.section}
+                                </span>
+                                <span className={`px-1.5 py-0.2 rounded-full text-[8.5px] font-semibold ${
+                                  isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-600'
+                                }`}>
+                                  {item.part}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => handleOpenEditQuestion(item)}
+                                  className={`p-1 rounded-md transition-colors cursor-pointer ${
+                                    isDark 
+                                      ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' 
+                                      : 'bg-slate-100 hover:bg-[#F7B425] text-slate-700 hover:text-black'
+                                  }`}
+                                  title={tr('Edit Soal', 'Edit Question')}
+                                >
+                                  <Edit3 className="w-2.5 h-2.5" />
+                                </button>
+                                <button
+                                  id={`btn-delete-card-question-${item.id}`}
+                                  type="button"
+                                  onClick={() => handleDelete(item)}
+                                  className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
+                                  title={tr('Hapus Soal', 'Delete Question')}
+                                  aria-label={tr('Hapus Soal', 'Delete Question')}
+                                >
+                                  <Trash2 className="w-2.5 h-2.5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Question Text & Audio Player */}
+                            <div className={`p-2 rounded-lg border text-[11px] font-medium leading-relaxed ${
+                              isDark 
+                                ? 'bg-white/5 border-white/5 text-slate-200' 
+                                : 'bg-slate-50 border-slate-200 text-slate-800'
+                            }`}>
+                              {item.passageText && (
+                                <div className={`mb-2 p-2 rounded-lg border text-[11px] font-serif leading-relaxed ${
+                                  isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-100' : 'bg-amber-50 border-amber-200 text-amber-950'
+                                }`}>
+                                  <div className="font-sans font-bold text-[9.5px] uppercase tracking-wider text-[#F7B425] flex items-center gap-1 mb-1">
+                                    <BookOpen className="w-3 h-3" />
+                                    <span>{tr('Paragraf Cerita (Reading Passage):', 'Reading Passage:')}</span>
+                                  </div>
+                                  <div className="whitespace-pre-line line-clamp-3 hover:line-clamp-none transition-all">
+                                    {item.passageText}
+                                  </div>
+                                </div>
+                              )}
+                              {item.audioUrl && (
+                                <div className="mb-2 p-2 rounded-lg bg-[#F7B425]/10 border border-[#F7B425]/30">
+                                  <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                                    <div className="flex items-center gap-1.5 min-w-0">
+                                      <Volume2 className="w-3.5 h-3.5 text-[#F7B425] shrink-0" />
+                                      <span className="text-[10px] font-bold text-[#F7B425]">
+                                        {tr('Audio Soal Listening:', 'Listening Question Audio:')}
+                                      </span>
+                                      {item.audioFileName && (
+                                        <span className="text-[9.5px] opacity-80 truncate">{item.audioFileName}</span>
+                                      )}
+                                    </div>
+                                    <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-[#F7B425]/20 text-[#F7B425] font-bold">
+                                      AUDIO
+                                    </span>
+                                  </div>
+                                  <audio controls src={item.audioUrl} className="w-full h-7 rounded" />
+                                </div>
+                              )}
+                              {item.questionText ? (
+                                <div className="leading-relaxed">
+                                  {renderWrittenExpressionText(item.questionText, isDark)}
+                                </div>
+                              ) : (
+                                <div className="text-slate-400 italic text-[10.5px]">
+                                  {tr('Dengarkan rekaman audio di atas untuk menjawab soal.', 'Listen to the audio recording above to answer the question.')}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Options Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
+                              {(['A', 'B', 'C', 'D'] as const).map((optKey) => {
+                                const isCorrect = item.correctAnswer === optKey;
+                                return (
+                                  <div
+                                    key={optKey}
+                                    className={`p-1.5 rounded-md border flex items-center gap-1.5 transition-colors ${
+                                      isCorrect 
+                                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold' 
+                                        : isDark 
+                                          ? 'bg-white/5 border-white/5 text-slate-300' 
+                                          : 'bg-slate-50 border-slate-200 text-slate-700'
+                                    }`}
+                                  >
+                                    <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8.5px] font-black shrink-0 ${
+                                      isCorrect ? 'bg-emerald-500 text-black' : isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-200 text-slate-600'
+                                    }`}>
+                                      {optKey}
+                                    </span>
+                                    <span className="flex-1 text-[10.5px] leading-tight">{item.options[optKey]}</span>
+                                    {isCorrect && <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />}
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {/* Explanation Box */}
+                            <div className="p-2 bg-[#F7B425]/10 rounded-lg border border-[#F7B425]/20 text-[10.5px] text-[#F7B425] flex items-start gap-1.5">
+                              <BookOpen className="w-3 h-3 text-[#F7B425] shrink-0 mt-0.5" />
+                              <div className="text-[10px] sm:text-[10.5px] leading-snug">
+                                <strong className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                  {tr('Kunci & Analisis Soal:', 'Key & Explanation:')}
+                                </strong>{' '}
+                                <span className={isDark ? 'text-slate-300' : 'text-slate-800'}>
+                                  {item.explanation}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      /* Compact Table View for this Section */
+                      <div className={`rounded-xl border overflow-hidden ${cardBg}`}>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs">
+                            <thead className={`border-b text-[9.5px] uppercase tracking-wider ${
+                              isDark ? 'border-white/10 text-slate-400 bg-white/5' : 'border-slate-200 text-slate-500 bg-slate-50/80'
+                            }`}>
+                              <tr>
+                                <th className="py-1.5 px-2.5 font-bold text-center w-10">No</th>
+                                <th className="py-1.5 px-2.5 font-bold w-32">{tr('Bagian (Part)', 'Part')}</th>
+                                <th className="py-1.5 px-2.5 font-bold">{tr('Cuplikan Teks Soal', 'Question Snippet')}</th>
+                                <th className="py-1.5 px-2.5 font-bold text-center w-14">{tr('Kunci', 'Key')}</th>
+                                <th className="py-1.5 px-2.5 font-bold">{tr('Analisis Pembahasan', 'Explanation')}</th>
+                                <th className="py-1.5 px-2.5 font-bold text-right w-16">{tr('Aksi', 'Action')}</th>
+                              </tr>
+                            </thead>
+                            <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
+                              {secQuestions.map((q, idx) => (
+                                <tr key={q.id} className={isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}>
+                                  <td className="py-1 px-2.5 font-bold text-center font-mono text-[#F7B425] text-[11px]">
+                                    {idx + 1}
+                                  </td>
+                                  <td className="py-1 px-2.5">
+                                    <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                                      {q.part}
+                                    </span>
+                                  </td>
+                                  <td className="py-1 px-2.5 max-w-xs truncate font-medium text-[11px]">
+                                    {q.passageText && (
+                                      <span className="inline-flex items-center gap-1 mr-1.5 px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[9px] font-bold">
+                                        <BookOpen className="w-2.5 h-2.5" />
+                                        Passage
+                                      </span>
+                                    )}
+                                    {q.audioUrl && (
+                                      <span className="inline-flex items-center gap-1 mr-1.5 px-1.5 py-0.2 rounded bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[9px] font-bold">
+                                        <Volume2 className="w-2.5 h-2.5" />
+                                        Audio
+                                      </span>
+                                    )}
+                                    <span className="leading-relaxed">{renderWrittenExpressionText(q.questionText, isDark)}</span>
+                                  </td>
+                                  <td className="py-1 px-2.5 text-center">
+                                    <span className="w-4.5 h-4.5 rounded-full inline-flex items-center justify-center text-[9.5px] font-black bg-emerald-500 text-black">
+                                      {q.correctAnswer}
+                                    </span>
+                                  </td>
+                                  <td className="py-1 px-2.5 max-w-sm truncate text-slate-400 text-[10.5px]">
+                                    {q.explanation}
+                                  </td>
+                                  <td className="py-1 px-2.5 text-right">
+                                    <div className="flex items-center justify-end gap-1">
+                                      <button
+                                        onClick={() => handleOpenEditQuestion(q)}
+                                        className={`p-1 rounded-md transition-colors cursor-pointer ${
+                                          isDark 
+                                            ? 'bg-white/10 hover:bg-[#F7B425] text-white hover:text-black' 
+                                            : 'bg-slate-100 hover:bg-[#F7B425] text-slate-700 hover:text-black'
+                                        }`}
+                                        title={tr('Edit Soal', 'Edit Question')}
+                                      >
+                                        <Edit3 className="w-2.5 h-2.5" />
+                                      </button>
+                                      <button
+                                        id={`btn-delete-table-question-${q.id}`}
+                                        type="button"
+                                        onClick={() => handleDelete(q)}
+                                        className="p-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors cursor-pointer"
+                                        title={tr('Hapus Soal', 'Delete Question')}
+                                        aria-label={tr('Hapus Soal', 'Delete Question')}
+                                      >
+                                        <Trash2 className="w-2.5 h-2.5" />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+      </div>
         </div>
       )}
 
@@ -1993,6 +2488,8 @@ export const ToeflQuestionsTab: React.FC = () => {
                 <div>
                   <CustomDropdown
                     label={tr('Section *', 'Section *')}
+                    labelClassName="!mb-0"
+                    labelStyle={{ marginBottom: '0px' }}
                     value={editingQuestion.section}
                     onChange={(val) => {
                       const newSection = val as 'Listening' | 'Structure' | 'Reading';
@@ -2053,20 +2550,77 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {tr('Part / Bagian Spesifik', 'Specific Part / Skill')}
-                  </label>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <label 
+                      style={{ fontSize: '12px', lineHeight: '16px', marginBottom: '0px', fontWeight: 'bold' }}
+                      className={`block font-bold !mb-0 text-[12px] leading-4 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
+                    >
+                      {tr('Part / Bagian Spesifik *', 'Specific Part / Skill *')}
+                    </label>
+                    {editingQuestion.part.toLowerCase().includes('written') && (
+                      <span className="text-[9px] px-1.5 py-0.2 rounded font-extrabold bg-[#F7B425]/20 text-[#F7B425] border border-[#F7B425]/30">
+                        Mode Underline Aktif
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="text"
                     value={editingQuestion.part}
                     onChange={(e) => setEditingQuestion({ ...editingQuestion, part: e.target.value })}
-                    placeholder={editingQuestion.section === 'Listening' ? 'Contoh: Part A (Short Conversations)' : 'Contoh: Part A (Sentence Completion)'}
-                    className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                    placeholder={editingQuestion.section === 'Listening' ? 'Contoh: Part A (Short Conversations)' : 'Contoh: Part B (Written Expression)'}
+                    style={{ height: '34px' }}
+                    className={`w-full h-[34px] px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                       isDark 
                         ? 'bg-[#1e1e1e] border-[#4b4b4b] text-white' 
                         : 'bg-slate-50 border-slate-300 text-slate-900'
                     }`}
                   />
+                  {editingQuestion.section === 'Structure' && (
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => setEditingQuestion({ ...editingQuestion, part: 'Part A (Sentence Completion)' })}
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-all cursor-pointer ${
+                          editingQuestion.part.toLowerCase().includes('completion') || editingQuestion.part === 'Part A'
+                            ? 'bg-[#F7B425] text-black border-[#F7B425] font-extrabold shadow-xs'
+                            : isDark ? 'bg-white/5 border-white/10 text-slate-300 hover:text-white' : 'bg-slate-100 border-slate-200 text-slate-700'
+                        }`}
+                      >
+                        Part A: Sentence Completion
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingQuestion({ 
+                            ...editingQuestion, 
+                            part: 'Part B (Written Expression)',
+                            questionText: editingQuestion.questionText || '<u>The</u> four <u>string</u> on a violin <u>are</u> <u>tuned</u> in fifth.'
+                          });
+                          const extracted = extractUnderlinedOptions(editingQuestion.questionText || '<u>The</u> four <u>string</u> on a violin <u>are</u> <u>tuned</u> in fifth.');
+                          if (extracted.A) {
+                            setEditingQuestion(prev => prev ? ({
+                              ...prev,
+                              part: 'Part B (Written Expression)',
+                              options: {
+                                A: extracted.A || prev.options.A,
+                                B: extracted.B || prev.options.B,
+                                C: extracted.C || prev.options.C,
+                                D: extracted.D || prev.options.D,
+                              }
+                            }) : null);
+                          }
+                        }}
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                          editingQuestion.part.toLowerCase().includes('written') || editingQuestion.part.toLowerCase().includes('expression')
+                            ? 'bg-[#F7B425] text-black border-[#F7B425] font-extrabold shadow-xs'
+                            : isDark ? 'bg-white/5 border-white/10 text-slate-300 hover:text-white' : 'bg-slate-100 border-slate-200 text-slate-700'
+                        }`}
+                      >
+                        <Underline className="w-2.5 h-2.5" />
+                        <span>Part B: Written Expression (Kata Bergaris Bawah)</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -2074,9 +2628,12 @@ export const ToeflQuestionsTab: React.FC = () => {
               {editingQuestion.section === 'Reading' ? (
                 <div className="space-y-3">
                   {/* 1. Teks Paragraf Cerita / Wacana (Reading Passage) */}
-                  <div className={`p-3 rounded-xl border ${
-                    isDark ? 'bg-amber-500/5 border-amber-500/30' : 'bg-amber-50/70 border-amber-300'
-                  }`}>
+                  <div 
+                    style={{ backgroundColor: '#141414', borderColor: '#5b5b5b' }}
+                    className={`p-3 rounded-xl border ${
+                      isDark ? 'bg-amber-500/5 border-amber-500/30' : 'bg-amber-50/70 border-amber-300'
+                    }`}
+                  >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
                       <label className={`font-bold text-xs flex items-center gap-1.5 ${isDark ? 'text-amber-400' : 'text-amber-800'}`}>
                         <BookOpen className="w-4 h-4 text-[#F7B425]" />
@@ -2111,7 +2668,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                     <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
                       <span>{tr('Wacana ini menjadi bahan rujukan untuk butir-butir pertanyaan di bawah.', 'This passage is the reference for the questions below.')}</span>
                       <span className="font-mono text-[#F7B425]">
-                        {readingPassage.split(/\s+/).filter(Boolean).length} {tr('kata', 'words')}
+                        {(readingPassage || '').split(/\s+/).filter(Boolean).length} {tr('kata', 'words')}
                       </span>
                     </div>
                   </div>
@@ -2124,7 +2681,10 @@ export const ToeflQuestionsTab: React.FC = () => {
                         <h4 className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {tr('Daftar Teks Pertanyaan & Opsi Jawaban', 'Questions & Answer Options')}
                         </h4>
-                        <span className="px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-[#F7B425] text-black">
+                        <span 
+                          style={{ paddingTop: '3px', paddingBottom: '3px' }}
+                          className="px-1.5 py-[3px] rounded-full text-[9px] font-extrabold bg-[#F7B425] text-black"
+                        >
                           {readingQuestions.length} {tr('Soal', 'Questions')}
                         </span>
                       </div>
@@ -2132,10 +2692,16 @@ export const ToeflQuestionsTab: React.FC = () => {
                       <button
                         type="button"
                         onClick={handleAddReadingQuestion}
-                        className="px-2 py-1 rounded-lg bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[10.5px] transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-xs"
+                        style={{ height: '26px' }}
+                        className="px-2 py-1 h-[26px] rounded-lg bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[10.5px] transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-xs"
                       >
-                        <Plus className="w-3 h-3 stroke-[3]" />
-                        <span>{tr('Tambah Soal untuk Wacana Ini', 'Add Question for this Passage')}</span>
+                        <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                        <span 
+                          style={{ fontWeight: 'bold', fontSize: '12px', lineHeight: '16px' }}
+                          className="font-bold text-[12px] leading-4"
+                        >
+                          {tr('Tambah Soal untuk Wacana Ini', 'Add Question for this Passage')}
+                        </span>
                       </button>
                     </div>
 
@@ -2206,7 +2772,8 @@ export const ToeflQuestionsTab: React.FC = () => {
                                     optKey === 'B' ? 'Pilihan B...' :
                                     optKey === 'C' ? 'Pilihan C...' : 'Pilihan D...'
                                   }
-                                  className={`flex-1 px-2.5 py-1 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                                  style={{ paddingTop: '6px', paddingBottom: '6px' }}
+                                  className={`flex-1 px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                                     isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-300 text-slate-900'
                                   }`}
                                 />
@@ -2215,12 +2782,12 @@ export const ToeflQuestionsTab: React.FC = () => {
                           </div>
 
                           {/* Correct Key & Explanation */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <div className="space-y-2.5">
                             <div>
-                              <label className={`block font-bold mb-1 text-[10.5px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                              <label className={`block font-bold mb-1.5 text-xs ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                                 {tr('Kunci Jawaban Benar *', 'Correct Answer Key *')}
                               </label>
-                              <div className="flex gap-1">
+                              <div className="flex gap-2">
                                 {(['A', 'B', 'C', 'D'] as const).map((key) => {
                                   const isSelected = qItem.correctAnswer === key;
                                   return (
@@ -2228,12 +2795,12 @@ export const ToeflQuestionsTab: React.FC = () => {
                                       key={key}
                                       type="button"
                                       onClick={() => handleUpdateReadingQuestion(qIdx, 'correctAnswer', key)}
-                                      className={`flex-1 py-1 rounded-lg text-xs font-black transition-all cursor-pointer border ${
+                                      className={`flex-1 py-2 sm:py-2.5 rounded-xl text-sm font-black transition-all cursor-pointer border select-none ${
                                         isSelected
-                                          ? 'bg-emerald-500 border-emerald-500 text-black shadow-xs'
+                                          ? 'bg-[#00c975] border-[#00c975] text-black shadow-md shadow-emerald-500/20'
                                           : isDark
-                                            ? 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                                            : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+                                            ? 'bg-[#222222] border-[#383838] text-slate-200 hover:bg-[#2b2b2b] hover:border-[#444]'
+                                            : 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200'
                                       }`}
                                     >
                                       {key}
@@ -2243,7 +2810,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                               </div>
                             </div>
 
-                            <div className="sm:col-span-2">
+                            <div>
                               <label className={`block font-bold mb-1 text-[10.5px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                                 {tr('Penjelasan / Analisis Kunci Jawaban', 'Explanation / Key Analysis')}
                               </label>
@@ -2252,7 +2819,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                                 value={qItem.explanation}
                                 onChange={(e) => handleUpdateReadingQuestion(qIdx, 'explanation', e.target.value)}
                                 placeholder={tr('Jelaskan alasan bukti di teks wacana...', 'Explain the textual evidence...')}
-                                className={`w-full px-2.5 py-1 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                                className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
                                   isDark ? 'bg-[#181818] border-white/10 text-white' : 'bg-white border-slate-300 text-slate-900'
                                 }`}
                               />
@@ -2265,10 +2832,16 @@ export const ToeflQuestionsTab: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleAddReadingQuestion}
-                      className="w-full py-2 rounded-xl border border-dashed border-[#F7B425]/50 bg-[#F7B425]/5 hover:bg-[#F7B425]/15 text-[#F7B425] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      style={{
+                        backgroundColor: '#f7b425',
+                        borderStyle: 'solid',
+                        borderWidth: '1px',
+                        color: '#000000',
+                      }}
+                      className="w-full py-2 rounded-xl border border-solid border-[#F7B425] bg-[#F7B425] hover:bg-amber-400 text-black font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                      <span>{tr('+ Tambah Butir Pertanyaan untuk Wacana Ini', '+ Add Another Question for this Passage')}</span>
+                      <span>{tr('Tambah Butir Pertanyaan untuk Wacana Ini', 'Add Another Question for this Passage')}</span>
                     </button>
                   </div>
                 </div>
@@ -2419,63 +2992,194 @@ export const ToeflQuestionsTab: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <div>
-                      <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                        {tr('Teks Pertanyaan / Soal *', 'Question Prompt / Text *')}
-                      </label>
+                    <div className="space-y-1.5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                        <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                          {tr('Teks Pertanyaan / Soal *', 'Question Prompt / Text *')}
+                        </label>
+                        
+                        {/* Toolbar Underline untuk Written Expression & Structure */}
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <span className="text-[10px] font-bold text-[#F7B425] flex items-center gap-1 mr-0.5">
+                            <Underline className="w-3 h-3" />
+                            <span className="hidden xs:inline">Underline:</span>
+                          </span>
+                          {(['A', 'B', 'C', 'D'] as const).map((letter) => (
+                            <button
+                              key={letter}
+                              type="button"
+                              onClick={() => applyUnderlineTag(letter)}
+                              className="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/30 text-[#F7B425] border border-amber-500/30 text-[10px] font-bold transition-all cursor-pointer flex items-center gap-0.5 active:scale-95 shadow-xs"
+                              title={`Beri garis bawah pada kata yang disorot untuk Pilihan (${letter})`}
+                            >
+                              <Underline className="w-2.5 h-2.5" />
+                              <span className="underline font-black">{letter}</span>
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => applyUnderlineTag()}
+                            className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white border border-white/20 text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                            title="Beri garis bawah otomatis (akan mengisi A, B, C, D secara berurutan)"
+                          >
+                            <Underline className="w-2.5 h-2.5 text-[#F7B425]" />
+                            <span className="hidden sm:inline">Auto</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleLoadWrittenExpressionTemplate}
+                            className="px-2 py-0.5 rounded bg-emerald-500/15 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                            title="Muat contoh soal Written Expression persis standar TOEFL"
+                          >
+                            <Sparkles className="w-2.5 h-2.5" />
+                            <span>Contoh</span>
+                          </button>
+                        </div>
+                      </div>
+
                       <textarea
+                        ref={questionTextareaRef}
                         rows={2}
                         required
                         value={editingQuestion.questionText}
-                        onChange={(e) => setEditingQuestion({ ...editingQuestion, questionText: e.target.value })}
-                        placeholder={tr('Ketik kalimat soal TOEFL di sini...', 'Type the TOEFL question here...')}
-                        className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                        onChange={(e) => {
+                          const newText = e.target.value;
+                          const extracted = extractUnderlinedOptions(newText);
+                          const newOptions = { ...editingQuestion.options };
+                          let hasAuto = false;
+                          (['A', 'B', 'C', 'D'] as const).forEach((key) => {
+                            if (extracted[key]) {
+                              newOptions[key] = extracted[key]!;
+                              hasAuto = true;
+                            }
+                          });
+                          setEditingQuestion({
+                            ...editingQuestion,
+                            questionText: newText,
+                            options: hasAuto ? newOptions : editingQuestion.options
+                          });
+                        }}
+                        placeholder={tr(
+                          'Ketik kalimat soal. Sorot kata dan klik tombol Underline [A], [B], [C], [D] untuk memberi garis bawah dan otomatis mengisi opsi jawaban...',
+                          'Type the question sentence. Highlight words and click Underline [A]-[D] to underline and auto-populate options...'
+                        )}
+                        style={{ height: '60px' }}
+                        className={`w-full h-[60px] px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] font-mono sm:font-sans ${
                           isDark 
-                            ? 'bg-[#1e1e1e] border-white/10 text-white' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900'
+                            ? 'bg-[#1e1e1e] border-white/10 text-white placeholder:text-slate-500' 
+                            : 'bg-slate-50 border-slate-300 text-slate-900 placeholder:text-slate-400'
                         }`}
                       />
+
+                      {/* Hint Cara Pakai */}
+                      <div className="flex items-center justify-between text-[10px] text-slate-400">
+                        <span className="flex items-center gap-1">
+                          💡 <span className="font-semibold text-amber-400/90">Tips:</span> Sorot kata lalu klik tombol <strong className="text-white font-mono">[A]-[D]</strong> di atas. Kata otomatis masuk ke pilihan jawaban.
+                        </span>
+                        {editingQuestion.questionText.includes('<u>') && (
+                          <span className="text-emerald-400 font-bold flex items-center gap-1 shrink-0">
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>Underline Terdeteksi</span>
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Live Preview Written Expression (Format Resmi TOEFL) */}
+                      {editingQuestion.questionText && (
+                        <div className={`p-2.5 rounded-xl border mt-1 space-y-1 ${
+                          isDark ? 'bg-black/40 border-amber-500/30' : 'bg-amber-50/70 border-amber-200'
+                        }`}>
+                          <div className="flex items-center justify-between text-[10px]">
+                            <span className="font-bold text-[#F7B425] flex items-center gap-1">
+                              <Eye className="w-3 h-3" />
+                              <span>Preview Soal Written Expression (Sesuai Standar TOEFL):</span>
+                            </span>
+                            <span className="text-[9px] font-mono text-slate-400">ETS Format</span>
+                          </div>
+                          <div className={`p-3 rounded-lg border text-xs sm:text-sm font-serif leading-loose ${
+                            isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+                          }`}>
+                            {renderWrittenExpressionText(editingQuestion.questionText, isDark)}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
                   <div className="space-y-1.5">
-                    <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                      {tr('Pilihan Jawaban (Options A - D) *', 'Answer Options (A - D) *')}
-                    </label>
-                    {(['A', 'B', 'C', 'D'] as const).map((key) => (
-                      <div key={key} className="flex items-center gap-1.5">
-                        <span className="w-5 font-bold text-[#F7B425] text-center text-xs">{key}:</span>
-                        <input
-                          type="text"
-                          required
-                          value={editingQuestion.options[key]}
-                          onChange={(e) => setEditingQuestion({
-                            ...editingQuestion,
-                            options: { ...editingQuestion.options, [key]: e.target.value }
-                          })}
-                          className={`flex-1 px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
-                            isDark 
-                              ? 'bg-[#1e1e1e] border-white/10 text-white' 
-                              : 'bg-slate-50 border-slate-300 text-slate-900'
-                          }`}
-                        />
-                      </div>
-                    ))}
+                    <div className="flex items-center justify-between">
+                      <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        {tr('Pilihan Jawaban (Options A - D) *', 'Answer Options (A - D) *')}
+                      </label>
+                      {editingQuestion.questionText.includes('<u>') && (
+                        <button
+                          type="button"
+                          onClick={handleSyncUnderlineOptions}
+                          className="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                          title="Sinkronkan ulang opsi jawaban dari kata bergaris bawah di teks soal"
+                        >
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          <span>Otomatis Sinkron dari Underline</span>
+                        </button>
+                      )}
+                    </div>
+                    {(['A', 'B', 'C', 'D'] as const).map((key) => {
+                      const isExtracted = editingQuestion.questionText.includes('<u>') && !!editingQuestion.options[key];
+                      return (
+                        <div key={key} className="flex items-center gap-1.5">
+                          <span className="w-5 font-bold text-[#F7B425] text-center text-xs">{key}:</span>
+                          <div className="relative flex-1">
+                            <input
+                              type="text"
+                              required
+                              value={editingQuestion.options[key]}
+                              onChange={(e) => setEditingQuestion({
+                                ...editingQuestion,
+                                options: { ...editingQuestion.options, [key]: e.target.value }
+                              })}
+                              placeholder={`Pilihan ${key}...`}
+                              className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
+                                isDark 
+                                  ? 'bg-[#1e1e1e] border-white/10 text-white' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-900'
+                              } ${isExtracted ? 'border-amber-500/40' : ''}`}
+                            />
+                            {isExtracted && (
+                              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] px-1.5 py-0.2 rounded bg-amber-500/15 text-[#F7B425] font-mono font-bold pointer-events-none">
+                                Underline {key}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div>
-                    <CustomDropdown
-                      label={tr('Kunci Jawaban Benar *', 'Correct Answer Key *')}
-                      value={editingQuestion.correctAnswer}
-                      onChange={(val) => setEditingQuestion({ ...editingQuestion, correctAnswer: val as any })}
-                      buttonClassName={isDark ? '!border-[#2d2d2d] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
-                      options={[
-                        { value: 'A', label: 'Opsi A' },
-                        { value: 'B', label: 'Opsi B' },
-                        { value: 'C', label: 'Opsi C' },
-                        { value: 'D', label: 'Opsi D' },
-                      ]}
-                    />
+                    <label className={`block font-bold mb-1.5 text-xs ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                      {tr('Kunci Jawaban Benar *', 'Correct Answer Key *')}
+                    </label>
+                    <div className="flex gap-2">
+                      {(['A', 'B', 'C', 'D'] as const).map((key) => {
+                        const isSelected = editingQuestion.correctAnswer === key;
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => setEditingQuestion({ ...editingQuestion, correctAnswer: key })}
+                            className={`flex-1 py-2 sm:py-2.5 rounded-xl text-sm font-black transition-all cursor-pointer border select-none ${
+                              isSelected
+                                ? 'bg-[#00c975] border-[#00c975] text-black shadow-md shadow-emerald-500/20'
+                                : isDark
+                                  ? 'bg-[#222222] border-[#383838] text-slate-200 hover:bg-[#2b2b2b] hover:border-[#444]'
+                                  : 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200'
+                            }`}
+                          >
+                            {key}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   <div>
@@ -2958,7 +3662,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                   className="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#F7B425]/40 hover:border-[#F7B425] bg-[#F7B425]/5 hover:bg-[#F7B425]/10 text-[#F7B425] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-99"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>{tr('+ Tambah Bagian Baru ke Struktur Ujian', '+ Add New Section to Structure')}</span>
+                  <span>{tr('Tambah Bagian Baru ke Struktur Ujian', 'Add New Section to Structure')}</span>
                 </button>
               </div>
 
@@ -3204,6 +3908,250 @@ export const ToeflQuestionsTab: React.FC = () => {
                 <span>{tr('Ya, Hapus Soal', 'Yes, Delete Question')}</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TOEFL Official Section Directions Preview Modal */}
+      {previewSectionDirections && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+          <div className="relative w-full max-w-4xl bg-stone-900 border border-stone-800 rounded-3xl shadow-2xl flex flex-col my-auto max-h-[92vh] overflow-hidden">
+            
+            {/* Modal Top Control Bar */}
+            <div className="px-5 py-4 border-b border-stone-800/80 bg-stone-950/70 flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs uppercase tracking-wider font-extrabold text-amber-400">Preview Petunjuk Section</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-800 text-stone-300 border border-stone-700">Official ETS Style</span>
+                  </div>
+                  <h3 className="text-sm font-bold text-white">
+                    {SECTION_DIRECTIONS_DATA[previewSectionDirections]?.title}
+                  </h3>
+                </div>
+              </div>
+
+              {/* Section Tabs Switcher inside Modal */}
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-stone-900 border border-stone-800">
+                {(['Structure', 'Listening', 'Reading'] as const).map((sKey) => {
+                  const sData = SECTION_DIRECTIONS_DATA[sKey];
+                  const isActive = previewSectionDirections === sKey;
+                  return (
+                    <button
+                      key={sKey}
+                      type="button"
+                      onClick={() => setPreviewSectionDirections(sKey)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-[#F7B425] text-stone-950 shadow-sm'
+                          : 'text-stone-400 hover:text-white hover:bg-stone-800/60'
+                      }`}
+                    >
+                      {sKey === 'Structure' ? 'Section 2: Structure' : sKey === 'Listening' ? 'Section 1: Listening' : 'Section 3: Reading'}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Theme Mode Toggle (Paper vs CBT) */}
+                <div className="flex items-center p-0.5 rounded-lg bg-stone-800 border border-stone-700 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setDirectionsThemeMode('paper')}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                      directionsThemeMode === 'paper'
+                        ? 'bg-amber-100 text-stone-950 shadow-sm'
+                        : 'text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    Buku Soal (Paper)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDirectionsThemeMode('cbt')}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                      directionsThemeMode === 'cbt'
+                        ? 'bg-[#F7B425] text-stone-950 shadow-sm'
+                        : 'text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    Mode CBT
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setPreviewSectionDirections(null)}
+                  className="p-1.5 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800 transition-colors cursor-pointer"
+                  title="Tutup Preview"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body: Scrollable Directions Document */}
+            <div className="p-4 sm:p-8 overflow-y-auto flex-1 bg-stone-950/40">
+              {(() => {
+                const sec = previewSectionDirections ? SECTION_DIRECTIONS_DATA[previewSectionDirections] : null;
+                if (!sec) return null;
+
+                if (directionsThemeMode === 'paper') {
+                  return (
+                    /* Authentic Paper Booklet Document matching official TOEFL ITP screenshot */
+                    <div className="max-w-2xl mx-auto bg-[#faf8f5] text-stone-900 border border-stone-300 rounded-xl p-6 sm:p-10 shadow-2xl font-serif leading-relaxed selection:bg-amber-200">
+                      
+                      {/* Section Title */}
+                      <h1 className="text-xl sm:text-2xl font-bold tracking-wider text-center uppercase mb-3 text-black">
+                        {sec.title}
+                      </h1>
+
+                      {/* Timing Box */}
+                      <div className="text-center font-bold text-sm sm:text-base text-black mb-6 leading-snug">
+                        {(sec.timeHeading || '').split('\n').map((line, idx) => (
+                          <div key={idx} className={idx === 0 ? 'text-base sm:text-lg mb-0.5' : ''}>
+                            {line}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Introduction */}
+                      <p className="text-sm sm:text-base text-justify text-stone-800 mb-6">
+                        {sec.introText}
+                      </p>
+
+                      {/* Subpart & Directions */}
+                      <div className="border-t border-stone-300/80 pt-6 space-y-4">
+                        <h2 className="text-lg font-bold text-center text-black">
+                          {sec.subpartTitle}
+                        </h2>
+
+                        <div className="text-sm sm:text-base text-justify text-stone-800 whitespace-pre-line leading-relaxed">
+                          {sec.directionsText}
+                        </div>
+
+                        {/* Examples */}
+                        <div className="space-y-5 pt-2">
+                          {(sec.examples || []).map((ex, exIdx) => (
+                            <div key={exIdx} className="bg-white/90 p-4 sm:p-5 rounded-lg border border-stone-300/80 shadow-sm">
+                              <div className="font-bold text-sm text-black mb-2">{ex.title}</div>
+                              <div className="text-sm sm:text-base mb-3 text-stone-900 whitespace-pre-line font-medium">{ex.prompt}</div>
+
+                              <div className="pl-6 sm:pl-8 space-y-1.5 text-sm font-sans mb-3">
+                                {Object.entries(ex.options || {}).map(([optKey, optVal]) => (
+                                  <div key={optKey} className="flex items-center gap-2">
+                                    <span className="font-bold text-stone-900">{optKey}. {optVal}</span>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <p className="text-xs sm:text-sm text-stone-800 leading-normal border-t border-stone-200 pt-2 font-serif">
+                                {ex.explanation}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {sec.additionalNotes && sec.additionalNotes.length > 0 && (
+                          <div className="mt-5 text-xs text-stone-600 bg-stone-100 p-3.5 rounded border border-stone-200 space-y-1 font-sans">
+                            <strong className="block text-stone-800 mb-1">Catatan Tambahan:</strong>
+                            <ul className="list-disc pl-4 space-y-0.5">
+                              {sec.additionalNotes.map((note, nIdx) => (
+                                <li key={nIdx}>{note}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Official Footer Note */}
+                      <div className="mt-8 pt-4 border-t-2 border-stone-300 text-center text-xs text-stone-500 font-sans">
+                        Petunjuk ini muncul otomatis sebelum peserta mulai mengerjakan {sec.subtitle}.
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Modern CBT Dark Theme View
+                return (
+                  <div className="max-w-2xl mx-auto bg-stone-900 text-stone-100 border border-stone-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+                    <div className="text-center space-y-2 border-b border-stone-800 pb-5">
+                      <span className="text-[11px] uppercase tracking-wider font-extrabold text-[#F7B425] bg-[#F7B425]/10 px-3 py-1 rounded-full border border-[#F7B425]/20">
+                        {sec.badge} • Section Directions
+                      </span>
+                      <h2 className="text-2xl font-black text-white">{sec.title}</h2>
+                      <div className="text-sm font-semibold text-amber-300 whitespace-pre-line bg-amber-500/10 p-3 rounded-xl border border-amber-500/20 max-w-md mx-auto">
+                        {sec.timeHeading}
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-stone-300 leading-relaxed text-justify">
+                      {sec.introText}
+                    </p>
+
+                    <div className="p-5 rounded-xl bg-stone-950/70 border border-stone-800/80 space-y-4">
+                      <h3 className="text-base font-bold text-white border-b border-stone-800 pb-2">
+                        {sec.subpartTitle}
+                      </h3>
+                      <div className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
+                        {sec.directionsText}
+                      </div>
+
+                      <div className="space-y-3 pt-2">
+                        {(sec.examples || []).map((ex, exIdx) => (
+                          <div key={exIdx} className="p-4 rounded-xl bg-stone-900 border border-stone-800">
+                            <div className="text-xs font-bold text-amber-300 mb-1">{ex.title}</div>
+                            <div className="text-sm text-white font-medium mb-3 whitespace-pre-line">{ex.prompt}</div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                              {Object.entries(ex.options || {}).map(([optKey, optVal]) => (
+                                <div key={optKey} className="text-xs px-3 py-2 rounded-lg bg-stone-950 border border-stone-800 text-stone-300">
+                                  <strong className="text-amber-400 mr-1.5">{optKey}.</strong> {optVal}
+                                </div>
+                              ))}
+                            </div>
+                            <div className="text-xs text-stone-400 italic bg-stone-950/50 p-2.5 rounded-lg border border-stone-800">
+                              {ex.explanation}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {sec.additionalNotes && sec.additionalNotes.length > 0 && (
+                        <div className="mt-4 p-3 rounded-xl bg-stone-900 border border-stone-800 text-xs text-stone-300 space-y-1">
+                          <strong className="text-amber-400 block mb-1">Catatan Tambahan:</strong>
+                          <ul className="list-disc pl-4 space-y-0.5">
+                            {sec.additionalNotes.map((note, nIdx) => (
+                              <li key={nIdx}>{note}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Modal Bottom Footer Actions */}
+            <div className="px-6 py-4 border-t border-stone-800/80 bg-stone-950/90 flex items-center justify-between gap-3 shrink-0">
+              <div className="text-xs text-stone-400">
+                Mode Tampilan: <span className="text-white font-bold">{directionsThemeMode === 'paper' ? 'Buku Soal Kertas (Sesuai Screenshot ETS)' : 'CBT Digital Modern'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPreviewSectionDirections(null)}
+                  className="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-xs transition-all shadow-md shadow-amber-400/20 cursor-pointer active:scale-95"
+                >
+                  Tutup Preview
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       )}

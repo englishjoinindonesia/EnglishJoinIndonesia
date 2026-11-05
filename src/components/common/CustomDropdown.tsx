@@ -14,6 +14,8 @@ export interface DropdownOption {
 
 interface CustomDropdownProps {
   label?: string;
+  labelClassName?: string;
+  labelStyle?: React.CSSProperties;
   options: DropdownOption[];
   value: string;
   onChange: (value: string) => void;
@@ -26,6 +28,8 @@ interface CustomDropdownProps {
 
 export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   label,
+  labelClassName = '',
+  labelStyle,
   options,
   value,
   onChange,
@@ -62,9 +66,12 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   return (
     <div className={`relative w-full ${className}`} ref={containerRef} id={id}>
       {label && (
-        <label className={`block font-bold text-xs mb-1.5 ${
-          isDark ? 'text-slate-200' : 'text-slate-700'
-        }`}>
+        <label 
+          style={labelStyle}
+          className={`block font-bold text-xs mb-1.5 ${
+            isDark ? 'text-slate-200' : 'text-slate-700'
+          } ${labelClassName}`}
+        >
           {label}
         </label>
       )}

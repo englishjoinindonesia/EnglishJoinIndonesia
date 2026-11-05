@@ -12,6 +12,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { loadQuestionBanks, loadToeflQuestions } from '../../lib/supabaseService';
+import { renderWrittenExpressionText } from './ToeflQuestionsTab';
 
 interface TestItem {
   id: string;
@@ -1091,7 +1092,7 @@ export const StudentTestSimulationTab: React.FC = () => {
 
                 {/* Question Prompt */}
                 <div className="p-3.5 sm:p-4 rounded-xl border border-white/10 bg-[#0E1524] text-white text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line shadow-inner">
-                  {questions[currentIdx].questionText.replace(/\[PASSAGE\][\s\S]*?\[\/PASSAGE\]\s*/, '')}
+                  {renderWrittenExpressionText(questions[currentIdx].questionText.replace(/\[PASSAGE\][\s\S]*?\[\/PASSAGE\]\s*/, ''), isDark)}
                 </div>
 
                 {/* Multiple Choice Options */}
