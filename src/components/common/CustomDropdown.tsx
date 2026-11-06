@@ -100,7 +100,10 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
         </span>
         <div className="flex items-center gap-1.5 flex-shrink-0">
           {selectedOption?.badge && (
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#F7B425]/20 text-[#F7B425] border border-[#F7B425]/40">
+            <span 
+              style={{ borderRadius: '12px' }}
+              className="px-2 py-0.5 rounded-[12px] text-[10px] font-bold bg-[#F7B425]/20 text-[#F7B425] border border-[#F7B425]/40"
+            >
               {selectedOption.badge}
             </span>
           )}
@@ -115,7 +118,8 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
       {/* Options Panel matching screenshot golden border and pill items */}
       {isOpen && (
         <div
-          className={`absolute left-0 right-0 mt-2 z-50 p-2 rounded-2xl border border-[#F7B425] shadow-2xl space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-150 ${
+          style={{ borderRadius: '12px', borderColor: '#f5b324' }}
+          className={`absolute left-0 right-0 mt-2 z-50 p-2 rounded-[12px] border border-[#f5b324] shadow-2xl space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-150 ${
             isDark
               ? 'bg-[#0E0E0E] shadow-black/90'
               : 'bg-white shadow-xl'
@@ -129,10 +133,15 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
                 key={option.value}
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                style={option.style}
-                className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-left text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer ${option.className || ''} ${
+                style={{
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  borderRadius: '8px',
+                  ...option.style,
+                }}
+                className={`w-full px-4 py-2 rounded-[8px] flex items-center justify-between text-left text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer ${option.className || ''} ${
                   isSelected
-                    ? 'bg-[#F7B425] text-white font-black shadow-md'
+                    ? 'bg-[#F7B425] text-black font-black shadow-md'
                     : isDark
                       ? 'bg-[#0B0B0B] border border-[#F7B425]/70 text-white hover:bg-white/10 hover:border-[#F7B425]'
                       : 'bg-slate-50 border border-amber-400 text-slate-800 hover:bg-amber-50'
@@ -140,11 +149,18 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
                 role="option"
                 aria-selected={isSelected}
               >
-                <span className={`truncate pr-2 ${option.labelClassName || ''}`} style={option.labelStyle}>
+                <span 
+                  className={`truncate pr-2 ${option.labelClassName || ''}`} 
+                  style={{ 
+                    fontSize: '12px', 
+                    color: isSelected ? '#000000' : undefined,
+                    ...option.labelStyle 
+                  }}
+                >
                   {option.label}
                 </span>
                 {isSelected && (
-                  <Check className="w-4 h-4 text-white stroke-[3] flex-shrink-0" />
+                  <Check style={{ color: '#000000' }} className="w-4 h-4 text-black stroke-[3] flex-shrink-0" />
                 )}
               </button>
             );

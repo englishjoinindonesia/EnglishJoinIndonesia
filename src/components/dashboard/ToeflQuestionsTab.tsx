@@ -1983,7 +1983,7 @@ export const ToeflQuestionsTab: React.FC = () => {
           className="px-2.5 py-1 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-[11px] rounded-lg transition-all shadow-xs flex items-center gap-1 cursor-pointer self-start md:self-center active:scale-95"
         >
           <Plus className="w-3 h-3" />
-          <span>{tr('Tambah Soal ke Program Ini', 'Add Question to This Program')}</span>
+          <span style={{ fontWeight: 'bold' }}>{tr('Tambah Soal ke Program Ini', 'Add Question to This Program')}</span>
         </button>
       </div>
 
@@ -2002,6 +2002,7 @@ export const ToeflQuestionsTab: React.FC = () => {
             ].map((tab) => (
               <button
                 key={tab.id}
+                style={{ fontWeight: 'bold' }}
                 onClick={() => setSelectedSection(tab.id)}
                 className={`px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer text-[10px] ${
                   selectedSection === tab.id
@@ -2123,12 +2124,16 @@ export const ToeflQuestionsTab: React.FC = () => {
                         <h3 className={`text-xs sm:text-sm font-extrabold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {secInfo.subtitle}
                         </h3>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
-                          isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-200 text-slate-700'
-                        }`}>
+                        <span 
+                          style={{ backgroundColor: '#f7b425', color: '#000000', fontWeight: 'bold' }}
+                          className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#f7b425] text-black"
+                        >
                           {secQuestions.length} {tr('Soal Terdaftar', 'Questions')}
                         </span>
-                        <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">
+                        <span 
+                          style={{ color: '#00d492', fontWeight: 'bold' }}
+                          className="text-[10px] text-[#00d492] font-bold hidden sm:inline"
+                        >
                           • {secInfo.durationText}
                         </span>
                       </div>
@@ -2154,7 +2159,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                       title={tr(`Tambah butir soal ke ${secInfo.subtitle}`, `Add question to ${secInfo.subtitle}`)}
                     >
                       <Plus className="w-3 h-3 stroke-[2.5]" />
-                      <span className="hidden sm:inline">{tr('Tambah Soal', 'Add Question')}</span>
+                      <span style={{ fontWeight: 'bold' }} className="hidden sm:inline font-bold">{tr('Tambah Soal', 'Add Question')}</span>
                     </button>
 
                     <button
@@ -2212,12 +2217,16 @@ export const ToeflQuestionsTab: React.FC = () => {
                                 >
                                   {idx + 1}
                                 </span>
-                                <span className="px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[8.5px] font-black uppercase">
+                                <span 
+                                  style={{ fontWeight: 'bold' }}
+                                  className="px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 text-[8.5px] font-bold uppercase"
+                                >
                                   {item.section}
                                 </span>
-                                <span className={`px-1.5 py-0.2 rounded-full text-[8.5px] font-semibold ${
-                                  isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-600'
-                                }`}>
+                                <span 
+                                  style={{ backgroundColor: '#f7b425', color: '#000000', borderWidth: '1px', borderColor: '#f7b425', borderStyle: 'solid' }}
+                                  className="px-1.5 py-0.2 rounded-full text-[8.5px] font-bold bg-[#f7b425] text-black border border-[#f7b425]"
+                                >
                                   {item.part}
                                 </span>
                               </div>
@@ -2311,9 +2320,12 @@ export const ToeflQuestionsTab: React.FC = () => {
                                           : 'bg-slate-50 border-slate-200 text-slate-700'
                                     }`}
                                   >
-                                    <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8.5px] font-black shrink-0 ${
-                                      isCorrect ? 'bg-emerald-500 text-black' : isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-200 text-slate-600'
-                                    }`}>
+                                    <span 
+                                      style={{ fontWeight: 'bold' }}
+                                      className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8.5px] font-bold shrink-0 ${
+                                        isCorrect ? 'bg-emerald-500 text-black' : isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-200 text-slate-600'
+                                      }`}
+                                    >
                                       {optKey}
                                     </span>
                                     <span className="flex-1 text-[10.5px] leading-tight">{item.options[optKey]}</span>
@@ -2437,21 +2449,21 @@ export const ToeflQuestionsTab: React.FC = () => {
             isDark ? 'bg-[#141414] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
           }`}>
             <div className="flex items-center justify-between mb-2">
-              <div>
-                <span className="px-1.5 py-0.2 rounded-full text-[8.5px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
-                  {selectedProgram?.title || testBasedPrograms.find(p => p.id === editingQuestion.programId)?.title || tr('Program Berbasis Tes', 'Test-Based Program')}
-                </span>
-                <h3 className={`text-xs sm:text-sm font-bold font-heading mt-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 
+                  style={{ fontSize: '16px' }}
+                  className={`text-[16px] font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}
+                >
                   {editingQuestion.id 
                     ? tr('Edit Butir Soal TOEFL', 'Edit TOEFL Question') 
-                    : tr('Tambah Butir Soal Baru (Program Berbasis Tes)', 'Add New Question (Test-Based Program)')}
+                    : tr('Tambah Butir Soal Baru', 'Add New Question')}
                 </h3>
-                <p className={`text-[10px] mt-0.2 ${subText}`}>
-                  {tr(
-                    'Lengkapi teks pertanyaan, opsi jawaban A/B/C/D, kunci jawaban benar, dan pembahasan mendalam.',
-                    'Fill in the question prompt, answer options A/B/C/D, correct key, and grammar analysis.'
-                  )}
-                </p>
+                <span 
+                  style={{ paddingLeft: '8px', paddingRight: '8px', paddingTop: '2px', paddingBottom: '2px', borderRadius: '12px' }}
+                  className="text-[9px] font-black uppercase bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 inline-block rounded-[12px]"
+                >
+                  {selectedProgram?.title || testBasedPrograms.find(p => p.id === editingQuestion.programId)?.title || tr('Program Berbasis Tes', 'Test-Based Program')}
+                </span>
               </div>
               <button
                 type="button"
@@ -2494,11 +2506,11 @@ export const ToeflQuestionsTab: React.FC = () => {
                     onChange={(val) => {
                       const newSection = val as 'Listening' | 'Structure' | 'Reading';
                       let defaultPart = editingQuestion.part;
-                      if (newSection === 'Listening' && (!defaultPart || defaultPart.includes('Sentence') || defaultPart.includes('Passage'))) {
+                      if (newSection === 'Listening' && (!defaultPart || defaultPart.includes('Sentence') || defaultPart.includes('Passage') || defaultPart.includes('Written'))) {
                         defaultPart = 'Part A (Short Conversations)';
                       } else if (newSection === 'Structure' && (!defaultPart || defaultPart.includes('Conversations') || defaultPart.includes('Passage'))) {
-                        defaultPart = 'Part A (Sentence Completion)';
-                      } else if (newSection === 'Reading' && (!defaultPart || defaultPart.includes('Sentence') || defaultPart.includes('Conversations'))) {
+                        defaultPart = 'Part A : Sentence Completion';
+                      } else if (newSection === 'Reading' && (!defaultPart || defaultPart.includes('Sentence') || defaultPart.includes('Conversations') || defaultPart.includes('Written'))) {
                         defaultPart = 'Passage 1 (Reading Comprehension)';
                       }
                       if (newSection === 'Reading') {
@@ -2550,77 +2562,119 @@ export const ToeflQuestionsTab: React.FC = () => {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between mb-0.5">
-                    <label 
-                      style={{ fontSize: '12px', lineHeight: '16px', marginBottom: '0px', fontWeight: 'bold' }}
-                      className={`block font-bold !mb-0 text-[12px] leading-4 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
-                    >
-                      {tr('Part / Bagian Spesifik *', 'Specific Part / Skill *')}
-                    </label>
-                    {editingQuestion.part.toLowerCase().includes('written') && (
-                      <span className="text-[9px] px-1.5 py-0.2 rounded font-extrabold bg-[#F7B425]/20 text-[#F7B425] border border-[#F7B425]/30">
-                        Mode Underline Aktif
-                      </span>
-                    )}
-                  </div>
-                  <input
-                    type="text"
-                    value={editingQuestion.part}
-                    onChange={(e) => setEditingQuestion({ ...editingQuestion, part: e.target.value })}
-                    placeholder={editingQuestion.section === 'Listening' ? 'Contoh: Part A (Short Conversations)' : 'Contoh: Part B (Written Expression)'}
-                    style={{ height: '34px' }}
-                    className={`w-full h-[34px] px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] ${
-                      isDark 
-                        ? 'bg-[#1e1e1e] border-[#4b4b4b] text-white' 
-                        : 'bg-slate-50 border-slate-300 text-slate-900'
-                    }`}
-                  />
-                  {editingQuestion.section === 'Structure' && (
-                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                      <button
-                        type="button"
-                        onClick={() => setEditingQuestion({ ...editingQuestion, part: 'Part A (Sentence Completion)' })}
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-all cursor-pointer ${
-                          editingQuestion.part.toLowerCase().includes('completion') || editingQuestion.part === 'Part A'
-                            ? 'bg-[#F7B425] text-black border-[#F7B425] font-extrabold shadow-xs'
-                            : isDark ? 'bg-white/5 border-white/10 text-slate-300 hover:text-white' : 'bg-slate-100 border-slate-200 text-slate-700'
-                        }`}
-                      >
-                        Part A: Sentence Completion
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditingQuestion({ 
-                            ...editingQuestion, 
-                            part: 'Part B (Written Expression)',
-                            questionText: editingQuestion.questionText || '<u>The</u> four <u>string</u> on a violin <u>are</u> <u>tuned</u> in fifth.'
+                  <CustomDropdown
+                    label={tr('Part / Bagian Spesifik *', 'Specific Part / Skill *')}
+                    labelClassName="!mb-0"
+                    labelStyle={{ fontSize: '12px', lineHeight: '16px', marginBottom: '0px', fontWeight: 'bold' }}
+                    value={
+                      editingQuestion.section === 'Structure'
+                        ? (editingQuestion.part && (editingQuestion.part.toLowerCase().includes('written') || editingQuestion.part.toLowerCase().includes('expression'))
+                            ? 'Part B : Written Expression'
+                            : 'Part A : Sentence Completion')
+                        : editingQuestion.part
+                    }
+                    onChange={(val) => {
+                      if (val.includes('Written')) {
+                        const defaultText = editingQuestion.questionText || '<u>The</u> four <u>string</u> on a violin <u>are</u> <u>tuned</u> in fifth.';
+                        const extracted = extractUnderlinedOptions(defaultText);
+                        const newOptions = { ...editingQuestion.options };
+                        if (extracted.A) {
+                          (['A', 'B', 'C', 'D'] as const).forEach((key) => {
+                            if (extracted[key]) newOptions[key] = extracted[key]!;
                           });
-                          const extracted = extractUnderlinedOptions(editingQuestion.questionText || '<u>The</u> four <u>string</u> on a violin <u>are</u> <u>tuned</u> in fifth.');
-                          if (extracted.A) {
-                            setEditingQuestion(prev => prev ? ({
-                              ...prev,
-                              part: 'Part B (Written Expression)',
-                              options: {
-                                A: extracted.A || prev.options.A,
-                                B: extracted.B || prev.options.B,
-                                C: extracted.C || prev.options.C,
-                                D: extracted.D || prev.options.D,
-                              }
-                            }) : null);
-                          }
-                        }}
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
-                          editingQuestion.part.toLowerCase().includes('written') || editingQuestion.part.toLowerCase().includes('expression')
-                            ? 'bg-[#F7B425] text-black border-[#F7B425] font-extrabold shadow-xs'
-                            : isDark ? 'bg-white/5 border-white/10 text-slate-300 hover:text-white' : 'bg-slate-100 border-slate-200 text-slate-700'
-                        }`}
-                      >
-                        <Underline className="w-2.5 h-2.5" />
-                        <span>Part B: Written Expression (Kata Bergaris Bawah)</span>
-                      </button>
-                    </div>
-                  )}
+                        }
+                        setEditingQuestion({
+                          ...editingQuestion,
+                          part: val,
+                          questionText: defaultText,
+                          options: newOptions
+                        });
+                      } else {
+                        setEditingQuestion({ ...editingQuestion, part: val });
+                      }
+                    }}
+                    buttonClassName={isDark ? '!border-[#3a3a3a] !bg-[#1e1e1e] !py-1.5 !px-2.5 !rounded-lg !text-xs' : '!border-slate-300 !bg-slate-50 !py-1.5 !px-2.5 !rounded-lg !text-xs'}
+                    options={
+                      editingQuestion.section === 'Structure'
+                        ? [
+                            {
+                              value: 'Part A : Sentence Completion',
+                              label: 'Part A : Sentence Completion',
+                              badge: 'Part A',
+                              style: { height: '34px' },
+                              labelStyle: { fontSize: '12px' },
+                            },
+                            {
+                              value: 'Part B : Written Expression',
+                              label: 'Part B : Written Expression',
+                              badge: 'Part B',
+                              style: { height: '34px' },
+                              labelStyle: { fontSize: '12px' },
+                            },
+                          ]
+                        : editingQuestion.section === 'Listening'
+                          ? [
+                              {
+                                value: 'Part A (Short Conversations)',
+                                label: 'Part A (Short Conversations)',
+                                badge: 'Part A',
+                                style: { height: '34px' },
+                                labelStyle: { fontSize: '12px' },
+                              },
+                              {
+                                value: 'Part B (Longer Conversations)',
+                                label: 'Part B (Longer Conversations)',
+                                badge: 'Part B',
+                                style: { height: '34px' },
+                                labelStyle: { fontSize: '12px' },
+                              },
+                              {
+                                value: 'Part C (Short Talks / Lectures)',
+                                label: 'Part C (Short Talks / Lectures)',
+                                badge: 'Part C',
+                                style: { height: '34px' },
+                                labelStyle: { fontSize: '12px' },
+                              },
+                            ]
+                          : [
+                              {
+                                value: 'Passage 1 (Reading Comprehension)',
+                                label: 'Passage 1 (Reading Comprehension)',
+                                badge: 'Passage 1',
+                                style: { height: '34px' },
+                                labelStyle: { fontSize: '12px' },
+                              },
+                              {
+                                value: 'Passage 2 (Reading Comprehension)',
+                                label: 'Passage 2 (Reading Comprehension)',
+                                badge: 'Passage 2',
+                                style: { height: '34px' },
+                                labelStyle: { fontSize: '12px' },
+                              },
+                              {
+                                value: 'Passage 3 (Reading Comprehension)',
+                                label: 'Passage 3 (Reading Comprehension)',
+                                badge: 'Passage 3',
+                                style: { height: '34px' },
+                                labelStyle: { fontSize: '12px' },
+                              },
+                              {
+                                value: 'Passage 4 (Reading Comprehension)',
+                                label: 'Passage 4 (Reading Comprehension)',
+                                badge: 'Passage 4',
+                                style: { height: '34px' },
+                                labelStyle: { fontSize: '12px' },
+                              },
+                              {
+                                value: 'Passage 5 (Reading Comprehension)',
+                                label: 'Passage 5 (Reading Comprehension)',
+                                badge: 'Passage 5',
+                                style: { height: '34px' },
+                                labelStyle: { fontSize: '12px' },
+                              },
+                            ]
+                    }
+                  />
                 </div>
               </div>
 
@@ -2637,17 +2691,13 @@ export const ToeflQuestionsTab: React.FC = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
                       <label className={`font-bold text-xs flex items-center gap-1.5 ${isDark ? 'text-amber-400' : 'text-amber-800'}`}>
                         <BookOpen className="w-4 h-4 text-[#F7B425]" />
-                        <span>{tr('Teks Paragraf Cerita / Wacana (Reading Passage) *', 'Story Paragraph / Reading Passage Text *')}</span>
+                        <span 
+                          style={{ fontSize: '11px', fontWeight: 'bold', color: '#ffffff' }}
+                          className="text-[11px] font-bold text-white"
+                        >
+                          {tr('Teks Paragraf Cerita / Wacana (Reading Passage) *', 'Story Paragraph / Reading Passage Text *')}
+                        </span>
                       </label>
-                      <button
-                        type="button"
-                        onClick={handleLoadSampleReadingPassage}
-                        className="px-2 py-0.5 rounded-lg border text-[10px] font-bold bg-[#F7B425]/15 text-[#F7B425] hover:bg-[#F7B425]/25 border-[#F7B425]/40 transition-all cursor-pointer flex items-center gap-1 self-start sm:self-auto"
-                        title={tr('Muat contoh paragraf John Quincy Adams beserta 2 butir soal', 'Load John Quincy Adams passage and questions')}
-                      >
-                        <Sparkles className="w-3 h-3" />
-                        <span>⚡ {tr('Gunakan Contoh Soal Paragraf (Adams)', 'Use Sample Passage (Adams)')}</span>
-                      </button>
                     </div>
 
                     <textarea
@@ -2656,8 +2706,8 @@ export const ToeflQuestionsTab: React.FC = () => {
                       value={readingPassage}
                       onChange={(e) => setReadingPassage(e.target.value)}
                       placeholder={tr(
-                        'Masukkan teks cerita/wacana paragraf TOEFL di sini...\nContoh: John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829, is today recognized for his masterful statesmanship and diplomacy...',
-                        'Enter TOEFL reading passage text here...\nExample: John Quincy Adams, who served as the sixth president of the United States from 1825 to 1829...'
+                        'Masukkan Soal TOEFL...',
+                        'Enter TOEFL Question...'
                       )}
                       className={`w-full px-3 py-2 rounded-lg border text-xs leading-relaxed focus:outline-none focus:border-[#F7B425] font-serif ${
                         isDark 
@@ -2665,25 +2715,18 @@ export const ToeflQuestionsTab: React.FC = () => {
                           : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
                       }`}
                     />
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
-                      <span>{tr('Wacana ini menjadi bahan rujukan untuk butir-butir pertanyaan di bawah.', 'This passage is the reference for the questions below.')}</span>
-                      <span className="font-mono text-[#F7B425]">
-                        {(readingPassage || '').split(/\s+/).filter(Boolean).length} {tr('kata', 'words')}
-                      </span>
-                    </div>
                   </div>
 
                   {/* 2. Daftar Pertanyaan & Opsi Jawaban untuk Wacana Ini */}
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <HelpCircle className="w-3.5 h-3.5 text-[#F7B425]" />
                         <h4 className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {tr('Daftar Teks Pertanyaan & Opsi Jawaban', 'Questions & Answer Options')}
                         </h4>
                         <span 
-                          style={{ paddingTop: '3px', paddingBottom: '3px' }}
-                          className="px-1.5 py-[3px] rounded-full text-[9px] font-extrabold bg-[#F7B425] text-black"
+                          style={{ paddingTop: '3px', paddingBottom: '3px', paddingLeft: '8px', paddingRight: '8px', fontWeight: 'bold' }}
+                          className="px-2 py-[3px] rounded-full text-[9px] font-bold bg-[#F7B425] text-black"
                         >
                           {readingQuestions.length} {tr('Soal', 'Questions')}
                         </span>
@@ -2713,11 +2756,22 @@ export const ToeflQuestionsTab: React.FC = () => {
                             isDark ? 'bg-white/[0.03] border-white/10' : 'bg-slate-50 border-slate-200'
                           }`}
                         >
-                          {/* Question Header & Remove */}
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
-                              {tr(`Pertanyaan #${qIdx + 1}`, `Question #${qIdx + 1}`)}
-                            </span>
+                          {/* Question Header & Prompt Label Side-by-Side */}
+                          <div className="flex items-center justify-between mb-1.5 gap-2">
+                            <div className="flex items-center gap-2">
+                              <span 
+                                style={{ fontWeight: 'bold', borderRadius: '12px' }}
+                                className="px-2 py-0.5 rounded-[12px] text-[10px] font-bold uppercase tracking-wider bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30"
+                              >
+                                {tr(`Pertanyaan #${qIdx + 1}`, `Question #${qIdx + 1}`)}
+                              </span>
+                              <label 
+                                style={{ color: '#ffffff' }}
+                                className="font-bold text-[11px] text-white"
+                              >
+                                {tr('Teks Pertanyaan / Soal *', 'Question Prompt *')}
+                              </label>
+                            </div>
 
                             {readingQuestions.length > 1 && (
                               <button
@@ -2733,9 +2787,6 @@ export const ToeflQuestionsTab: React.FC = () => {
 
                           {/* Question Prompt Textarea */}
                           <div className="mb-2.5">
-                            <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                              {tr('Teks Pertanyaan / Soal *', 'Question Prompt *')}
-                            </label>
                             <textarea
                               rows={2}
                               required
@@ -2856,7 +2907,10 @@ export const ToeflQuestionsTab: React.FC = () => {
                           <span>{tr('Upload File Audio Soal Listening', 'Upload Listening Audio Question File')}</span>
                           <span className="text-rose-500 font-bold">*</span>
                         </label>
-                        <span className="text-[9.5px] font-mono text-[#F7B425] bg-[#F7B425]/10 px-1.5 py-0.2 rounded border border-[#F7B425]/20 font-bold">
+                        <span 
+                          style={{ borderRadius: '8px' }}
+                          className="text-[9.5px] font-mono text-[#F7B425] bg-[#F7B425]/10 px-1.5 py-0.2 rounded-lg border border-[#F7B425]/20 font-bold"
+                        >
                           Format: MP3, WAV, M4A, OGG
                         </span>
                       </div>
@@ -2874,7 +2928,8 @@ export const ToeflQuestionsTab: React.FC = () => {
                       {!editingQuestion.audioUrl ? (
                         <div 
                           onClick={() => audioFileInputRef.current?.click()}
-                          className={`p-3.5 sm:p-4 rounded-xl border-2 border-dashed transition-all cursor-pointer text-center group flex flex-col items-center justify-center gap-1.5 ${
+                          style={{ borderStyle: 'solid', borderWidth: '1px' }}
+                          className={`p-3.5 sm:p-4 rounded-xl border border-solid transition-all cursor-pointer text-center group flex flex-col items-center justify-center gap-1.5 ${
                             isDark 
                               ? 'border-[#F7B425]/40 bg-[#F7B425]/5 hover:bg-[#F7B425]/10 hover:border-[#F7B425]' 
                               : 'border-[#F7B425]/50 bg-amber-50/50 hover:bg-amber-50 hover:border-[#F7B425]'
@@ -2897,20 +2952,6 @@ export const ToeflQuestionsTab: React.FC = () => {
                               className="px-2.5 py-1 rounded-lg bg-[#F7B425] text-black font-extrabold text-[10.5px] shadow-xs hover:bg-amber-400 transition-colors pointer-events-none"
                             >
                               {tr('Pilih File Audio', 'Select Audio File')}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUseSampleAudio();
-                              }}
-                              className={`px-2.5 py-1 rounded-lg border text-[10.5px] font-bold transition-all cursor-pointer pointer-events-auto ${
-                                isDark 
-                                  ? 'bg-white/10 hover:bg-white/20 border-white/15 text-slate-200' 
-                                  : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700'
-                              }`}
-                            >
-                              ⚡ {tr('Gunakan Sampel Percakapan', 'Use Sample Dialogue')}
                             </button>
                           </div>
                         </div>
@@ -2974,9 +3015,6 @@ export const ToeflQuestionsTab: React.FC = () => {
                           <label className={`block font-semibold text-[10px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                             {tr('Transkrip Percakapan / Pertanyaan Narator (Opsional)', 'Conversation Transcript / Narrator Prompt (Optional)')}
                           </label>
-                          <span className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                            {tr('Opsional • Teks pendukung bagi penguji/peserta', 'Optional • Supporting prompt')}
-                          </span>
                         </div>
                         <textarea
                           rows={2}
@@ -2994,46 +3032,30 @@ export const ToeflQuestionsTab: React.FC = () => {
                   ) : (
                     <div className="space-y-1.5">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                        <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <label 
+                          style={{ color: '#e2e8f0' }}
+                          className={`block font-bold text-[11px] ${isDark ? 'text-[#e2e8f0]' : 'text-slate-700'}`}
+                        >
                           {tr('Teks Pertanyaan / Soal *', 'Question Prompt / Text *')}
                         </label>
                         
                         {/* Toolbar Underline untuk Written Expression & Structure */}
                         <div className="flex items-center gap-1 flex-wrap">
-                          <span className="text-[10px] font-bold text-[#F7B425] flex items-center gap-1 mr-0.5">
-                            <Underline className="w-3 h-3" />
-                            <span className="hidden xs:inline">Underline:</span>
+                          <span className="text-[10px] font-bold text-[#F7B425] mr-0.5">
+                            Underline:
                           </span>
                           {(['A', 'B', 'C', 'D'] as const).map((letter) => (
                             <button
                               key={letter}
                               type="button"
+                              style={{ borderRadius: '12px' }}
                               onClick={() => applyUnderlineTag(letter)}
-                              className="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/30 text-[#F7B425] border border-amber-500/30 text-[10px] font-bold transition-all cursor-pointer flex items-center gap-0.5 active:scale-95 shadow-xs"
+                              className="px-2.5 py-0.5 rounded-[12px] bg-amber-500/15 hover:bg-amber-500/30 text-[#F7B425] border border-amber-500/30 text-[10px] font-black transition-all cursor-pointer shadow-xs active:scale-95"
                               title={`Beri garis bawah pada kata yang disorot untuk Pilihan (${letter})`}
                             >
-                              <Underline className="w-2.5 h-2.5" />
-                              <span className="underline font-black">{letter}</span>
+                              <span>{letter}</span>
                             </button>
                           ))}
-                          <button
-                            type="button"
-                            onClick={() => applyUnderlineTag()}
-                            className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white border border-white/20 text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-                            title="Beri garis bawah otomatis (akan mengisi A, B, C, D secara berurutan)"
-                          >
-                            <Underline className="w-2.5 h-2.5 text-[#F7B425]" />
-                            <span className="hidden sm:inline">Auto</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleLoadWrittenExpressionTemplate}
-                            className="px-2 py-0.5 rounded bg-emerald-500/15 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
-                            title="Muat contoh soal Written Expression persis standar TOEFL"
-                          >
-                            <Sparkles className="w-2.5 h-2.5" />
-                            <span>Contoh</span>
-                          </button>
                         </div>
                       </div>
 
@@ -3060,8 +3082,8 @@ export const ToeflQuestionsTab: React.FC = () => {
                           });
                         }}
                         placeholder={tr(
-                          'Ketik kalimat soal. Sorot kata dan klik tombol Underline [A], [B], [C], [D] untuk memberi garis bawah dan otomatis mengisi opsi jawaban...',
-                          'Type the question sentence. Highlight words and click Underline [A]-[D] to underline and auto-populate options...'
+                          'Ketik kalimat soal TOEFL di sini...',
+                          'Type the TOEFL question here...'
                         )}
                         style={{ height: '60px' }}
                         className={`w-full h-[60px] px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none focus:border-[#F7B425] font-mono sm:font-sans ${
@@ -3071,34 +3093,23 @@ export const ToeflQuestionsTab: React.FC = () => {
                         }`}
                       />
 
-                      {/* Hint Cara Pakai */}
-                      <div className="flex items-center justify-between text-[10px] text-slate-400">
-                        <span className="flex items-center gap-1">
-                          💡 <span className="font-semibold text-amber-400/90">Tips:</span> Sorot kata lalu klik tombol <strong className="text-white font-mono">[A]-[D]</strong> di atas. Kata otomatis masuk ke pilihan jawaban.
-                        </span>
-                        {editingQuestion.questionText.includes('<u>') && (
-                          <span className="text-emerald-400 font-bold flex items-center gap-1 shrink-0">
-                            <CheckCircle2 className="w-3 h-3" />
-                            <span>Underline Terdeteksi</span>
-                          </span>
-                        )}
-                      </div>
-
                       {/* Live Preview Written Expression (Format Resmi TOEFL) */}
-                      {editingQuestion.questionText && (
-                        <div className={`p-2.5 rounded-xl border mt-1 space-y-1 ${
-                          isDark ? 'bg-black/40 border-amber-500/30' : 'bg-amber-50/70 border-amber-200'
-                        }`}>
-                          <div className="flex items-center justify-between text-[10px]">
-                            <span className="font-bold text-[#F7B425] flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              <span>Preview Soal Written Expression (Sesuai Standar TOEFL):</span>
-                            </span>
-                            <span className="text-[9px] font-mono text-slate-400">ETS Format</span>
-                          </div>
-                          <div className={`p-3 rounded-lg border text-xs sm:text-sm font-serif leading-loose ${
-                            isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
-                          }`}>
+                      {editingQuestion.questionText && editingQuestion.questionText.includes('<u>') && (
+                        <div 
+                          style={{
+                            backgroundColor: '#1e1e1e',
+                            borderColor: '#363636',
+                            borderWidth: '1px',
+                            borderStyle: 'solid',
+                          }}
+                          className="p-2.5 rounded-xl border mt-1 space-y-1 bg-[#1e1e1e] border-[#363636]"
+                        >
+                          <div 
+                            style={{ borderWidth: '0px' }}
+                            className={`p-2.5 rounded-lg text-xs sm:text-sm font-serif leading-loose ${
+                              isDark ? 'bg-white/5 text-white' : 'bg-white/5 text-slate-100'
+                            }`}
+                          >
                             {renderWrittenExpressionText(editingQuestion.questionText, isDark)}
                           </div>
                         </div>
@@ -3108,7 +3119,10 @@ export const ToeflQuestionsTab: React.FC = () => {
 
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className={`block font-bold text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      <label 
+                        style={{ color: '#e2e8f0' }}
+                        className={`block font-bold text-[11px] ${isDark ? 'text-[#e2e8f0]' : 'text-slate-700'}`}
+                      >
                         {tr('Pilihan Jawaban (Options A - D) *', 'Answer Options (A - D) *')}
                       </label>
                       {editingQuestion.questionText.includes('<u>') && (
@@ -3156,7 +3170,10 @@ export const ToeflQuestionsTab: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className={`block font-bold mb-1.5 text-xs ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                    <label 
+                      style={{ color: '#e2e8f0' }}
+                      className={`block font-bold mb-1.5 text-xs ${isDark ? 'text-[#e2e8f0]' : 'text-slate-700'}`}
+                    >
                       {tr('Kunci Jawaban Benar *', 'Correct Answer Key *')}
                     </label>
                     <div className="flex gap-2">
@@ -3166,8 +3183,9 @@ export const ToeflQuestionsTab: React.FC = () => {
                           <button
                             key={key}
                             type="button"
+                            style={{ fontWeight: 'bold' }}
                             onClick={() => setEditingQuestion({ ...editingQuestion, correctAnswer: key })}
-                            className={`flex-1 py-2 sm:py-2.5 rounded-xl text-sm font-black transition-all cursor-pointer border select-none ${
+                            className={`flex-1 py-2 sm:py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer border select-none ${
                               isSelected
                                 ? 'bg-[#00c975] border-[#00c975] text-black shadow-md shadow-emerald-500/20'
                                 : isDark
@@ -3183,7 +3201,10 @@ export const ToeflQuestionsTab: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    <label 
+                      style={{ color: '#e2e8f0' }}
+                      className={`block font-bold mb-1 text-[11px] ${isDark ? 'text-[#e2e8f0]' : 'text-slate-700'}`}
+                    >
                       {tr('Penjelasan / Pembahasan Grammar & Jawaban', 'Grammar Analysis & Explanation')}
                     </label>
                     <textarea
