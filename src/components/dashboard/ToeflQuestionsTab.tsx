@@ -2501,7 +2501,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                   <CustomDropdown
                     label={tr('Section *', 'Section *')}
                     labelClassName="!mb-0"
-                    labelStyle={{ marginBottom: '0px' }}
+                    labelStyle={{ marginBottom: '0px', lineHeight: '22px' }}
                     value={editingQuestion.section}
                     onChange={(val) => {
                       const newSection = val as 'Listening' | 'Structure' | 'Reading';
@@ -2547,14 +2547,14 @@ export const ToeflQuestionsTab: React.FC = () => {
                         value: 'Listening',
                         label: 'Listening Comprehension',
                         badge: 'Section 1',
-                        style: { height: '34px' },
+                        style: { height: '34px', backgroundColor: '#1e1e1e' },
                         labelStyle: { fontSize: '12px' },
                       },
                       {
                         value: 'Reading',
                         label: 'Reading Comprehension',
                         badge: 'Section 3',
-                        style: { height: '34px' },
+                        style: { height: '34px', backgroundColor: '#1e1e1e' },
                         labelStyle: { fontSize: '12px' },
                       },
                     ]}
@@ -2565,7 +2565,7 @@ export const ToeflQuestionsTab: React.FC = () => {
                   <CustomDropdown
                     label={tr('Part / Bagian Spesifik *', 'Specific Part / Skill *')}
                     labelClassName="!mb-0"
-                    labelStyle={{ fontSize: '12px', lineHeight: '16px', marginBottom: '0px', fontWeight: 'bold' }}
+                    labelStyle={{ fontSize: '12px', lineHeight: '22px', marginBottom: '0px', fontWeight: 'bold' }}
                     value={
                       editingQuestion.section === 'Structure'
                         ? (editingQuestion.part && (editingQuestion.part.toLowerCase().includes('written') || editingQuestion.part.toLowerCase().includes('expression'))

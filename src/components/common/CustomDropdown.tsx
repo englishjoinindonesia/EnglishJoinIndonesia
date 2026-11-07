@@ -118,10 +118,10 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
       {/* Options Panel matching screenshot golden border and pill items */}
       {isOpen && (
         <div
-          style={{ borderRadius: '12px', borderColor: '#f5b324' }}
+          style={{ borderRadius: '12px', borderColor: '#f5b324', backgroundColor: isDark ? '#141414' : undefined }}
           className={`absolute left-0 right-0 mt-2 z-50 p-2 rounded-[12px] border border-[#f5b324] shadow-2xl space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-150 ${
             isDark
-              ? 'bg-[#0E0E0E] shadow-black/90'
+              ? 'bg-[#141414] shadow-black/90'
               : 'bg-white shadow-xl'
           }`}
           role="listbox"
@@ -137,13 +137,14 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
                   paddingTop: '8px',
                   paddingBottom: '8px',
                   borderRadius: '8px',
+                  backgroundColor: !isSelected ? (isDark ? '#1e1e1e' : undefined) : undefined,
                   ...option.style,
                 }}
                 className={`w-full px-4 py-2 rounded-[8px] flex items-center justify-between text-left text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer ${option.className || ''} ${
                   isSelected
                     ? 'bg-[#F7B425] text-black font-black shadow-md'
                     : isDark
-                      ? 'bg-[#0B0B0B] border border-[#F7B425]/70 text-white hover:bg-white/10 hover:border-[#F7B425]'
+                      ? 'bg-[#1e1e1e] border border-[#F7B425]/70 text-white hover:bg-white/10 hover:border-[#F7B425]'
                       : 'bg-slate-50 border border-amber-400 text-slate-800 hover:bg-amber-50'
                 }`}
                 role="option"

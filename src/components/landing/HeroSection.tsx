@@ -16,7 +16,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister, onOpen
   return (
     <section
       id="home"
-      className="relative min-h-[92vh] pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden bg-[#0A0A0A] flex items-center"
+      style={{ paddingBottom: '118px' }}
+      className="relative min-h-[92vh] pt-28 pb-[118px] lg:pt-36 lg:pb-[118px] overflow-hidden bg-[#0A0A0A] flex items-center"
     >
       {/* Background Decorative Lighting & Grid */}
       <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
