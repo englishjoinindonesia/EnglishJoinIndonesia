@@ -194,8 +194,15 @@ export const CampusLogosManagementTab: React.FC = () => {
 
       {/* Header & Action Bar - Compact & Minimal Padding */}
       <div 
-        style={{ borderRadius: '12px', paddingLeft: '12px', paddingRight: '12px', marginBottom: '10px' }}
-        className={`py-2 px-3 rounded-xl border transition-colors mb-2.5 ${
+        style={{
+          borderRadius: '12px',
+          paddingLeft: '12px',
+          paddingRight: '12px',
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          marginBottom: '10px'
+        }}
+        className={`py-2 px-3 rounded-[12px] border transition-colors mb-2.5 ${
         isDark 
           ? 'bg-[#141414] border-white/10 shadow-sm' 
           : 'bg-white border-slate-200/80 shadow-xs'

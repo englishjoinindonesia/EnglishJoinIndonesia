@@ -202,18 +202,22 @@ export const ProgramsManagementTab: React.FC = () => {
   return (
     <div className="space-y-3 relative" id="programs-management-container">
       
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
-          <CheckCircle2 className="w-3.5 h-3.5 text-[#F7B425]" />
-          <span className="text-xs font-semibold">{toastMessage}</span>
-        </div>
-      )}
-
       {/* Top Header Card - Compact & Minimal Padding */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#141414] p-3 sm:px-4 sm:py-2.5 rounded-2xl border border-white/10 shadow-lg text-white">
+      <div 
+        style={{
+          paddingLeft: '12px',
+          paddingRight: '12px',
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          borderRadius: '12px'
+        }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#141414] px-3 py-2 rounded-[12px] border border-white/10 shadow-lg text-white"
+      >
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
+          <div 
+            style={{ borderRadius: '8px' }}
+            className="w-8 h-8 rounded-[8px] bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0"
+          >
             <BookOpen className="w-4 h-4 text-[#F7B425]" />
           </div>
           <div>
@@ -234,6 +238,14 @@ export const ProgramsManagementTab: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#F7B425]" />
+          <span className="text-xs font-semibold">{toastMessage}</span>
+        </div>
+      )}
 
       {/* Category Tabs & Filter - Compact */}
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -338,7 +350,10 @@ export const ProgramsManagementTab: React.FC = () => {
                         </div>
                         <div className="flex items-baseline gap-1">
                           <span className="text-[9px] uppercase font-bold text-slate-400">Urutan</span>
-                          <span className="text-[11px] font-black text-[#F7B425] font-mono bg-[#F7B425]/10 px-1.5 py-0.5 rounded border border-[#F7B425]/20">
+                          <span 
+                            style={{ borderRadius: '12px' }}
+                            className="text-[11px] font-black text-[#F7B425] font-mono bg-[#F7B425]/10 px-1.5 py-0.5 rounded-[12px] border border-[#F7B425]/20"
+                          >
                             #{index + 1}
                           </span>
                         </div>
@@ -369,7 +384,9 @@ export const ProgramsManagementTab: React.FC = () => {
                     {/* Header Badges & Status */}
                     <div className="flex items-center justify-between mb-2 pt-0.5">
                       <div className="flex items-center gap-1 flex-wrap">
-                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wide ${
+                        <span 
+                          style={{ borderRadius: '12px' }}
+                          className={`px-2 py-0.5 rounded-[12px] text-[9px] font-bold uppercase tracking-wide ${
                           program.category === 'Landing Page'
                             ? 'bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30'
                             : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'

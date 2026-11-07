@@ -211,21 +211,16 @@ export const MentorsManagementTab: React.FC = () => {
   return (
     <div className="space-y-3 relative" id="mentors-management-container">
       
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
-          <CheckCircle2 className="w-3.5 h-3.5 text-[#F7B425]" />
-          <span className="text-xs font-semibold">{toastMessage}</span>
-        </div>
-      )}
-
       {/* Top Header Card - Compact & Minimal Padding */}
       <div 
         style={{ borderRadius: '12px', paddingLeft: '12px', paddingRight: '12px', paddingTop: '8px', paddingBottom: '8px' }}
         className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border ${cardBg}`}
       >
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
+          <div 
+            style={{ borderRadius: '8px' }}
+            className="w-8 h-8 rounded-[8px] bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0"
+          >
             <GraduationCap className="w-4 h-4 text-[#F7B425]" />
           </div>
           <div>
@@ -237,6 +232,14 @@ export const MentorsManagementTab: React.FC = () => {
             </h2>
           </div>
         </div>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#F7B425]" />
+          <span className="text-xs font-semibold">{toastMessage}</span>
+        </div>
+      )}
 
         <div className="flex items-center gap-2">
           <button

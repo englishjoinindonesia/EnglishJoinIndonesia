@@ -212,10 +212,13 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
     <div className="space-y-3">
       
       {/* 4 STAT CARDS - Compact & Minimal Padding */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      <div 
+        style={{ marginBottom: '10px' }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 mb-[10px]"
+      >
         {/* Total Pendaftar */}
         <div 
-          style={{ borderRadius: '12px', marginBottom: '10px', paddingTop: '12px', paddingBottom: '14px' }}
+          style={{ borderRadius: '12px', marginBottom: '0px', paddingTop: '12px', paddingBottom: '14px' }}
           className={`rounded-xl px-3.5 sm:px-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}
         >
           <div className="flex items-center justify-between text-slate-300">

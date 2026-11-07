@@ -43,7 +43,16 @@ export const ScoreSettingsTab: React.FC = () => {
     <div className="space-y-2 sm:space-y-2.5">
       
       {/* Top Header */}
-      <div className={`p-2 sm:px-3 sm:py-2 rounded-xl border ${cardBg} flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-colors`}>
+      <div 
+        style={{
+          borderRadius: '12px',
+          paddingLeft: '12px',
+          paddingRight: '12px',
+          paddingTop: '8px',
+          paddingBottom: '8px'
+        }}
+        className={`px-3 py-2 rounded-[12px] border ${cardBg} flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-colors`}
+      >
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#F7B425]/15 flex items-center justify-center text-[#F7B425] font-bold shrink-0">
             <Settings2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

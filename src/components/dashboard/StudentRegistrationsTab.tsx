@@ -481,7 +481,16 @@ export const StudentRegistrationsTab: React.FC = () => {
     <div className="space-y-3">
       
       {/* Top Action Bar - Compact & Minimal Padding */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:px-4 sm:py-2.5 rounded-2xl border ${cardBg}`}>
+      <div 
+        style={{
+          borderRadius: '12px',
+          paddingLeft: '12px',
+          paddingRight: '12px',
+          paddingTop: '8px',
+          paddingBottom: '8px'
+        }}
+        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-3 py-2 rounded-[12px] border ${cardBg}`}
+      >
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold shrink-0">
             <Users className="w-4 h-4 text-[#F7B425]" />
