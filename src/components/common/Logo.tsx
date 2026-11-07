@@ -31,7 +31,11 @@ export const Logo: React.FC<LogoProps> = ({
       <img
         src={logoSrc}
         alt="English Join Indonesia - Official Logo"
-        className={`${heightClasses[size]} w-auto object-contain drop-shadow-sm`}
+        style={{
+          transitionDuration: '300ms',
+          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        }}
+        className={`${heightClasses[size]} w-auto object-contain drop-shadow-sm transition-all duration-300 ease-in-out`}
         loading="eager"
       />
     </div>

@@ -394,17 +394,20 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
                   </div>
 
                   {/* Title */}
-                  <h4 className={`text-xs sm:text-[13px] font-extrabold font-heading leading-snug group-hover:text-[#F7B425] transition-colors line-clamp-1 ${
+                  <h4 className={`text-xs sm:text-[13px] font-extrabold font-heading leading-snug group-hover:text-[#F7B425] transition-colors line-clamp-1 mb-2 ${
                     isDark ? 'text-white' : 'text-slate-900'
                   }`}>
                     {qb.title}
                   </h4>
 
-                  {/* Tag */}
-                  <div className="flex items-center gap-1.5 mt-0.5 mb-2">
-                    <span className={`text-[9px] font-semibold px-1.5 py-0.2 rounded ${
-                      isDark ? 'bg-white/5 text-slate-300' : 'bg-slate-200/80 text-slate-700'
-                    }`}>
+                  {/* Tag (Hidden to minimize display) */}
+                  <div className="hidden items-center gap-1.5 mt-0.5 mb-2">
+                    <span 
+                      style={{ display: 'none' }}
+                      className={`hidden text-[9px] font-semibold px-1.5 py-0.2 rounded ${
+                        isDark ? 'bg-white/5 text-slate-300' : 'bg-slate-200/80 text-slate-700'
+                      }`}
+                    >
                       {qb.tag}
                     </span>
                   </div>
