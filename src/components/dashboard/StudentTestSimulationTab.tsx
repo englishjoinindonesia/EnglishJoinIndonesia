@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   CheckCircle2, Clock, Award, RotateCcw, 
   ArrowRight, ArrowLeft, Volume2, Download,
   Filter, PlayCircle, ShieldAlert, Check, Headphones, FileText,
   AlertTriangle, Monitor, Sparkles, HelpCircle, BookOpen,
-  Lock, Shield, Maximize, Minimize, AlertCircle, CheckSquare, X, Loader2
+  Lock, Shield, Maximize, Minimize, AlertCircle, CheckSquare, X, Loader2, Eye, Layers
 } from 'lucide-react';
 import { SAMPLE_TOEFL_QUESTIONS } from '../../data/toeflData';
 import { useTheme } from '../../context/ThemeContext';
@@ -12,8 +12,16 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { loadQuestionBanks, loadToeflQuestions } from '../../lib/supabaseService';
-import { renderWrittenExpressionText } from './ToeflQuestionsTab';
+import { renderWrittenExpressionText, SECTION_DIRECTIONS_DATA, SectionDirectionsInfo } from './ToeflQuestionsTab';
 import { downloadCertificatePdf } from '../../utils/certificatePdfGenerator';
+
+export const normalizeSection = (sec?: string): 'Listening' | 'Structure' | 'Reading' => {
+  if (!sec) return 'Listening';
+  const lower = sec.toLowerCase();
+  if (lower.includes('listen')) return 'Listening';
+  if (lower.includes('read')) return 'Reading';
+  return 'Structure';
+};
 
 interface TestItem {
   id: string;
@@ -46,6 +54,10 @@ export const StudentTestSimulationTab: React.FC = () => {
   const [showFullscreenWarning, setShowFullscreenWarning] = useState(false);
   const [fullscreenEnabled, setFullscreenEnabled] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [activeDirectionSection, setActiveDirectionSection] = useState<'Listening' | 'Structure' | 'Reading' | null>(null);
+  const [seenSectionDirections, setSeenSectionDirections] = useState<Record<string, boolean>>({});
+  const [directionsThemeMode, setDirectionsThemeMode] = useState<'cbt' | 'paper'>('cbt');
+  const [prepPreviewSection, setPrepPreviewSection] = useState<'Listening' | 'Structure' | 'Reading' | null>(null);
 
   const cardBg = isDark ? 'bg-[#141414] border-white/10 text-white' : 'bg-white border-slate-200/90 text-slate-900 shadow-2xs';
   const innerCardBg = isDark ? 'bg-[#181818] border-white/5' : 'bg-slate-50/70 border-slate-100';
@@ -241,6 +253,34 @@ export const StudentTestSimulationTab: React.FC = () => {
 
   const questions = dbQuestions.length > 0 ? dbQuestions : fallbackQuestions;
 
+  const sectionQuestionsCount = useMemo(() => {
+    const counts: Record<'Listening' | 'Structure' | 'Reading', number> = {
+      Listening: 0,
+      Structure: 0,
+      Reading: 0,
+    };
+    questions.forEach(q => {
+      const s = normalizeSection(q.section);
+      counts[s] = (counts[s] || 0) + 1;
+    });
+    return counts;
+  }, [questions]);
+
+  const sectionFirstIndex = useMemo(() => {
+    const indices: Record<'Listening' | 'Structure' | 'Reading', number> = {
+      Listening: -1,
+      Structure: -1,
+      Reading: -1,
+    };
+    questions.forEach((q, idx) => {
+      const s = normalizeSection(q.section);
+      if (indices[s] === -1) {
+        indices[s] = idx;
+      }
+    });
+    return indices;
+  }, [questions]);
+
   // Request browser fullscreen mode with fallback
   const requestBrowserFullscreen = async () => {
     try {
@@ -375,6 +415,37 @@ export const StudentTestSimulationTab: React.FC = () => {
     setTimeLeft(115 * 60);
     setShowFullscreenWarning(false);
     setShowSubmitConfirm(false);
+
+    // Present Preview Petunjuk (Direction) for the first section before starting questions
+    const firstSection = normalizeSection(questions[0]?.section);
+    setActiveDirectionSection(firstSection);
+    setSeenSectionDirections({});
+  };
+
+  const handleGoToQuestion = (targetIdx: number) => {
+    if (targetIdx < 0 || targetIdx >= questions.length) return;
+    const currentSec = normalizeSection(questions[currentIdx]?.section);
+    const targetSec = normalizeSection(questions[targetIdx]?.section);
+
+    if (targetSec !== currentSec && !seenSectionDirections[targetSec]) {
+      // First time entering this new section! Show its Direction Guide first
+      setCurrentIdx(targetIdx);
+      setActiveDirectionSection(targetSec);
+    } else {
+      setCurrentIdx(targetIdx);
+      setActiveDirectionSection(null);
+    }
+  };
+
+  const handleStartOrDismissDirection = () => {
+    if (activeDirectionSection) {
+      setSeenSectionDirections(prev => ({ ...prev, [activeDirectionSection]: true }));
+      const targetFirstIdx = sectionFirstIndex[activeDirectionSection];
+      if (targetFirstIdx >= 0 && normalizeSection(questions[currentIdx]?.section) !== activeDirectionSection) {
+        setCurrentIdx(targetFirstIdx);
+      }
+    }
+    setActiveDirectionSection(null);
   };
 
   const handleTestAudioSample = () => {
@@ -504,6 +575,422 @@ export const StudentTestSimulationTab: React.FC = () => {
   const correctCount = questions.filter(q => userAnswers[q.id] === q.correctAnswer).length;
   const rawPercentage = Math.round((correctCount / questions.length) * 100);
   const scaledScore = Math.round(310 + ((677 - 310) * (correctCount / questions.length)));
+
+  const renderSectionDirectionContent = (
+    sectionKey: 'Listening' | 'Structure' | 'Reading',
+    themeMode: 'cbt' | 'paper',
+    isReview: boolean,
+    onStartOrResumeAction: () => void,
+    onSwitchSectionAction: (sec: 'Listening' | 'Structure' | 'Reading') => void,
+    onCloseAction?: () => void
+  ) => {
+    const sec = SECTION_DIRECTIONS_DATA[sectionKey];
+    if (!sec) return null;
+
+    const isStructure = sectionKey === 'Structure';
+    const isListening = sectionKey === 'Listening';
+    const isReading = sectionKey === 'Reading';
+
+    const themeBorder = isStructure 
+      ? 'border-amber-500/30' 
+      : isListening 
+        ? 'border-blue-500/30' 
+        : 'border-emerald-500/30';
+
+    const themeBg = isStructure 
+      ? 'bg-amber-500/10' 
+      : isListening 
+        ? 'bg-blue-500/10' 
+        : 'bg-emerald-500/10';
+
+    return (
+      <div className="space-y-4 max-w-4xl mx-auto w-full animate-fadeIn pb-6">
+        {/* Top Bar: Section Switcher & Format Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-white/10">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/5 border border-white/10 flex-wrap">
+            {(['Listening', 'Structure', 'Reading'] as const).map((sKey) => {
+              const sInfo = SECTION_DIRECTIONS_DATA[sKey];
+              const isSelected = sectionKey === sKey;
+              return (
+                <button
+                  key={sKey}
+                  type="button"
+                  onClick={() => onSwitchSectionAction(sKey)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    isSelected
+                      ? 'bg-[#F7B425] text-black shadow-xs font-black'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span>Section {sInfo.number}: {sKey}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-center">
+            {/* Format Toggle: CBT vs Paper */}
+            <div className="flex items-center p-0.5 rounded-lg bg-white/5 border border-white/10 text-xs">
+              <button
+                type="button"
+                onClick={() => setDirectionsThemeMode('cbt')}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                  themeMode === 'cbt'
+                    ? 'bg-[#2563EB] text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Mode CBT
+              </button>
+              <button
+                type="button"
+                onClick={() => setDirectionsThemeMode('paper')}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                  themeMode === 'paper'
+                    ? 'bg-amber-100 text-stone-900 shadow-xs'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Buku Soal (Paper)
+              </button>
+            </div>
+
+            {onCloseAction && (
+              <button
+                type="button"
+                onClick={onCloseAction}
+                className="p-1 rounded-lg border border-white/10 hover:bg-white/10 text-slate-300 transition-colors cursor-pointer"
+                title="Tutup Petunjuk"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Main Content: CBT or Paper */}
+        {themeMode === 'paper' ? (
+          /* Authentic ETS Paper Booklet Format */
+          <div className="bg-[#faf8f5] text-stone-900 border border-stone-300 rounded-2xl p-5 sm:p-9 shadow-2xl font-serif leading-relaxed">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-wider text-center uppercase mb-3 text-black font-serif">
+              {sec.title}
+            </h1>
+
+            <div className="text-center font-bold text-xs sm:text-sm text-stone-800 mb-6 leading-snug font-sans">
+              {(sec.timeHeading || '').split('\n').map((line, idx) => (
+                <div key={idx} className={idx === 0 ? 'text-sm sm:text-base font-extrabold text-black mb-0.5' : ''}>
+                  {line}
+                </div>
+              ))}
+            </div>
+
+            <p className="text-xs sm:text-sm text-justify text-stone-800 mb-6">
+              {sec.introText}
+            </p>
+
+            <div className="border-t border-stone-300 pt-5 space-y-4">
+              <h2 className="text-base sm:text-lg font-bold text-center text-black uppercase tracking-wide">
+                {sec.subpartTitle}
+              </h2>
+
+              <div className="text-xs sm:text-sm text-justify text-stone-800 whitespace-pre-line leading-relaxed">
+                {sec.directionsText}
+              </div>
+
+              {/* Examples in Paper format */}
+              <div className="space-y-4 pt-3">
+                {sec.examples.map((ex, exIdx) => (
+                  <div key={exIdx} className="p-4 bg-white rounded-xl border border-stone-300 shadow-xs space-y-2">
+                    <div className="font-bold font-sans text-xs uppercase tracking-wider text-amber-700">
+                      {ex.title}
+                    </div>
+                    <div className="text-xs sm:text-sm text-black font-medium whitespace-pre-line">
+                      {renderWrittenExpressionText(ex.prompt, false)}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-xs">
+                      {(['A', 'B', 'C', 'D'] as const).map((letter) => (
+                        <div
+                          key={letter}
+                          className={`p-1.5 rounded-lg flex items-center gap-2 border ${
+                            ex.correctAnswer === letter
+                              ? 'bg-emerald-50 border-emerald-400 text-emerald-950 font-bold'
+                              : 'bg-stone-50 border-stone-200 text-stone-800'
+                          }`}
+                        >
+                          <span className="font-bold font-sans">{letter}.</span>
+                          <span>{ex.options[letter]}</span>
+                          {ex.correctAnswer === letter && (
+                            <span className="ml-auto text-[10px] font-sans font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded">
+                              Jawaban Benar
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-[11px] text-stone-700 italic pt-1 border-t border-stone-200 leading-relaxed font-sans">
+                      <strong>Penjelasan:</strong> {ex.explanation}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Modern Interactive CBT Format */
+          <div className="space-y-3.5">
+            {/* Hero Banner Card */}
+            <div className={`p-4 sm:p-5 rounded-2xl border ${themeBorder} ${themeBg} relative overflow-hidden`}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border shadow-md ${
+                    isStructure
+                      ? 'bg-amber-500/20 border-amber-500/40 text-[#F7B425]'
+                      : isListening
+                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400'
+                        : 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
+                  }`}>
+                    {isStructure ? (
+                      <FileText className="w-6 h-6" />
+                    ) : isListening ? (
+                      <Headphones className="w-6 h-6" />
+                    ) : (
+                      <BookOpen className="w-6 h-6" />
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="px-2 py-0.5 rounded-md bg-white/10 text-white font-mono text-[10px] font-black uppercase tracking-wider border border-white/10">
+                        {sec.badge}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-[#F7B425]/20 text-[#F7B425] text-[10px] font-black uppercase tracking-wider border border-[#F7B425]/40">
+                        PETUNJUK RESMI SECTION
+                      </span>
+                    </div>
+                    <h2 className="text-base sm:text-xl font-black font-heading tracking-tight text-white">
+                      {sec.title}
+                    </h2>
+                  </div>
+                </div>
+
+                {/* Time & Count Badges */}
+                <div className="flex sm:flex-col items-center sm:items-end gap-1.5 self-start sm:self-center shrink-0">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/40 border border-white/10 text-white font-mono text-xs font-bold shadow-2xs">
+                    <Clock className="w-3.5 h-3.5 text-[#F7B425]" />
+                    <span>{sec.durationText}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/40 border border-white/10 text-slate-300 font-mono text-xs font-bold">
+                    <FileText className="w-3.5 h-3.5 text-blue-400" />
+                    <span>{sectionQuestionsCount[sectionKey] || sec.questionCount} Soal</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Time Heading Callout */}
+              <div className="mt-3.5 pt-3 border-t border-white/10 flex items-start gap-2 text-xs text-slate-300">
+                <Clock className="w-4 h-4 text-[#F7B425] shrink-0 mt-0.5" />
+                <div className="whitespace-pre-line leading-relaxed text-[11px] sm:text-xs font-medium">
+                  {sec.timeHeading}
+                </div>
+              </div>
+            </div>
+
+            {/* Section Description Card */}
+            <div className="p-4 rounded-xl border border-white/10 bg-[#0E1524] space-y-2.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#F7B425] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#F7B425]" />
+                <span>Deskripsi &amp; Tujuan Bagian Ujian</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                {sec.introText}
+              </p>
+            </div>
+
+            {/* Subparts Breakdown */}
+            <div className="p-4 rounded-xl border border-white/10 bg-[#0E1524] space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-blue-400" />
+                <span>{sec.subpartTitle} &amp; Pembagian Bagian Soal</span>
+              </h3>
+
+              <div className="text-xs text-slate-300 leading-relaxed whitespace-pre-line bg-black/30 p-3 rounded-lg border border-white/5">
+                {sec.directionsText}
+              </div>
+
+              {/* Structure special highlight: Part A vs Part B */}
+              {isStructure && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
+                  <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 space-y-1">
+                    <div className="font-extrabold text-xs text-[#F7B425] flex items-center justify-between">
+                      <span>Part A: Structure (Soal 1–15)</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-[#F7B425]">15 Soal</span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                      Kalimat tidak lengkap (incomplete sentences). Pilih 1 kata/frasa dari (A), (B), (C), atau (D) yang paling tepat melengkapi kalimat sesuai tata bahasa standar.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-purple-500/5 border border-purple-500/20 space-y-1">
+                    <div className="font-extrabold text-xs text-purple-300 flex items-center justify-between">
+                      <span>Part B: Written Expression (Soal 16–40)</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300">25 Soal</span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                      Kalimat dengan 4 bagian bergaris bawah (A, B, C, D). Cari 1 bagian yang <strong>salah</strong> atau harus diubah agar kalimat menjadi benar secara gramatikal.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Listening special highlight: Part A, B, C */}
+              {isListening && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                  <div className="p-2.5 rounded-lg bg-blue-500/5 border border-blue-500/20 space-y-1">
+                    <div className="font-extrabold text-xs text-blue-300">Part A (Short)</div>
+                    <p className="text-[10.5px] text-slate-300 leading-relaxed">30 Percakapan pendek antara 2 orang + 1 pertanyaan.</p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-blue-500/5 border border-blue-500/20 space-y-1">
+                    <div className="font-extrabold text-xs text-blue-300">Part B (Longer)</div>
+                    <p className="text-[10.5px] text-slate-300 leading-relaxed">2 Percakapan panjang seputar akademik/kampus (8 soal).</p>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-blue-500/5 border border-blue-500/20 space-y-1">
+                    <div className="font-extrabold text-xs text-blue-300">Part C (Talks)</div>
+                    <p className="text-[10.5px] text-slate-300 leading-relaxed">3 Ceramah/kuliah ilmiah dari 1 pembicara (12 soal).</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Reading special highlight: 5 passages */}
+              {isReading && (
+                <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 space-y-1.5">
+                  <div className="font-extrabold text-xs text-emerald-400 flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>5 Wacana Teks Akademik • 10 Soal Per Teks</span>
+                  </div>
+                  <p className="text-[11px] text-slate-300 leading-relaxed">
+                    Topik mencakup sejarah, sains, seni, dan biografi. Anda bebas membaca ulang wacana dan melompat ke nomor soal mana pun dalam bagian ini.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Official ETS Examples & Solutions */}
+            <div className="p-4 rounded-xl border border-white/10 bg-[#0E1524] space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Contoh Soal &amp; Cara Menjawab (Official Examples)</span>
+              </h3>
+
+              <div className="space-y-3">
+                {sec.examples.map((ex, exIdx) => (
+                  <div key={exIdx} className="p-3.5 rounded-xl border border-white/10 bg-[#0B101D] space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-black uppercase tracking-wider text-[#F7B425]">
+                        {ex.title}
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold">
+                        Kunci: ({ex.correctAnswer})
+                      </span>
+                    </div>
+
+                    {/* Problem text */}
+                    <div className="text-xs sm:text-sm text-white font-medium whitespace-pre-line leading-relaxed p-2.5 rounded-lg bg-white/5 border border-white/5">
+                      {renderWrittenExpressionText(ex.prompt, true)}
+                    </div>
+
+                    {/* Options */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
+                      {(['A', 'B', 'C', 'D'] as const).map((letter) => {
+                        const isCorrect = ex.correctAnswer === letter;
+                        return (
+                          <div
+                            key={letter}
+                            className={`p-2 rounded-lg border flex items-center gap-2 transition-all ${
+                              isCorrect
+                                ? 'bg-emerald-500/20 border-emerald-500/50 text-white font-bold shadow-xs'
+                                : 'bg-white/5 border-white/10 text-slate-300'
+                            }`}
+                          >
+                            <span className={`w-5 h-5 rounded flex items-center justify-center font-bold text-[11px] shrink-0 ${
+                              isCorrect ? 'bg-emerald-500 text-black' : 'bg-white/10 text-slate-300'
+                            }`}>
+                              {letter}
+                            </span>
+                            <span className="flex-1 truncate">{ex.options[letter]}</span>
+                            {isCorrect && (
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 ml-auto" />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Explanation */}
+                    <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-[11px] text-emerald-300/90 leading-relaxed">
+                      <strong className="text-emerald-200">Penjelasan Resmi: </strong>
+                      {ex.explanation}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Notes and Rules */}
+            {sec.additionalNotes && sec.additionalNotes.length > 0 && (
+              <div className="p-3.5 rounded-xl border border-white/10 bg-[#0E1524] space-y-2">
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Ketentuan Penting Section Ini</span>
+                </h4>
+                <ul className="space-y-1 text-xs text-slate-300">
+                  {sec.additionalNotes.map((note, nIdx) => (
+                    <li key={nIdx} className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#F7B425] mt-1.5 shrink-0" />
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Action Footer CTA */}
+        <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-xs text-slate-400 text-center sm:text-left">
+            {isReview ? (
+              <span>{tr('Anda sedang melihat kembali petunjuk. Waktu tes tetap berjalan.', 'Viewing directions review. Timer is still counting down.')}</span>
+            ) : (
+              <span>{tr('Waktu pengerjaan berjalan otomatis. Klik tombol di kanan untuk mulai menjawab soal.', 'Timer counts down automatically. Click button to start answering.')}</span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {isReview ? (
+              <button
+                type="button"
+                onClick={onStartOrResumeAction}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-[#2563EB] hover:bg-[#1D4ED8] shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>{tr(`Kembali ke Soal ${currentIdx + 1}`, `Return to Question ${currentIdx + 1}`)}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onStartOrResumeAction}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-black bg-[#F7B425] hover:bg-[#e5a41c] shadow-lg shadow-[#F7B425]/20 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+              >
+                <PlayCircle className="w-4 h-4" />
+                <span>{tr(`Mulai Mengerjakan Section ${sec.number}: ${sec.id}`, `Start Section ${sec.number}: ${sec.id}`)}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-2.5 sm:space-y-3 max-w-7xl mx-auto">
@@ -685,37 +1172,67 @@ export const StudentTestSimulationTab: React.FC = () => {
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <div className={`p-2.5 rounded-lg border ${innerCardBg}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-[11px]">Section 1</span>
-                    <Headphones className="w-3.5 h-3.5 text-blue-400" />
+                <div className={`p-2.5 rounded-lg border flex flex-col justify-between ${innerCardBg}`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-[11px]">Section 1</span>
+                      <Headphones className="w-3.5 h-3.5 text-blue-400" />
+                    </div>
+                    <div className="font-bold text-xs">Listening Comprehension</div>
+                    <p className={`text-[10px] mt-0.5 ${subText}`}>
+                      {tr('50 Soal • 35 Menit', '50 Questions • 35 Mins')}
+                    </p>
                   </div>
-                  <div className="font-bold text-xs">Listening Comprehension</div>
-                  <p className={`text-[10px] mt-0.5 ${subText}`}>
-                    {tr('50 Soal • 35 Menit', '50 Questions • 35 Mins')}
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setPrepPreviewSection('Listening')}
+                    className="mt-2 w-full py-1 px-2 rounded-md border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-[10px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>{tr('Lihat Petunjuk (Direction)', 'Preview Directions')}</span>
+                  </button>
                 </div>
 
-                <div className={`p-2.5 rounded-lg border ${innerCardBg}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-[11px]">Section 2</span>
-                    <FileText className="w-3.5 h-3.5 text-purple-400" />
+                <div className={`p-2.5 rounded-lg border flex flex-col justify-between ${innerCardBg}`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-[11px]">Section 2</span>
+                      <FileText className="w-3.5 h-3.5 text-purple-400" />
+                    </div>
+                    <div className="font-bold text-xs">Structure &amp; Written Exp.</div>
+                    <p className={`text-[10px] mt-0.5 ${subText}`}>
+                      {tr('40 Soal • 25 Menit', '40 Questions • 25 Mins')}
+                    </p>
                   </div>
-                  <div className="font-bold text-xs">Structure &amp; Written Exp.</div>
-                  <p className={`text-[10px] mt-0.5 ${subText}`}>
-                    {tr('40 Soal • 25 Menit', '40 Questions • 25 Mins')}
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setPrepPreviewSection('Structure')}
+                    className="mt-2 w-full py-1 px-2 rounded-md border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 text-[10px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>{tr('Lihat Petunjuk (Direction)', 'Preview Directions')}</span>
+                  </button>
                 </div>
 
-                <div className={`p-2.5 rounded-lg border ${innerCardBg}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-[11px]">Section 3</span>
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <div className={`p-2.5 rounded-lg border flex flex-col justify-between ${innerCardBg}`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-[11px]">Section 3</span>
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    </div>
+                    <div className="font-bold text-xs">Reading Comprehension</div>
+                    <p className={`text-[10px] mt-0.5 ${subText}`}>
+                      {tr('50 Soal • 55 Menit', '50 Questions • 55 Mins')}
+                    </p>
                   </div>
-                  <div className="font-bold text-xs">Reading Comprehension</div>
-                  <p className={`text-[10px] mt-0.5 ${subText}`}>
-                    {tr('50 Soal • 55 Menit', '50 Questions • 55 Mins')}
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setPrepPreviewSection('Reading')}
+                    className="mt-2 w-full py-1 px-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[10px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>{tr('Lihat Petunjuk (Direction)', 'Preview Directions')}</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -905,6 +1422,22 @@ export const StudentTestSimulationTab: React.FC = () => {
             </div>
 
           </div>
+
+          {/* Prep Screen Directions Preview Modal */}
+          {prepPreviewSection && (
+            <div className="fixed inset-0 z-[100000] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+              <div className="max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl bg-[#0E1524] border border-white/20 p-4 sm:p-6 shadow-2xl text-white">
+                {renderSectionDirectionContent(
+                  prepPreviewSection,
+                  directionsThemeMode,
+                  false,
+                  () => setPrepPreviewSection(null),
+                  (s) => setPrepPreviewSection(s),
+                  () => setPrepPreviewSection(null)
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1022,6 +1555,23 @@ export const StudentTestSimulationTab: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={() => {
+                  const currentSec = normalizeSection(questions[currentIdx]?.section);
+                  setActiveDirectionSection(currentSec);
+                }}
+                className={`px-2 py-0.5 rounded-md border text-[10px] sm:text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs ${
+                  activeDirectionSection
+                    ? 'bg-[#F7B425] text-black border-[#F7B425]'
+                    : 'bg-[#F7B425]/15 text-[#F7B425] hover:bg-[#F7B425]/25 border-[#F7B425]/40'
+                }`}
+                title={tr('Buka Petunjuk & Panduan Section (Direction)', 'Open Section Directions Guide')}
+              >
+                <BookOpen className="w-3 h-3" />
+                <span>{tr('Petunjuk (Direction)', 'Directions')}</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => handleToggleDoubtful(questions[currentIdx].id)}
                 className={`px-2 py-0.5 rounded-md border text-[10px] sm:text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
                   doubtfulQuestions[questions[currentIdx].id]
@@ -1046,132 +1596,160 @@ export const StudentTestSimulationTab: React.FC = () => {
 
           {/* Middle Body */}
           <div className="flex-1 flex overflow-hidden">
-            {/* Main Question Box */}
-            <main className="flex-1 overflow-y-auto p-3 sm:p-5 flex flex-col justify-between max-w-4xl mx-auto w-full">
-              <div className="space-y-3 sm:space-y-4">
-                {/* Audio Narration Player if Listening */}
-                {questions[currentIdx].section === 'Listening' && (
-                  <div className="p-3 rounded-xl border border-blue-500/30 bg-blue-950/30 space-y-2">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-blue-600/30 text-blue-400 flex items-center justify-center">
-                          <Headphones className="w-4 h-4" />
+            {activeDirectionSection ? (
+              /* Section Direction Guide / Preview Screen */
+              <main className="flex-1 overflow-y-auto p-3 sm:p-5 max-w-4xl mx-auto w-full">
+                {renderSectionDirectionContent(
+                  activeDirectionSection,
+                  directionsThemeMode,
+                  !!seenSectionDirections[activeDirectionSection],
+                  handleStartOrDismissDirection,
+                  (secKey) => setActiveDirectionSection(secKey),
+                  seenSectionDirections[activeDirectionSection] ? () => setActiveDirectionSection(null) : undefined
+                )}
+              </main>
+            ) : (
+              /* Main Question Box */
+              <main className="flex-1 overflow-y-auto p-3 sm:p-5 flex flex-col justify-between max-w-4xl mx-auto w-full">
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Audio Narration Player if Listening */}
+                  {questions[currentIdx].section === 'Listening' && (
+                    <div className="p-3 rounded-xl border border-blue-500/30 bg-blue-950/30 space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-blue-600/30 text-blue-400 flex items-center justify-center">
+                            <Headphones className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-xs text-white">Audio Narration Player</div>
+                            <div className="text-[10px] text-blue-300">{questions[currentIdx].part || 'Listening Comprehension'}</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-bold text-xs text-white">Audio Narration Player</div>
-                          <div className="text-[10px] text-blue-300">{questions[currentIdx].part || 'Listening Comprehension'}</div>
-                        </div>
+                        {!(questions[currentIdx] as any).audioUrl && (
+                          <button
+                            type="button"
+                            onClick={handleTestAudioSample}
+                            className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1 cursor-pointer shadow-2xs"
+                          >
+                            <Volume2 className="w-3 h-3" />
+                            <span>{audioPlaying ? 'Memutar...' : 'Putar Audio'}</span>
+                          </button>
+                        )}
                       </div>
-                      {!(questions[currentIdx] as any).audioUrl && (
-                        <button
-                          type="button"
-                          onClick={handleTestAudioSample}
-                          className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1 cursor-pointer shadow-2xs"
-                        >
-                          <Volume2 className="w-3 h-3" />
-                          <span>{audioPlaying ? 'Memutar...' : 'Putar Audio'}</span>
-                        </button>
+                      {(questions[currentIdx] as any).audioUrl && (
+                        <audio controls src={(questions[currentIdx] as any).audioUrl} className="w-full h-8 rounded" />
                       )}
                     </div>
-                    {(questions[currentIdx] as any).audioUrl && (
-                      <audio controls src={(questions[currentIdx] as any).audioUrl} className="w-full h-8 rounded" />
-                    )}
-                  </div>
-                )}
+                  )}
 
-                {/* Reading Passage Card if present */}
-                {((questions[currentIdx] as any).passageText || questions[currentIdx].questionText.includes('[PASSAGE]')) && (
-                  <div className="p-3.5 sm:p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 text-slate-100 text-xs sm:text-sm font-serif leading-relaxed whitespace-pre-line shadow-inner">
-                    <div className="text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#F7B425] mb-2 flex items-center gap-1.5">
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>Reading Passage / Teks Paragraf Cerita</span>
+                  {/* Reading Passage Card if present */}
+                  {((questions[currentIdx] as any).passageText || questions[currentIdx].questionText.includes('[PASSAGE]')) && (
+                    <div className="p-3.5 sm:p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 text-slate-100 text-xs sm:text-sm font-serif leading-relaxed whitespace-pre-line shadow-inner">
+                      <div className="text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#F7B425] mb-2 flex items-center gap-1.5">
+                        <BookOpen className="w-3.5 h-3.5" />
+                        <span>Reading Passage / Teks Paragraf Cerita</span>
+                      </div>
+                      {(questions[currentIdx] as any).passageText || (
+                        questions[currentIdx].questionText.match(/\[PASSAGE\]([\s\S]*?)\[\/PASSAGE\]/)?.[1]?.trim()
+                      )}
                     </div>
-                    {(questions[currentIdx] as any).passageText || (
-                      questions[currentIdx].questionText.match(/\[PASSAGE\]([\s\S]*?)\[\/PASSAGE\]/)?.[1]?.trim()
-                    )}
+                  )}
+
+                  {/* Question Prompt */}
+                  <div className="p-3.5 sm:p-4 rounded-xl border border-white/10 bg-[#0E1524] text-white text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line shadow-inner">
+                    {renderWrittenExpressionText(questions[currentIdx].questionText.replace(/\[PASSAGE\][\s\S]*?\[\/PASSAGE\]\s*/, ''), isDark)}
                   </div>
-                )}
 
-                {/* Question Prompt */}
-                <div className="p-3.5 sm:p-4 rounded-xl border border-white/10 bg-[#0E1524] text-white text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line shadow-inner">
-                  {renderWrittenExpressionText(questions[currentIdx].questionText.replace(/\[PASSAGE\][\s\S]*?\[\/PASSAGE\]\s*/, ''), isDark)}
+                  {/* Multiple Choice Options */}
+                  <div className="space-y-2">
+                    {(['A', 'B', 'C', 'D'] as const).map((opt) => {
+                      const isSelected = userAnswers[questions[currentIdx].id] === opt;
+                      return (
+                        <button
+                          key={opt}
+                          onClick={() => handleSelectOption(opt)}
+                          className={`w-full text-left p-2.5 sm:p-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all flex items-center gap-2.5 cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-md shadow-blue-600/25'
+                              : 'bg-[#0E1524] hover:bg-white/10 border-white/10 text-slate-200'
+                          }`}
+                        >
+                          <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center font-black text-xs shrink-0 transition-colors ${
+                            isSelected 
+                              ? 'bg-white text-[#2563EB]' 
+                              : 'bg-white/10 text-slate-300 border border-white/10'
+                          }`}>
+                            {opt}
+                          </span>
+                          <span className="flex-1 leading-relaxed">{questions[currentIdx].options[opt]}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* Multiple Choice Options */}
-                <div className="space-y-2">
-                  {(['A', 'B', 'C', 'D'] as const).map((opt) => {
-                    const isSelected = userAnswers[questions[currentIdx].id] === opt;
-                    return (
-                      <button
-                        key={opt}
-                        onClick={() => handleSelectOption(opt)}
-                        className={`w-full text-left p-2.5 sm:p-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all flex items-center gap-2.5 cursor-pointer ${
-                          isSelected
-                            ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-md shadow-blue-600/25'
-                            : 'bg-[#0E1524] hover:bg-white/10 border-white/10 text-slate-200'
-                        }`}
-                      >
-                        <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center font-black text-xs shrink-0 transition-colors ${
-                          isSelected 
-                            ? 'bg-white text-[#2563EB]' 
-                            : 'bg-white/10 text-slate-300 border border-white/10'
-                        }`}>
-                          {opt}
-                        </span>
-                        <span className="flex-1 leading-relaxed">{questions[currentIdx].options[opt]}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Bottom Navigation Bar */}
-              <div className="pt-4 mt-3 border-t border-white/10 flex items-center justify-between gap-2">
-                <button
-                  type="button"
-                  disabled={currentIdx === 0}
-                  onClick={() => setCurrentIdx(currentIdx - 1)}
-                  className="px-3.5 py-1.5 rounded-lg border border-white/15 text-xs font-bold disabled:opacity-30 disabled:pointer-events-none hover:bg-white/5 text-slate-200 flex items-center gap-1 cursor-pointer transition-all"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>{tr('Sebelumnya', 'Previous')}</span>
-                </button>
-
-                <div className="text-center text-[10px] text-slate-400 hidden sm:block">
-                  <span>{Object.keys(userAnswers).length} dari {questions.length} terjawab</span>
-                </div>
-
-                {currentIdx < questions.length - 1 ? (
+                {/* Bottom Navigation Bar */}
+                <div className="pt-4 mt-3 border-t border-white/10 flex items-center justify-between gap-2">
                   <button
                     type="button"
-                    onClick={() => setCurrentIdx(currentIdx + 1)}
-                    className="px-4 py-1.5 rounded-lg bg-[#2563EB] text-white text-xs font-bold hover:bg-[#1D4ED8] flex items-center gap-1 cursor-pointer shadow-xs active:scale-98 transition-all"
+                    disabled={currentIdx === 0}
+                    onClick={() => handleGoToQuestion(currentIdx - 1)}
+                    className="px-3.5 py-1.5 rounded-lg border border-white/15 text-xs font-bold disabled:opacity-30 disabled:pointer-events-none hover:bg-white/5 text-slate-200 flex items-center gap-1 cursor-pointer transition-all"
                   >
-                    <span>{tr('Berikutnya', 'Next')}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>{tr('Sebelumnya', 'Previous')}</span>
                   </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowSubmitConfirm(true)}
-                    className="px-4 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-extrabold hover:bg-emerald-500 shadow-xs flex items-center gap-1 cursor-pointer active:scale-98 transition-all"
-                  >
-                    <CheckSquare className="w-3.5 h-3.5" />
-                    <span>{tr('Kumpulkan Ujian', 'Submit Exam')}</span>
-                  </button>
-                )}
-              </div>
-            </main>
+
+                  <div className="text-center text-[10px] text-slate-400 hidden sm:block">
+                    <span>{Object.keys(userAnswers).length} dari {questions.length} terjawab</span>
+                  </div>
+
+                  {currentIdx < questions.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => handleGoToQuestion(currentIdx + 1)}
+                      className="px-4 py-1.5 rounded-lg bg-[#2563EB] text-white text-xs font-bold hover:bg-[#1D4ED8] flex items-center gap-1 cursor-pointer shadow-xs active:scale-98 transition-all"
+                    >
+                      <span>{tr('Berikutnya', 'Next')}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowSubmitConfirm(true)}
+                      className="px-4 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-extrabold hover:bg-emerald-500 shadow-xs flex items-center gap-1 cursor-pointer active:scale-98 transition-all"
+                    >
+                      <CheckSquare className="w-3.5 h-3.5" />
+                      <span>{tr('Kumpulkan Ujian', 'Submit Exam')}</span>
+                    </button>
+                  )}
+                </div>
+              </main>
+            )}
 
             {/* Right Question Palette */}
             <aside className="w-64 border-l border-white/10 bg-[#0B101D] p-3 hidden xl:flex flex-col justify-between shrink-0">
               <div className="space-y-3">
                 <div>
-                  <h4 className="font-bold text-xs text-white uppercase tracking-wider">
-                    {tr('Navigasi Lembar Soal', 'Question Navigation Palette')}
-                  </h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-xs text-white uppercase tracking-wider">
+                      {tr('Navigasi Lembar Soal', 'Question Navigation Palette')}
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const curSec = normalizeSection(questions[currentIdx]?.section);
+                        setActiveDirectionSection(curSec);
+                      }}
+                      className="text-[10px] text-[#F7B425] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                      title={tr('Lihat Petunjuk Section', 'View Section Directions')}
+                    >
+                      <BookOpen className="w-3 h-3" />
+                      <span>{tr('Petunjuk', 'Guide')}</span>
+                    </button>
+                  </div>
                   <p className="text-[10px] text-slate-400 mt-0.5">
-                    {tr('Klik nomor untuk melompat', 'Click number to jump')}
+                    {tr('Klik nomor untuk melompat antar soal', 'Click number to jump')}
                   </p>
                 </div>
 
@@ -1219,7 +1797,7 @@ export const StudentTestSimulationTab: React.FC = () => {
                       <button
                         key={q.id}
                         type="button"
-                        onClick={() => setCurrentIdx(idx)}
+                        onClick={() => handleGoToQuestion(idx)}
                         className={`h-8 rounded-lg font-bold text-xs border transition-all flex items-center justify-center cursor-pointer ${bgClass} ${
                           isCurrent ? 'ring-2 ring-blue-400 ring-offset-1 ring-offset-[#0B101D] scale-105' : ''
                         }`}
@@ -1351,7 +1929,9 @@ export const StudentTestSimulationTab: React.FC = () => {
 
             <div className="space-y-0.5">
               <span className="text-[9px] text-slate-400">{tr('Diberikan kepada:', 'Awarded to:')}</span>
-              <h3 className="text-base sm:text-lg font-bold text-white font-heading">Muhammad Ihsan</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white font-heading">
+                {user?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Student'}
+              </h3>
               <p className="text-[10px] text-slate-400">{tr('Sebagai Peserta Ujian TOEFL Prediction Online Terverifikasi', 'As a Verified Online TOEFL Prediction Candidate')}</p>
             </div>
 
@@ -1390,7 +1970,7 @@ export const StudentTestSimulationTab: React.FC = () => {
               onClick={async () => {
                 try {
                   setIsDownloadingPdf(true);
-                  const studentName = user?.name || 'Muhammad Ihsan';
+                  const studentName = user?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Student';
                   const todayStr = new Date().toLocaleDateString('id-ID', {
                     day: 'numeric',
                     month: 'long',

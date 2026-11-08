@@ -40,74 +40,15 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
   const cardBg = isDark ? 'bg-[#141414] border-white/10 text-white' : 'bg-white border-slate-200/90 text-slate-900 shadow-2xs';
   const subText = isDark ? 'text-slate-400' : 'text-slate-500';
 
-  const defaultHistoryRecords: TestHistoryRecord[] = [
-    {
-      id: 'rec-01',
-      testTitle: 'TOEFL ITP — Official Prediction Test 04A',
-      testType: 'TOEFL ITP',
-      date: '02 Sep 2026, 14:30 WIB',
-      listeningScore: 61,
-      structureScore: 63,
-      readingScore: 59,
-      totalScore: 610,
-      maxScore: 677,
-      status: 'LULUS',
-      certNumber: 'EJI/TOEFL-ITP/2026/0892',
-      certIssueDate: '02 September 2026',
-      levelCategory: 'C1 — Advanced Proficiency',
-      studentName: 'Muhammad Ihsan'
-    },
-    {
-      id: 'rec-02',
-      testTitle: 'TOEFL ITP — Complete Diagnostic Test 02',
-      testType: 'TOEFL ITP',
-      date: '24 Agu 2026, 10:15 WIB',
-      listeningScore: 56,
-      structureScore: 58,
-      readingScore: 54,
-      totalScore: 560,
-      maxScore: 677,
-      status: 'LULUS',
-      certNumber: 'EJI/TOEFL-ITP/2026/0744',
-      certIssueDate: '24 Agustus 2026',
-      levelCategory: 'B2 — High Intermediate',
-      studentName: 'Muhammad Ihsan'
-    },
-    {
-      id: 'rec-03',
-      testTitle: 'TOEFL ITP — Intensive Practice Test 03',
-      testType: 'TOEFL ITP',
-      date: '15 Agu 2026, 16:00 WIB',
-      listeningScore: 57,
-      structureScore: 59,
-      readingScore: 58,
-      totalScore: 580,
-      maxScore: 677,
-      status: 'LULUS',
-      certNumber: 'EJI/TOEFL-ITP/2026/0312',
-      certIssueDate: '15 Agustus 2026',
-      levelCategory: 'B2+ — Competent User',
-      studentName: 'Muhammad Ihsan'
-    },
-    {
-      id: 'rec-04',
-      testTitle: 'TOEFL ITP — Initial Placement Test 01',
-      testType: 'TOEFL ITP',
-      date: '01 Agu 2026, 09:00 WIB',
-      listeningScore: 48,
-      structureScore: 50,
-      readingScore: 49,
-      totalScore: 490,
-      maxScore: 677,
-      status: 'LULUS',
-      certNumber: 'EJI/TOEFL-ITP/2026/0105',
-      certIssueDate: '01 Agustus 2026',
-      levelCategory: 'B1 — Intermediate',
-      studentName: 'Muhammad Ihsan'
-    }
+  // List of seeded dummy test titles to permanently purge and prevent from displaying
+  const SEEDED_DUMMY_TEST_TITLES = [
+    'TOEFL ITP — Official Prediction Test 04A',
+    'TOEFL ITP — Complete Diagnostic Test 02',
+    'TOEFL ITP — Intensive Practice Test 03',
+    'TOEFL ITP — Initial Placement Test 01'
   ];
 
-  const [records, setRecords] = useState<TestHistoryRecord[]>(defaultHistoryRecords);
+  const [records, setRecords] = useState<TestHistoryRecord[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -115,6 +56,16 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
     let isSubscribed = true;
     const fetchUserRecords = async () => {
       try {
+        // Proactively purge any seeded dummy test records from Supabase
+        try {
+          await supabase
+            .from('test_history_records')
+            .delete()
+            .in('test_title', SEEDED_DUMMY_TEST_TITLES);
+        } catch (cleanupErr) {
+          console.warn('Error purging seeded dummy test records:', cleanupErr);
+        }
+
         const { data, error } = await supabase
           .from('test_history_records')
           .select('*')
@@ -126,7 +77,9 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
         if (error) {
           console.warn('Error fetching test_history_records from Supabase:', error.message);
         } else if (data && data.length > 0) {
-          setRecords(data.map((d: any) => ({
+          // Strictly exclude any seeded dummy records
+          const realRecords = data.filter((d: any) => !SEEDED_DUMMY_TEST_TITLES.includes(d.test_title));
+          setRecords(realRecords.map((d: any) => ({
             id: d.id,
             testTitle: d.test_title,
             testType: d.test_type,
@@ -143,26 +96,8 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
             studentName: d.student_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Student'
           })));
         } else {
-          // If Supabase table is empty for this user, seed default records bound to their user_id
-          const studentDisplayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Student';
-          const toInsert = defaultHistoryRecords.map(r => ({
-            user_id: user.id,
-            test_title: r.testTitle,
-            test_type: r.testType,
-            date: r.date,
-            listening_score: r.listeningScore,
-            structure_score: r.structureScore,
-            reading_score: r.readingScore,
-            total_score: r.totalScore,
-            max_score: r.maxScore,
-            status: r.status,
-            cert_number: r.certNumber,
-            cert_issue_date: r.certIssueDate,
-            level_category: r.levelCategory,
-            student_name: studentDisplayName
-          }));
-          await supabase.from('test_history_records').insert(toInsert);
-          setRecords(defaultHistoryRecords.map(r => ({ ...r, studentName: studentDisplayName })));
+          // New student user starts with completely clean empty history (no auto-seeding)
+          setRecords([]);
         }
       } catch (err) {
         console.warn('DB error:', err);
@@ -181,16 +116,27 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
     return rec.testType === activeFilter;
   });
 
-  const highestScore = records.length > 0 
-    ? Math.max(...records.filter(r => r.testType === 'TOEFL ITP').map(r => r.totalScore), 0)
+  const itpRecords = records.filter(r => r.testType === 'TOEFL ITP');
+  const highestScore = itpRecords.length > 0 
+    ? Math.max(...itpRecords.map(r => r.totalScore), 0)
     : 0;
   const totalCompleted = records.length;
+
+  const avgListening = itpRecords.length > 0
+    ? Math.round(itpRecords.reduce((acc, r) => acc + (r.listeningScore || 0), 0) / itpRecords.length)
+    : null;
+  const avgStructure = itpRecords.length > 0
+    ? Math.round(itpRecords.reduce((acc, r) => acc + (r.structureScore || 0), 0) / itpRecords.length)
+    : null;
+  const avgReading = itpRecords.length > 0
+    ? Math.round(itpRecords.reduce((acc, r) => acc + (r.readingScore || 0), 0) / itpRecords.length)
+    : null;
 
   const handleDownloadPdf = async (rec: TestHistoryRecord) => {
     try {
       setDownloadingId(rec.id);
       await downloadCertificatePdf({
-        studentName: rec.studentName || user?.name || 'Muhammad Ihsan',
+        studentName: rec.studentName || user?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Student',
         testTitle: rec.testTitle,
         testType: rec.testType,
         certNumber: rec.certNumber,
@@ -245,7 +191,13 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
           <div className="flex items-center gap-1.5 self-start sm:self-auto">
             <button
               onClick={() => setSelectedCert(records[0] || null)}
-              className="px-2.5 py-1.5 sm:py-1 bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs rounded-lg transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-98"
+              disabled={records.length === 0}
+              className={`px-2.5 py-1.5 sm:py-1 rounded-lg transition-all shadow-xs flex items-center gap-1.5 ${
+                records.length === 0
+                  ? 'bg-slate-700/40 text-slate-400 border border-white/5 cursor-not-allowed opacity-60'
+                  : 'bg-[#F7B425] hover:bg-amber-400 text-black font-extrabold text-xs cursor-pointer active:scale-98'
+              }`}
+              title={records.length === 0 ? tr('Belum ada sertifikat tersedia', 'No certificates available yet') : tr('Lihat Sertifikat Terakhir', 'View Latest Certificate')}
             >
               <Award className="w-3.5 h-3.5" />
               <span className="font-bold" style={{ fontWeight: 'bold' }}>{tr('Lihat Sertifikat Terakhir', 'View Latest Certificate')}</span>
@@ -265,7 +217,9 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
               </div>
             </div>
             <div className="mt-1 flex items-baseline gap-1">
-              <span className="text-xl sm:text-2xl font-black font-mono text-[#F7B425]">{highestScore}</span>
+              <span className="text-xl sm:text-2xl font-black font-mono text-[#F7B425]">
+                {highestScore > 0 ? highestScore : '—'}
+              </span>
               <span className="text-[10px] text-slate-400">/ 677 ITP</span>
             </div>
           </div>
@@ -309,20 +263,27 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
                 <BarChart3 className="w-3 h-3" />
               </div>
             </div>
-            <div className="mt-1 space-y-0.5">
-              <div className="flex justify-between text-[9.5px] sm:text-[10px]">
-                <span className={subText}>Listening</span>
-                <span className="font-bold text-[#F7B425]">58/68</span>
+            {itpRecords.length > 0 ? (
+              <div className="mt-1 space-y-0.5">
+                <div className="flex justify-between text-[9.5px] sm:text-[10px]">
+                  <span className={subText}>Listening</span>
+                  <span className="font-bold text-[#F7B425]">{avgListening}/68</span>
+                </div>
+                <div className="flex justify-between text-[9.5px] sm:text-[10px]">
+                  <span className={subText}>Structure</span>
+                  <span className="font-bold text-[#F7B425]">{avgStructure}/68</span>
+                </div>
+                <div className="flex justify-between text-[9.5px] sm:text-[10px]">
+                  <span className={subText}>Reading</span>
+                  <span className="font-bold text-[#F7B425]">{avgReading}/67</span>
+                </div>
               </div>
-              <div className="flex justify-between text-[9.5px] sm:text-[10px]">
-                <span className={subText}>Structure</span>
-                <span className="font-bold text-[#F7B425]">60/68</span>
+            ) : (
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="text-xl sm:text-2xl font-black font-mono text-slate-400">—</span>
+                <span className="text-[10px] text-slate-400">{tr('Belum ada tes', 'No tests yet')}</span>
               </div>
-              <div className="flex justify-between text-[9.5px] sm:text-[10px]">
-                <span className={subText}>Reading</span>
-                <span className="font-bold text-[#F7B425]">57/67</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -374,87 +335,110 @@ export const StudentScoresAndCertificateTab: React.FC = () => {
               </tr>
             </thead>
             <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
-              {filteredRecords.map((rec) => (
-                <tr key={rec.id} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
-                  {/* Test Info */}
-                  <td className="py-1.5 sm:py-2 px-2.5 sm:px-3">
-                    <div className="font-bold text-[11px] sm:text-xs text-inherit">
-                      {rec.testTitle}
-                    </div>
-                    <div className="flex items-center gap-1.5 mt-0.5 text-[9.5px] sm:text-[10px] text-slate-400">
-                      <Calendar className="w-3 h-3 text-[#F7B425]" />
-                      <span>{rec.date}</span>
-                    </div>
-                  </td>
-
-                  {/* Type */}
-                  <td className="py-1.5 sm:py-2 px-2 text-center">
-                    <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase ${
-                      rec.testType === 'TOEFL ITP'
-                        ? 'bg-blue-500/15 text-blue-500 border border-blue-500/30'
-                        : 'bg-amber-500/15 text-amber-500 border border-amber-500/30'
-                    }`}>
-                      {rec.testType}
-                    </span>
-                  </td>
-
-                  {/* Section Scores */}
-                  <td className="py-1.5 sm:py-2 px-2 text-center font-mono font-bold text-[11px] sm:text-xs">
-                    {rec.listeningScore}
-                  </td>
-                  <td className="py-1.5 sm:py-2 px-2 text-center font-mono font-bold text-[11px] sm:text-xs">
-                    {rec.structureScore}
-                  </td>
-                  <td className="py-1.5 sm:py-2 px-2 text-center font-mono font-bold text-[11px] sm:text-xs">
-                    {rec.readingScore}
-                  </td>
-
-                  {/* Total Score Badge */}
-                  <td className="py-1.5 sm:py-2 px-2 text-center">
-                    <div className="inline-flex flex-col items-center">
-                      <span className="px-2 py-0.5 rounded-md bg-[#F7B425] text-black font-black font-mono text-[11px] sm:text-xs shadow-2xs">
-                        {rec.totalScore}
-                      </span>
-                      <span className="text-[8.5px] sm:text-[9px] text-slate-400 mt-0.5">
-                        {tr('dari', 'of')} {rec.maxScore}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Actions */}
-                  <td className="py-1.5 sm:py-2 px-2.5 sm:px-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedCert(rec)}
-                        className="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10.5px] sm:text-[11px] flex items-center gap-1 transition-all shadow-2xs cursor-pointer active:scale-95"
-                        title={tr('Lihat Pratinjau Sertifikat', 'View Certificate Preview')}
-                      >
-                        <Eye className="w-3 h-3" />
-                        <span>{tr('Sertifikat', 'Certificate')}</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleDownloadPdf(rec)}
-                        disabled={downloadingId === rec.id}
-                        className={`p-1 rounded-lg border transition-all cursor-pointer ${
-                          isDark 
-                            ? 'border-white/10 hover:bg-white/10 text-slate-300' 
-                            : 'border-slate-300 hover:bg-slate-100 text-slate-700'
-                        } ${downloadingId === rec.id ? 'opacity-60 pointer-events-none' : ''}`}
-                        title={tr('Unduh E-Certificate PDF', 'Download E-Certificate PDF')}
-                      >
-                        {downloadingId === rec.id ? (
-                          <Loader2 className="w-3 h-3 animate-spin text-[#F7B425]" />
-                        ) : (
-                          <Download className="w-3 h-3" />
-                        )}
-                      </button>
+              {filteredRecords.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 px-4 text-center">
+                    <div className="flex flex-col items-center justify-center max-w-sm mx-auto space-y-2">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#F7B425] flex items-center justify-center border border-[#F7B425]/20">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {tr('Belum Ada Riwayat Ujian & Sertifikat', 'No Exam History & Certificates Yet')}
+                        </p>
+                        <p className={`text-[10.5px] leading-relaxed ${subText}`}>
+                          {tr(
+                            'Anda belum menyelesaikan tes TOEFL. Mulai ujian simulasi di tab Simulasi Tes untuk mendapatkan skor terverifikasi dan dokumen e-sertifikat resmi.',
+                            'You have not completed any TOEFL simulation tests yet. Start a test in the Test Simulation tab to earn verified scores and official e-certificates.'
+                          )}
+                        </p>
+                      </div>
                     </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredRecords.map((rec) => (
+                  <tr key={rec.id} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
+                    {/* Test Info */}
+                    <td className="py-1.5 sm:py-2 px-2.5 sm:px-3">
+                      <div className="font-bold text-[11px] sm:text-xs text-inherit">
+                        {rec.testTitle}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-0.5 text-[9.5px] sm:text-[10px] text-slate-400">
+                        <Calendar className="w-3 h-3 text-[#F7B425]" />
+                        <span>{rec.date}</span>
+                      </div>
+                    </td>
+
+                    {/* Type */}
+                    <td className="py-1.5 sm:py-2 px-2 text-center">
+                      <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                        rec.testType === 'TOEFL ITP'
+                          ? 'bg-blue-500/15 text-blue-500 border border-blue-500/30'
+                          : 'bg-amber-500/15 text-amber-500 border border-amber-500/30'
+                      }`}>
+                        {rec.testType}
+                      </span>
+                    </td>
+
+                    {/* Section Scores */}
+                    <td className="py-1.5 sm:py-2 px-2 text-center font-mono font-bold text-[11px] sm:text-xs">
+                      {rec.listeningScore}
+                    </td>
+                    <td className="py-1.5 sm:py-2 px-2 text-center font-mono font-bold text-[11px] sm:text-xs">
+                      {rec.structureScore}
+                    </td>
+                    <td className="py-1.5 sm:py-2 px-2 text-center font-mono font-bold text-[11px] sm:text-xs">
+                      {rec.readingScore}
+                    </td>
+
+                    {/* Total Score Badge */}
+                    <td className="py-1.5 sm:py-2 px-2 text-center">
+                      <div className="inline-flex flex-col items-center">
+                        <span className="px-2 py-0.5 rounded-md bg-[#F7B425] text-black font-black font-mono text-[11px] sm:text-xs shadow-2xs">
+                          {rec.totalScore}
+                        </span>
+                        <span className="text-[8.5px] sm:text-[9px] text-slate-400 mt-0.5">
+                          {tr('dari', 'of')} {rec.maxScore}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-1.5 sm:py-2 px-2.5 sm:px-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCert(rec)}
+                          className="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10.5px] sm:text-[11px] flex items-center gap-1 transition-all shadow-2xs cursor-pointer active:scale-95"
+                          title={tr('Lihat Pratinjau Sertifikat', 'View Certificate Preview')}
+                        >
+                          <Eye className="w-3 h-3" />
+                          <span>{tr('Sertifikat', 'Certificate')}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadPdf(rec)}
+                          disabled={downloadingId === rec.id}
+                          className={`p-1 rounded-lg border transition-all cursor-pointer ${
+                            isDark 
+                              ? 'border-white/10 hover:bg-white/10 text-slate-300' 
+                              : 'border-slate-300 hover:bg-slate-100 text-slate-700'
+                          } ${downloadingId === rec.id ? 'opacity-60 pointer-events-none' : ''}`}
+                          title={tr('Unduh E-Certificate PDF', 'Download E-Certificate PDF')}
+                        >
+                          {downloadingId === rec.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin text-[#F7B425]" />
+                          ) : (
+                            <Download className="w-3 h-3" />
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

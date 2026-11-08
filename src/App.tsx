@@ -27,27 +27,64 @@ import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+const getPathFromUrl = (): string => {
+  if (typeof window === 'undefined') return '/';
+  const hash = window.location.hash;
+  if (hash && hash.length > 1) {
+    const clean = hash.replace(/^#\/?/, '/');
+    return clean.startsWith('/') ? clean : '/' + clean;
+  }
+  const pathname = window.location.pathname;
+  if (pathname && pathname !== '/' && pathname !== '/index.html') {
+    try {
+      const cleanPath = pathname.startsWith('/') ? pathname : '/' + pathname;
+      window.history.replaceState(null, '', '/#' + cleanPath);
+      return cleanPath;
+    } catch {
+      // Ignore fallback
+    }
+    return pathname;
+  }
+  return '/';
+};
+
 function AppContent() {
   const { user, role, loading, signOut } = useAuth();
-  const [currentPath, setCurrentPath] = useState<string>(() => {
-    return typeof window !== 'undefined' ? window.location.pathname : '/';
-  });
+  const [currentPath, setCurrentPath] = useState<string>(() => getPathFromUrl());
   const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   useEffect(() => {
-    const handlePopState = () => {
-      setCurrentPath(window.location.pathname);
+    const handleLocationChange = () => {
+      setCurrentPath(getPathFromUrl());
     };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+
+    window.addEventListener('hashchange', handleLocationChange);
+    window.addEventListener('popstate', handleLocationChange);
+
+    // Ensure state matches current URL on mount
+    setCurrentPath(getPathFromUrl());
+
+    return () => {
+      window.removeEventListener('hashchange', handleLocationChange);
+      window.removeEventListener('popstate', handleLocationChange);
+    };
   }, []);
 
   const navigate = (path: string) => {
     if (typeof window !== 'undefined') {
-      if (window.location.pathname !== path) {
-        window.history.pushState(null, '', path);
+      const normalized = path.startsWith('/') ? path : '/' + path;
+      const targetHash = normalized === '/' ? '' : '#' + normalized;
+
+      if (normalized === '/') {
+        if (window.location.hash) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      } else {
+        if (window.location.hash !== targetHash) {
+          window.location.hash = targetHash;
+        }
       }
-      setCurrentPath(path);
+      setCurrentPath(normalized);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };

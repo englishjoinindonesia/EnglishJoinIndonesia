@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           role: userRole,
           whatsapp: whatsapp || '',
         },
-        emailRedirectTo: `${siteOrigin}/sign-in`,
+        emailRedirectTo: `${siteOrigin}/#/sign-in`,
       },
     });
     return { user: data.user, session: data.session, error };
@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const resetPasswordForEmail = async (email: string) => {
     const siteOrigin = typeof window !== 'undefined' ? window.location.origin : '';
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${siteOrigin}/update-password`,
+      redirectTo: `${siteOrigin}/#/update-password`,
     });
     return { error };
   };

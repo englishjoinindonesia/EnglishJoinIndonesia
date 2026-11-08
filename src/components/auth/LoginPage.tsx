@@ -24,8 +24,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         } else if (onNavigate) {
           onNavigate(path);
         } else if (typeof window !== 'undefined') {
-          window.history.pushState(null, '', path);
-          window.dispatchEvent(new PopStateEvent('popstate'));
+          const target = path.startsWith('/') ? path : '/' + path;
+          if (target === '/') {
+            window.history.replaceState(null, '', window.location.pathname);
+          } else {
+            window.location.hash = '#' + target;
+          }
+          window.dispatchEvent(new Event('hashchange'));
         }
       }}
       onSuccessRedirect={() => {
