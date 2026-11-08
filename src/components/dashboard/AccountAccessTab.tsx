@@ -261,9 +261,19 @@ export const AccountAccessTab: React.FC = () => {
             {totalCount}
           </div>
           <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-            <span className="font-bold">Admin: <strong>{adminRequestsCount}</strong></span>
+            <span 
+              style={{ color: '#f1f5f9' }}
+              className="font-bold text-[#f1f5f9]"
+            >
+              Admin: <strong>{adminRequestsCount}</strong>
+            </span>
             <span>•</span>
-            <span className="font-bold">Student: <strong>{studentRequestsCount}</strong></span>
+            <span 
+              style={{ color: '#f1f5f9' }}
+              className="font-bold text-[#f1f5f9]"
+            >
+              Student: <strong>{studentRequestsCount}</strong>
+            </span>
           </div>
         </div>
 
@@ -288,7 +298,10 @@ export const AccountAccessTab: React.FC = () => {
           <div className="text-xl sm:text-2xl font-black mt-1 font-heading text-amber-600 dark:text-amber-400">
             {pendingCount}
           </div>
-          <div className="text-[10px] font-normal text-[#90a1b9] mt-0.5 truncate">
+          <div 
+            style={{ color: '#f1f5f9' }}
+            className="text-[10px] font-normal text-[#f1f5f9] mt-0.5 truncate"
+          >
             {tr('Perlu persetujuan Admin EJI', 'Needs Admin EJI approval')}
           </div>
         </div>
@@ -311,7 +324,10 @@ export const AccountAccessTab: React.FC = () => {
           <div className="text-xl sm:text-2xl font-black mt-1 font-heading text-emerald-600 dark:text-emerald-400">
             {approvedCount}
           </div>
-          <div className="text-[10px] text-slate-400 mt-0.5">
+          <div 
+            style={{ color: '#f1f5f9' }}
+            className="text-[10px] text-[#f1f5f9] mt-0.5"
+          >
             {tr('Akun aktif & dapat login', 'Active accounts')}
           </div>
         </div>
@@ -334,7 +350,10 @@ export const AccountAccessTab: React.FC = () => {
           <div className="text-xl sm:text-2xl font-black mt-1 font-heading text-rose-600 dark:text-rose-400">
             {rejectedCount}
           </div>
-          <div className="text-[10px] text-slate-400 mt-0.5">
+          <div 
+            style={{ color: '#f1f5f9' }}
+            className="text-[10px] text-[#f1f5f9] mt-0.5"
+          >
             {tr('Akses diblokir / ditolak', 'Access blocked')}
           </div>
         </div>
@@ -444,7 +463,10 @@ export const AccountAccessTab: React.FC = () => {
       <div className={`rounded-2xl border overflow-hidden transition-all duration-200 ${
         isDark ? 'bg-[#141414] border-white/10' : 'bg-white border-slate-200 shadow-2xs'
       }`}>
-        <div className="px-3 py-2 sm:px-3.5 sm:py-2.5 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
+        <div 
+          style={{ borderColor: '#000000' }}
+          className="px-3 py-2 sm:px-3.5 sm:py-2.5 border-b border-[#000000] flex items-center justify-between"
+        >
           <div className="flex items-center gap-2">
             <h3 
               style={{ fontSize: '12px' }}

@@ -222,7 +222,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
           className={`rounded-xl px-3.5 sm:px-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}
         >
           <div className="flex items-center justify-between text-slate-300">
-            <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{tr('Total Siswa Terdaftar', 'Total Registered Students')}</span>
+            <span 
+              style={{ color: '#ffffff' }}
+              className={`text-[11px] font-bold ${isDark ? 'text-white' : 'text-slate-600'}`}
+            >
+              {tr('Total Siswa Terdaftar', 'Total Registered Students')}
+            </span>
             <div className="w-7 h-7 rounded-lg bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
               <Users className="w-3.5 h-3.5 text-[#F7B425]" />
             </div>
@@ -231,7 +236,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
             <div className={`text-2xl font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>1,548+</div>
             <p className="text-[10px] font-semibold text-[#F7B425] mt-0.5 flex items-center gap-1">
               <TrendingUp className="w-3 h-3 text-[#F7B425]" />
-              <span className="text-[#F7B425]">{tr('+38 minggu ini', '+38 this week')}</span>
+              <span 
+                style={{ fontWeight: 'normal' }}
+                className="text-[#F7B425] font-normal"
+              >
+                {tr('+38 minggu ini', '+38 this week')}
+              </span>
             </p>
           </div>
         </div>
@@ -249,7 +259,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
           </div>
           <div>
             <div className="text-2xl font-bold font-heading text-black">535.4</div>
-            <p className="text-[10px] font-bold mt-0.5 text-black/80">{tr('94% lolos target 500+', '94% reached 500+ target')}</p>
+            <p 
+              style={{ fontWeight: 'normal' }}
+              className="text-[10px] font-normal mt-0.5 text-black/80"
+            >
+              {tr('94% lolos target 500+', '94% reached 500+ target')}
+            </p>
           </div>
         </div>
 
@@ -259,14 +274,24 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
           className={`rounded-xl px-3.5 sm:px-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}
         >
           <div className="flex items-center justify-between text-slate-300">
-            <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{tr('Sertifikat Resmi Terbit', 'Certificates Issued')}</span>
+            <span 
+              style={{ color: '#ffffff' }}
+              className={`text-[11px] font-bold ${isDark ? 'text-white' : 'text-slate-600'}`}
+            >
+              {tr('Sertifikat Resmi Terbit', 'Certificates Issued')}
+            </span>
             <div className="w-7 h-7 rounded-lg bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
               <Award className="w-3.5 h-3.5 text-[#F7B425]" />
             </div>
           </div>
           <div>
             <div className={`text-2xl font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>1,420</div>
-            <p className={`text-[10px] mt-0.5 font-mono ${subText}`}>{tr('Verifikasi Digital', 'Digital Verified')}</p>
+            <p 
+              style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 'normal', color: '#ffffff' }}
+              className={`text-[10px] mt-0.5 font-['Poppins',sans-serif] font-normal ${isDark ? 'text-white' : subText}`}
+            >
+              {tr('Verifikasi Digital', 'Digital Verified')}
+            </p>
           </div>
         </div>
 
@@ -276,7 +301,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
           className={`rounded-xl px-3.5 sm:px-4 flex flex-col justify-between h-28 border relative overflow-hidden group hover:border-[#F7B425]/50 transition-all ${cardBg}`}
         >
           <div className="flex items-center justify-between text-slate-300">
-            <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{tr('Total Bank Soal', 'Total Question Bank')}</span>
+            <span 
+              style={{ color: '#ffffff' }}
+              className={`text-[11px] font-bold ${isDark ? 'text-white' : 'text-slate-600'}`}
+            >
+              {tr('Total Bank Soal', 'Total Question Bank')}
+            </span>
             <div className="w-7 h-7 rounded-lg bg-[#F7B425]/15 text-[#F7B425] flex items-center justify-center font-bold">
               <HelpCircle className="w-3.5 h-3.5 text-[#F7B425]" />
             </div>
@@ -285,7 +315,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
             <div id="stat-total-question-banks" className={`text-xl font-bold font-heading ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {questionBanksList.length} {tr('Paket Soal', 'Question Banks')}
             </div>
-            <p className={`text-[10px] mt-0.5 ${subText} truncate`}>
+            <p 
+              style={{ color: '#ffffff' }}
+              className={`text-[10px] mt-0.5 ${isDark ? 'text-white' : subText} truncate`}
+            >
               {totalStandardQuestions} {tr('Soal', 'Questions')} • {questionsBank.length} {tr('Tersimpan', 'Saved')}
             </p>
           </div>
@@ -302,7 +335,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
             >
               <span className="w-2 h-2 rounded-full bg-[#F7B425] shadow-xs shadow-[#F7B425]/50" />
               {tr('Daftar Bank Soal TOEFL (Question Bank)', 'TOEFL Question Bank List')}
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 font-bold ml-1 font-mono">
+              <span 
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+                className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 font-bold ml-1 font-['Poppins',sans-serif]"
+              >
                 {questionBanksList.length} {tr('Tersedia', 'Available')}
               </span>
             </h3>

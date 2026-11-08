@@ -6,7 +6,7 @@ import {
   Award, Eye, FolderOpen, ArrowUpRight, Sparkles,
   Settings, Check, FolderPlus, Sliders, ToggleLeft, ToggleRight,
   Headphones, FileEdit, PenTool, LayoutGrid, Table2, Upload, Play, Pause, Music, FileAudio,
-  Maximize, Minimize, FileText, ChevronUp, Underline
+  Maximize, Minimize, FileText, ChevronUp, Underline, ArrowUp, ArrowDown
 } from 'lucide-react';
 import { ToeflQuestion, ToeflTestProgram } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
@@ -962,6 +962,138 @@ export const ToeflQuestionsTab: React.FC = () => {
       q.explanation.toLowerCase().includes(questionSearchTerm.toLowerCase());
     return matchSec && matchSearch;
   });
+
+  // Drag and drop & Quick Reorder state (6-dots toggle)
+  const [activeReorderMenu, setActiveReorderMenu] = useState<string | null>(null);
+  const [draggedQuestionId, setDraggedQuestionId] = useState<string | null>(null);
+  const [dragOverQuestionId, setDragOverQuestionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.reorder-menu-container')) {
+        setActiveReorderMenu(null);
+      }
+    };
+    if (activeReorderMenu) {
+      document.addEventListener('click', handleOutsideClick);
+      return () => document.removeEventListener('click', handleOutsideClick);
+    }
+  }, [activeReorderMenu]);
+
+  const handleDragStart = (e: React.DragEvent, questionId: string) => {
+    e.dataTransfer.setData('text/plain', questionId);
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggedQuestionId(questionId);
+  };
+
+  const handleDragOver = (e: React.DragEvent, questionId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverQuestionId !== questionId) {
+      setDragOverQuestionId(questionId);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedQuestionId(null);
+    setDragOverQuestionId(null);
+  };
+
+  const handleDrop = (
+    e: React.DragEvent, 
+    targetQuestionId: string, 
+    currentSectionQuestions: ToeflQuestion[]
+  ) => {
+    e.preventDefault();
+    const sourceQuestionId = e.dataTransfer.getData('text/plain') || draggedQuestionId;
+    if (!sourceQuestionId || sourceQuestionId === targetQuestionId) {
+      handleDragEnd();
+      return;
+    }
+
+    const sourceSecIdx = currentSectionQuestions.findIndex(q => q.id === sourceQuestionId);
+    const targetSecIdx = currentSectionQuestions.findIndex(q => q.id === targetQuestionId);
+
+    if (sourceSecIdx === -1 || targetSecIdx === -1) {
+      handleDragEnd();
+      return;
+    }
+
+    setQuestions(prevQuestions => {
+      const sourceGlobalIdx = prevQuestions.findIndex(q => q.id === sourceQuestionId);
+      const targetGlobalIdx = prevQuestions.findIndex(q => q.id === targetQuestionId);
+
+      if (sourceGlobalIdx === -1 || targetGlobalIdx === -1) return prevQuestions;
+
+      const updated = [...prevQuestions];
+      const [movedItem] = updated.splice(sourceGlobalIdx, 1);
+      updated.splice(targetGlobalIdx, 0, movedItem);
+
+      try {
+        localStorage.setItem('ej_toefl_questions_bank', JSON.stringify(updated));
+        window.dispatchEvent(new Event('storage'));
+      } catch (err) {
+        console.warn('Error saving questions after drag-and-drop', err);
+      }
+      return updated;
+    });
+
+    setActionNotice(
+      tr(`Soal #${sourceSecIdx + 1} berhasil digeser ke urutan #${targetSecIdx + 1}`, `Question #${sourceSecIdx + 1} moved to position #${targetSecIdx + 1}`)
+    );
+    setTimeout(() => setActionNotice(null), 2500);
+    handleDragEnd();
+  };
+
+  // Reorder question position within a section (Geser Naik / Turun / Ke Paling Atas / Bawah)
+  const handleReorderQuestion = (
+    questionId: string, 
+    direction: 'up' | 'down' | 'top' | 'bottom', 
+    currentSectionQuestions: ToeflQuestion[]
+  ) => {
+    const secIdx = currentSectionQuestions.findIndex(q => q.id === questionId);
+    if (secIdx === -1) return;
+    if ((direction === 'up' || direction === 'top') && secIdx === 0) return;
+    if ((direction === 'down' || direction === 'bottom') && secIdx === currentSectionQuestions.length - 1) return;
+
+    let targetSecIdx = secIdx;
+    if (direction === 'up') targetSecIdx = secIdx - 1;
+    else if (direction === 'down') targetSecIdx = secIdx + 1;
+    else if (direction === 'top') targetSecIdx = 0;
+    else if (direction === 'bottom') targetSecIdx = currentSectionQuestions.length - 1;
+
+    const targetQuestionId = currentSectionQuestions[targetSecIdx].id;
+
+    setQuestions(prevQuestions => {
+      const idxA = prevQuestions.findIndex(q => q.id === questionId);
+      const idxB = prevQuestions.findIndex(q => q.id === targetQuestionId);
+      if (idxA === -1 || idxB === -1) return prevQuestions;
+
+      const updated = [...prevQuestions];
+      const [movedItem] = updated.splice(idxA, 1);
+      updated.splice(idxB, 0, movedItem);
+
+      try {
+        localStorage.setItem('ej_toefl_questions_bank', JSON.stringify(updated));
+        window.dispatchEvent(new Event('storage'));
+      } catch (err) {
+        console.warn('Error saving reordered questions to localStorage', err);
+      }
+      return updated;
+    });
+
+    setActionNotice(
+      direction === 'up'
+        ? tr(`Urutan soal berhasil digeser naik ke nomor #${targetSecIdx + 1}`, `Question moved up to position #${targetSecIdx + 1}`)
+        : direction === 'down'
+          ? tr(`Urutan soal berhasil digeser turun ke nomor #${targetSecIdx + 1}`, `Question moved down to position #${targetSecIdx + 1}`)
+          : direction === 'top'
+            ? tr(`Urutan soal berhasil dipindahkan ke posisi teratas (#1)`, `Question moved to top position (#1)`)
+            : tr(`Urutan soal berhasil dipindahkan ke posisi terbawah (#${targetSecIdx + 1})`, `Question moved to bottom position (#${targetSecIdx + 1})`)
+    );
+    setTimeout(() => setActionNotice(null), 2500);
+  };
 
   const handleDelete = (target: string | ToeflQuestion) => {
     if (typeof target === 'string') {
@@ -2204,8 +2336,12 @@ export const ToeflQuestionsTab: React.FC = () => {
                         {secQuestions.map((item, idx) => (
                           <div 
                             key={item.id}
-                            className={`rounded-xl p-2.5 sm:p-3 border transition-colors duration-150 space-y-2 ${cardBg} ${
+                            onDragOver={(e) => handleDragOver(e, item.id)}
+                            onDrop={(e) => handleDrop(e, item.id, secQuestions)}
+                            className={`rounded-xl p-2.5 sm:p-3 border transition-all duration-150 space-y-2 ${cardBg} ${
                               isDark ? 'hover:border-[#F7B425]/40' : 'hover:border-[#F7B425]'
+                            } ${dragOverQuestionId === item.id ? 'border-2 border-[#F7B425] bg-[#F7B425]/10 shadow-lg' : ''} ${
+                              draggedQuestionId === item.id ? 'opacity-40' : ''
                             }`}
                           >
                             {/* Header Tag */}
@@ -2232,6 +2368,54 @@ export const ToeflQuestionsTab: React.FC = () => {
                               </div>
 
                               <div className="flex items-center gap-1">
+                                {/* 6-Dots Drag Handle matching user screenshot */}
+                                <div
+                                  draggable
+                                  onDragStart={(e) => handleDragStart(e, item.id)}
+                                  onDragEnd={handleDragEnd}
+                                  className="w-6 h-6 rounded-md bg-[#38260d] hover:bg-[#4d3412] active:bg-[#5a3d15] border border-[#F7B425]/50 flex items-center justify-center cursor-grab active:cursor-grabbing transition-all select-none shadow-xs group mr-0.5"
+                                  title={tr('Tahan & geser untuk mengubah urutan (Drag & drop)', 'Drag & drop to reorder')}
+                                >
+                                  <svg className="w-3 h-3 text-[#F7B425] group-hover:scale-110 transition-transform pointer-events-none" viewBox="0 0 16 16" fill="currentColor">
+                                    <circle cx="5" cy="3.5" r="1.5" />
+                                    <circle cx="11" cy="3.5" r="1.5" />
+                                    <circle cx="5" cy="8" r="1.5" />
+                                    <circle cx="11" cy="8" r="1.5" />
+                                    <circle cx="5" cy="12.5" r="1.5" />
+                                    <circle cx="11" cy="12.5" r="1.5" />
+                                  </svg>
+                                </div>
+
+                                <div className="inline-flex items-center gap-0.5 p-0.5 rounded-md border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 mr-0.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleReorderQuestion(item.id, 'up', secQuestions)}
+                                    disabled={idx === 0}
+                                    className={`p-1 rounded transition-colors ${
+                                      idx === 0
+                                        ? 'opacity-20 cursor-not-allowed text-slate-400'
+                                        : 'hover:bg-[#F7B425] hover:text-black text-slate-700 dark:text-slate-300 cursor-pointer active:scale-90'
+                                    }`}
+                                    title={idx === 0 ? tr('Sudah di urutan teratas', 'Already at top') : tr('Geser Soal Naik', 'Move Question Up')}
+                                    aria-label={tr('Geser Soal Naik', 'Move Question Up')}
+                                  >
+                                    <ArrowUp className="w-2.5 h-2.5 stroke-[2.5]" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleReorderQuestion(item.id, 'down', secQuestions)}
+                                    disabled={idx === secQuestions.length - 1}
+                                    className={`p-1 rounded transition-colors ${
+                                      idx === secQuestions.length - 1
+                                        ? 'opacity-20 cursor-not-allowed text-slate-400'
+                                        : 'hover:bg-[#F7B425] hover:text-black text-slate-700 dark:text-slate-300 cursor-pointer active:scale-90'
+                                    }`}
+                                    title={idx === secQuestions.length - 1 ? tr('Sudah di urutan terbawah', 'Already at bottom') : tr('Geser Soal Turun', 'Move Question Down')}
+                                    aria-label={tr('Geser Soal Turun', 'Move Question Down')}
+                                  >
+                                    <ArrowDown className="w-2.5 h-2.5 stroke-[2.5]" />
+                                  </button>
+                                </div>
                                 <button
                                   onClick={() => handleOpenEditQuestion(item)}
                                   className={`p-1 rounded-md transition-colors cursor-pointer ${
@@ -2359,22 +2543,159 @@ export const ToeflQuestionsTab: React.FC = () => {
                               isDark ? 'border-white/10 text-slate-400 bg-white/5' : 'border-slate-200 text-slate-500 bg-slate-50/80'
                             }`}>
                               <tr>
-                                <th className="py-1.5 px-2.5 font-bold text-center w-10">No</th>
-                                <th className="py-1.5 px-2.5 font-bold w-32">{tr('Bagian (Part)', 'Part')}</th>
-                                <th className="py-1.5 px-2.5 font-bold">{tr('Cuplikan Teks Soal', 'Question Snippet')}</th>
-                                <th className="py-1.5 px-2.5 font-bold text-center w-14">{tr('Kunci', 'Key')}</th>
-                                <th className="py-1.5 px-2.5 font-bold">{tr('Analisis Pembahasan', 'Explanation')}</th>
-                                <th className="py-1.5 px-2.5 font-bold text-right w-16">{tr('Aksi', 'Action')}</th>
+                                <th className="py-2 px-2.5 font-bold text-center w-12">No</th>
+                                <th className="py-2 px-2 font-bold text-center w-20">{tr('Urutan (Geser)', 'Reorder')}</th>
+                                <th className="py-2 px-3 font-bold whitespace-nowrap min-w-[200px]">{tr('Bagian (Part)', 'Part')}</th>
+                                <th className="py-2 px-3 font-bold min-w-[280px]">{tr('Cuplikan Teks Soal', 'Question Snippet')}</th>
+                                <th className="py-2 px-2 font-bold text-center w-14">{tr('Kunci', 'Key')}</th>
+                                <th className="py-2 px-3 font-bold min-w-[220px]">{tr('Analisis Pembahasan', 'Explanation')}</th>
+                                <th className="py-2 px-3 font-bold text-right w-20">{tr('Aksi', 'Action')}</th>
                               </tr>
                             </thead>
                             <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
                               {secQuestions.map((q, idx) => (
-                                <tr key={q.id} className={isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}>
+                                <tr 
+                                  key={q.id}
+                                  onDragOver={(e) => handleDragOver(e, q.id)}
+                                  onDrop={(e) => handleDrop(e, q.id, secQuestions)}
+                                  className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'} ${
+                                    dragOverQuestionId === q.id ? 'border-t-2 border-[#F7B425] bg-[#F7B425]/15' : ''
+                                  } ${draggedQuestionId === q.id ? 'opacity-40' : ''}`}
+                                >
                                   <td className="py-1 px-2.5 font-bold text-center font-mono text-[#F7B425] text-[11px]">
                                     {idx + 1}
                                   </td>
-                                  <td className="py-1 px-2.5">
-                                    <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30">
+                                  <td className="py-1 px-2 text-center relative">
+                                    <div className="inline-flex items-center gap-1.5 relative reorder-menu-container">
+                                      {/* 6-Dots Drag & Drop Toggle Handle (Matching User Screenshot) */}
+                                      <div
+                                        draggable
+                                        onDragStart={(e) => handleDragStart(e, q.id)}
+                                        onDragEnd={handleDragEnd}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setActiveReorderMenu(activeReorderMenu === q.id ? null : q.id);
+                                        }}
+                                        className="w-7 h-7 rounded-lg bg-[#38260d] hover:bg-[#4d3412] active:bg-[#5a3d15] border border-[#F7B425]/50 flex items-center justify-center cursor-grab active:cursor-grabbing transition-all select-none shadow-xs group"
+                                        title={tr('Tahan & geser untuk mengubah urutan (Drag & drop) atau klik untuk opsi cepat', 'Drag & drop to reorder or click for quick options')}
+                                        aria-label={tr('Tombol geser urutan soal', 'Reorder question toggle handle')}
+                                      >
+                                        <svg 
+                                          className="w-3.5 h-3.5 text-[#F7B425] group-hover:scale-110 transition-transform pointer-events-none" 
+                                          viewBox="0 0 16 16" 
+                                          fill="currentColor"
+                                        >
+                                          <circle cx="5" cy="3.5" r="1.5" />
+                                          <circle cx="11" cy="3.5" r="1.5" />
+                                          <circle cx="5" cy="8" r="1.5" />
+                                          <circle cx="11" cy="8" r="1.5" />
+                                          <circle cx="5" cy="12.5" r="1.5" />
+                                          <circle cx="11" cy="12.5" r="1.5" />
+                                        </svg>
+                                      </div>
+
+                                      {/* Quick Step Up & Down Mini Arrows beside the 6-dots button */}
+                                      <div className="flex flex-col gap-0.5">
+                                        <button
+                                          type="button"
+                                          onClick={() => handleReorderQuestion(q.id, 'up', secQuestions)}
+                                          disabled={idx === 0}
+                                          className={`w-3.5 h-3 rounded flex items-center justify-center transition-colors ${
+                                            idx === 0
+                                              ? 'opacity-20 cursor-not-allowed text-slate-500'
+                                              : 'bg-white/5 hover:bg-[#F7B425] hover:text-black text-slate-300 cursor-pointer active:scale-90'
+                                          }`}
+                                          title={tr('Geser Naik', 'Move Up')}
+                                        >
+                                          <ChevronUp className="w-2.5 h-2.5 stroke-[2.5]" />
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleReorderQuestion(q.id, 'down', secQuestions)}
+                                          disabled={idx === secQuestions.length - 1}
+                                          className={`w-3.5 h-3 rounded flex items-center justify-center transition-colors ${
+                                            idx === secQuestions.length - 1
+                                              ? 'opacity-20 cursor-not-allowed text-slate-500'
+                                              : 'bg-white/5 hover:bg-[#F7B425] hover:text-black text-slate-300 cursor-pointer active:scale-90'
+                                          }`}
+                                          title={tr('Geser Turun', 'Move Down')}
+                                        >
+                                          <ChevronDown className="w-2.5 h-2.5 stroke-[2.5]" />
+                                        </button>
+                                      </div>
+
+                                      {/* Dropdown Menu when clicking the 6-dots toggle */}
+                                      {activeReorderMenu === q.id && (
+                                        <div 
+                                          onClick={(e) => e.stopPropagation()}
+                                          className="absolute left-0 top-full mt-1 z-30 w-48 rounded-xl border border-white/15 bg-[#18181a] shadow-2xl p-1 text-left text-[11px] animate-in fade-in zoom-in-95 duration-100"
+                                        >
+                                          <div className="px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-[#F7B425] border-b border-white/10 mb-0.5">
+                                            {tr(`Urutan Soal: #${idx + 1}`, `Question Order: #${idx + 1}`)}
+                                          </div>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              handleReorderQuestion(q.id, 'up', secQuestions);
+                                              setActiveReorderMenu(null);
+                                            }}
+                                            disabled={idx === 0}
+                                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${
+                                              idx === 0 ? 'opacity-30 cursor-not-allowed text-slate-500' : 'hover:bg-white/10 text-white cursor-pointer'
+                                            }`}
+                                          >
+                                            <ArrowUp className="w-3 h-3 text-[#F7B425]" />
+                                            <span>{tr('Geser Naik (1 langkah)', 'Move Up (1 step)')}</span>
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              handleReorderQuestion(q.id, 'down', secQuestions);
+                                              setActiveReorderMenu(null);
+                                            }}
+                                            disabled={idx === secQuestions.length - 1}
+                                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${
+                                              idx === secQuestions.length - 1 ? 'opacity-30 cursor-not-allowed text-slate-500' : 'hover:bg-white/10 text-white cursor-pointer'
+                                            }`}
+                                          >
+                                            <ArrowDown className="w-3 h-3 text-[#F7B425]" />
+                                            <span>{tr('Geser Turun (1 langkah)', 'Move Down (1 step)')}</span>
+                                          </button>
+                                          <div className="border-t border-white/10 my-0.5" />
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              handleReorderQuestion(q.id, 'top', secQuestions);
+                                              setActiveReorderMenu(null);
+                                            }}
+                                            disabled={idx === 0}
+                                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${
+                                              idx === 0 ? 'opacity-30 cursor-not-allowed text-slate-500' : 'hover:bg-white/10 text-white cursor-pointer'
+                                            }`}
+                                          >
+                                            <span className="font-mono font-bold text-[#F7B425] text-xs">⇈</span>
+                                            <span>{tr('Pindah ke Paling Atas', 'Move to Top')}</span>
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              handleReorderQuestion(q.id, 'bottom', secQuestions);
+                                              setActiveReorderMenu(null);
+                                            }}
+                                            disabled={idx === secQuestions.length - 1}
+                                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${
+                                              idx === secQuestions.length - 1 ? 'opacity-30 cursor-not-allowed text-slate-500' : 'hover:bg-white/10 text-white cursor-pointer'
+                                            }`}
+                                          >
+                                            <span className="font-mono font-bold text-[#F7B425] text-xs">⇊</span>
+                                            <span>{tr('Pindah ke Paling Bawah', 'Move to Bottom')}</span>
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className="py-2 px-3 whitespace-nowrap">
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold whitespace-nowrap bg-[#F7B425]/15 text-[#F7B425] border border-[#F7B425]/30 shadow-2xs">
                                       {q.part}
                                     </span>
                                   </td>

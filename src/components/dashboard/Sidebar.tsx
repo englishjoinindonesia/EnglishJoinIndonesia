@@ -188,9 +188,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className={`min-w-0 transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${
             isCollapsed ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-[180px] opacity-100 ml-1'
           }`}>
-            <span className={`text-[9px] font-extrabold uppercase tracking-wider block ${
-              isDark ? 'text-slate-400' : 'text-slate-500'
-            }`}>
+            <span 
+              style={{ color: '#f7b425' }}
+              className="text-[9px] font-extrabold uppercase tracking-wider block text-[#f7b425]"
+            >
               {t.dashboard.sidebar.portalAccess}
             </span>
             <span className={`text-xs font-bold block truncate font-heading ${
